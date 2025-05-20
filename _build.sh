@@ -6,6 +6,9 @@ rm -rf _build
 echo "Building website using Quarto book format"
 quarto render website --to html
 
+echo "Copying real lecture files into slides/"
+cp lectures/lecture*.qmd slides/
+
 echo "Building slides"
 quarto render slides --to revealjs
 echo "Removing left-over files folders"
