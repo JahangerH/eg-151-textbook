@@ -5,11 +5,11 @@ project:
 book:
   cover-image: cover.jpg
   cover-image-alt: An Intel 8742 Microprocessor
-  repo-url: https://github.com/cpjobling/eg-151-textbook
+  repo-url: https://github.com/JahangerH/eg-151-textbook
   repo-actions: [edit, issue]
   repo-branch: main
   repo-subdir: website
-  site-url: https://cpjobling.github.io/eg-151-textbook
+  site-url: https://jahangerh.github.io/eg-151-textbook
   favicon: logo.png
   title: "EG-151 Microcontrollers 2025-2026"
   author:
