@@ -1,0 +1,794 @@
+---
+title: "Introduction to Microcontrollers and Microcontroller Architecture"
+author: 
+  name: "Ben Clifford"
+  affiliation: "Welsh Centre for Printing and Coatings"
+date: "10/01/2024"
+---
+
+![](pictures/cover.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+
+::: {.notes}
+[Presentation version](/slides/lecture01.html) of these [notes](#week1:introduction).
+:::
+
+## 50 years of teaching microprocessors at Swansea!{.unnumbered .unlisted #week1:introduction}
+
+![Dr Davies in the Electronics lab](pictures/dr_tim_davies.png){fig-align=left fig-alt="A photograph of Dr Davies lecturing in the Electronics Lab" #dr_timothy_davies}
+
+---
+
+### A brief history by our former colleague, Honoury Lecturer Dr Timothy Davies.{.unnumbered}
+
+::: {.incremental}
+* Started in 1972/1973 by Prof. David Aspinall and Dr. Erik Dagless, using bespoke equipment based on the Intel 8008.
+* Always using 8-bit micros such as Intel 8008, Intel 8085, Motorola 68HC11, Motorola 68HCS08...
+* Take-home lab, developed by Dr Davies, in 2020, used the Arduino Nano which is based on the Atmel (now MicroChip) ATmega328
+:::
+
+---
+
+::: {.incremental}
+* One of our former students, Prof Sir Andy Hopper, asked why we are not teaching using the ARM processor which he helped develop.
+* Spring 2021 - the launch of a new microcontroller, the RP2040 which is packaged into a small module, costing only three pounds.
+* This is the microcontroller for our second-year EG-252 lab and is also used in the third-year module EG-3082 Embedded Systems launching this year,
+* You will therefore be using microcontrollers throughout this program
+:::
+
+## Introduction {.unnumbered #week1:intro}
+
+In this week's lecture, you will be given an introduction to microcontrollers focusing on what a microcontroller is, where they can be found and how they can be described using the their *architecture*. The lecture then moves on to introduce the Atmel ATmega328 microcontroller, which will be used in the practical sessions in this course, looking at its core architecture including the function of the arithmetic logic unit and registers.
+
+
+## Topics Covered in this Lecture {.unnumbered #week1:toc}
+
+:::: {.columns}
+
+::: {.column width="25%"}
+![](pictures/slide2.png){img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module." width=100%}
+:::
+
+::: {.column width="75%"}
+- @sec-week1-what-is-a-uc: [What is a Microcontroller?](#sec-week1-what-is-a-uc)
+- @sec-week1-where-are-uc-used: [Where are Microcontrollers Used?](#sec-week1-where-are-uc-used)
+- @sec-week1-architecture: [How do we Describe Microcontrollers?](#sec-week1-architecture)
+- @sec-atmel-atmega328: [The Atmel ATmega 328 Microcontroller](#sec-atmel-atmega328)
+:::
+::::
+
+## What is a Microcontroller? {background-image="pictures/micro_chip.jpg" #sec-week1-what-is-a-uc} 
+
+::: {.notes}
+![](pictures/micro_chip.jpg){ fig-alt="A decorative image showing a microcontroller chip." width=25%}
+:::
+
+A microntroller is a compact integrated circuit designed to govern a specific operation or set of operations within an embedded system.
+
+At a high level of abstraction, a microntroller includes three core components within a single chip:
+
+- A central processing unit (CPU)
+- Memory, and
+- Input/output (I/0) peripherals
+
+## Where are Microcontrollers Used? {#sec-week1-where-are-uc-used}
+
+::: {#fig-uses_of_micros}
+
+![](pictures/uses_of_micros.png){fig-alt="An image illustrating that microcontrollers are used in the automotive industry, consumer electronics, industrial and control sytems, and environmental monitoring"}
+
+Some industrial uses of microcontrollers
+:::
+
+::: {.notes}
+Microcontrollers are used in the automotive industry, consumer electronics, industrial and control systems, and environmental monitoring and many other areas of engineering.
+:::
+
+---
+
+### Automotive applications
+
+::: {#fig-automotive-apps}
+
+![](pictures/automotive_apps.png){fig-alt="Automotive applications of microcontrollers"}
+
+Automotive applications of microcontrollers[^l1:note1]
+:::
+
+[^l1:note1]: Source of original image used in @fig-automotive-apps: [www.linkedin.com/pulse/microcontrollers-used-automotive-applications-field-amin-agina](https://www.linkedin.com/pulse/microcontrollers-used-automotive-applications-field-amin-agina). The original image is no longer accessible.
+
+#### *Applications of microcontrollers in the automotive industry* {.unnumbered}
+
+::: {.center}
+<table>
+<tr>
+<td>
+<ul>
+	<li>Engine Control</li>
+<li>Heating/Cooling</li>
+<li>Central Locking</li>
+<li>Navigation</li>
+<li>Cruise Control</li>
+<li>Lighting</li>
+<li>Radio</li>
+<li>Charging System</li>
+</li>
+</ul>
+</td><td>
+<ul>
+	<li>Exhaust Control</li>
+	<li>Parking Assistance</li>
+	<li>Wipers</li>
+	<li>Occupancy / Airbags</li>
+	<li>ADAS</li>
+	<li>Collison Warning</li>
+	<li>Speed limiter</li>
+	<li>Battery Monitoring</li>
+</ul>
+</td>
+</tr>
+</table>
+:::
+
+---
+
+### Consumer electronics
+
+::: {#fig-smart-watch}
+
+![](https://static.electronicsweekly.com/wp-content/uploads/2015/10/14194030/6a238902a5a6bcc5a0e42f2133959272_original.jpg){fig-alt="Photograph showing the microcontroller inside a smart watch"}
+
+Photograph showing the microcontroller inside a smart watch[^note2]
+:::
+
+[^note2]: Source of image used in @fig-smart-watch: [www.electronicsweekly.com/blogs/distribution-world/communities/innovative-smartwatch-challenges-apples-watch-design-2015-10](https://www.electronicsweekly.com/blogs/distribution-world/communities/innovative-smartwatch-challenges-apples-watch-design-2015-10)
+
+#### *Applications of microcontrollers in consumer electronics* {.unnumbered}
+
+<table>
+<tr>
+<td>
+<ul>
+	<li>Smart watch</li>
+<li>Mobile phone</li>
+<li>Air conditioner</li>
+<li>Printer</li>
+<li>Calculator</li>
+<li>Hair dryer</li>
+</li>
+</ul>
+</td><td>
+<ul>
+	<li>Alarm clock</li>
+	<li>Microwave</li>
+	<li>Wipers</li>
+	<li>Fridge freezer</li>
+	<li>Power tool</li>
+	<li>Remote control</li>
+</ul>
+</td>
+</tr>
+</table>
+
+---
+
+### Industrial applications
+
+::: {#fig-robots}
+
+![](pictures/robots.jpg){fig-alt="Photograph showing robots working on an automated assembly line"}
+
+Photograph showing robots working on an automated assembly line[^robot_src]
+:::
+
+[^robot_src]: Original source of image used in @fig-robots: [investinfrance.fr/high-technology-industry/robotic-arm-catch-for-electronic-assembly-line-the-robot-for-sm/](https://investinfrance.fr/high-technology-industry/robotic-arm-catch-for-electronic-assembly-line-the-robot-for-sm/). This original image is no longer available online.
+
+#### *Applications of microcontrollers in manufacturing systems* {.unnumbered}
+
+<table>
+<tr>
+<td>
+<ul>
+	<li>Manufacturing systems</li>
+<li>Quality control</li>
+<li>Process monitoring</li>
+<li>Robotics</li>
+<li>Tracking systems</li>
+<li>Fire control</li>
+</li>
+</ul>
+</td><td>
+<ul>
+	<li>Materials processing</li>
+	<li>Laboratory equipment</li>
+	<li>Machine-to-machine communications</li>
+	<li>Networking</li>
+	<li>Smart buildings / BMS</li>
+	<li>Environmental control</li>
+</ul>
+</td>
+</tr>
+</table>
+
+---
+
+### Environmental monitoring
+
+::: {#fig-env-mon}
+
+![](pictures/env_mon.jpg){alt-fig="Image that illustrated article 'Hawa Dawa Installs the Largest Air Quality Measurement Network in Germany'"}
+
+Environmental monitoring in Germany[^env_mon]
+:::
+
+[^env_mon]: Source of image used in @fig-env-mon: [www.openpr.com/news/1799966/hawa-dawa-installs-the-largest-air-quality-measurement-network](http://www.openpr.com/news/1799966/hawa-dawa-installs-the-largest-air-quality-measurement-network)
+
+#### *Applications of microcontrollers in environmental monitoring* {.unnumbered}
+<table>
+<tr>
+<td>
+<ul>
+	<li>Air quality monitoring</li>
+<li>Weather monitoring</li>
+<li>Gas sensors</li>
+<li>Water quality sensors</li>
+<li>Farming</li>
+</ul>
+</td><td>
+<ul>
+	<li>Temperature monitoring</li>
+<li>Light level monitoring</li>
+	<li>Climate change</li>
+	<li>Air flow</li>
+	<li>Animal/wildlife tracking</li>
+</ul>
+</td>
+</tr>
+</table>
+
+---
+
+### Microcontroller Market Forecast
+
+::: {#fig-market-forecast}
+
+![](https://www.precedenceresearch.com/insightimg/Microcontroller-Market-Share-By-Application-2021.jpg){fig-alt="Microntroller (MCU) market size, 2021 to 2030 (Billion USD)"}
+
+Microntroller (MCU) market size, 2021 to 2030 (Billion USD)[^note-market-forecast]
+:::
+
+[^note-market-forecast]: Source of imaged used in @fig-market-forecast: [www.precedenceresearch.com/microcontroller-mcu-market](http://www.precedenceresearch.com/microcontroller-mcu-market)
+
+## How do we Describe Microcontrollers?{#sec-week1-architecture .r-fit-text .center}
+
+---
+
+### Architecture
+
+Definition from the Oxford English Dictionary [architecture](https://www.oed.com/dictionary/architecture_n?tab=meaning_and_use&tl=true#40006241)
+
+> **Computing**. The conceptual structure and overall logical organization of a computer or computer-based system from the point of view of its use or design; a particular realization of this[^defn].
+
+[^defn]: “architecture, n., sense 6”. Oxford English Dictionary, Oxford University Press, July 2023, <https://doi.org/10.1093/OED/5575991854>
+
+
+---
+
+#### Number of Bits
+
+::: {#fig-nbits}
+
+![](pictures/nbits.png){fig-alt="Architecture diagram showing number of bits used in a microcontroller"}
+
+Architecture diagram showing number of bits used in a microcontroller
+:::
+
+::: {.notes}
+Categorizing Microcontroller Units (MCUs) as 8-, 16-, or 32-bit designs is one way of classifying their performance capabilities.
+
+The number of bits identifies the size of the registers, the number of available memory addresses and the largest number that can be processed/represented.
+
+As an example, in an 8-bit MCU
+
+- Each register is 8-bits (or one byte) wide. 
+- There are $2^8$ (or 256) possible memory addresses
+- There are $2^8$ integers that can be represented (0 to 255).
+
+Microcontrollers with more bits, for example 16- and 32-bit MCUs have correspondingly more bits per register, more available memory addresses, and can handle larger numbers compared with their 8-bit counterparts.
+
+An introduction to data representation follows in [Introduction to Data Representation](../data_representation).
+:::
+
+---
+
+@fig-memmap shows the data memory map of the Atmel Atmega328 which is an 8- bit MCU.
+
+::: {.notes}
+It has $2^8$ or 256 available memory addresses
+from 0x0000 – 0x00FF which covers:
+
+- 32 general purpose registers,
+- 64 I/O registers, and
+- 160 Extended I/O registers
+:::
+
+::: {#fig-memmap}
+
+![](pictures/memmap.jpg){fig-alt="Memory map for the Atmel Atmega328 MCU"}
+
+Memory map for the Atmel Atmega328 MCU
+:::
+
+---
+
+##### Applications of 8-bit and 32-bit MCUs
+
+::: {#fig-apps}
+![](pictures/Fig-1-VennDiagraml-1024x713.jpg){fig-alt="Venn diagram of the applications of the 8-bit MCU vs. the 32-bit MC" width="75%"}
+
+Venn diagram of the applications of the 8-bit MCU vs. the 32-bit MCU[^note_venn] 
+:::
+
+::: {.notes} 
+The plotting of the application benefits of the 8-bit MCU vs. the 32-bit MCU is best plotted on a Venn diagram as direct comparisons of all features combined are relative to tradeoffs. In general, the 8-bit MCU has been lower cost and smaller in size than the 32-bit MCU, but 32-bit MCUs are close to competing on cost and both have at least one “specimen” of a similarly minute physical size. In overall power consumption, the slower 8-bit MCUs will always trump the faster 32-bit MCUs as long as manufacturers stay on their game.
+:::
+
+[^note_venn]: The source of the Venn diagram used in @fig-apps: [http://lreese.dotsenkoweb.com/2017/07/31/iot-choosing-8-bit-vs-32-bit-mcus](http://lreese.dotsenkoweb.com/2017/07/31/iot-choosing-8-bit-vs-32-bit-mcus)
+
+---
+
+##### Market share of 8-bit, 16-bit and 32-bit MCUs in 2021{.unnumbered}
+
+::: {#fig-market-share}
+![](https://www.precedenceresearch.com/insightimg/Product-Market-Share-By-Product-2021.jpg){alt="Market share of 8-bit, 16-bit and 32-bit MCUs in 2021"}
+
+Market share of 8-bit, 16-bit and 32-bit MCUs in 2021[^note-market-share]
+:::
+
+[^note-market-share]: Source of image used in @fig-market-share: [www.precedenceresearch.com/microcontroller-mcu-market](http://www.precedenceresearch.com/microcontroller-mcu-market)
+
+---
+
+#### Memory
+
+::: {#fig-memory}
+![](pictures/memory.png){fig-alt="Architecture diagram showing memory types used in microcontrollers"}
+
+Architecture diagram showing memory types used in microcontrollers
+:::
+
+---
+
+##### Embedded vs external memory{.unnumbered}
+
+Memory in modern microcontrollers can be classified as *embedded* or *external* dependent on whether this is physically located within the MCU itself or is connected separately.
+
+::: {.notes}
+For most microcontroller-based applications, the internal memory is enough. However, applications which gather or buffer large amounts of data may also need external memory in the form of SD cards, M.2 drives and similar.
+
+A Raspberry Pi 4 Model B is illustrated in @fig-raspberrypi4b. It has both internal and external memory.
+:::
+
+---
+
+::: {#fig-raspberrypi4b}
+![](https://www.hackatronic.com/wp-content/uploads/2021/11/raspberry-pi-4-specifications-.jpg){fig-alt=" Raspberry Pi 4 Model B"
+
+Raspberry Pi 4 Model B[^note_raspberrypi4b]
+:::
+
+[^note_raspberrypi4b]: Source of image used in @fig-raspberrypi4b: [www.hackatronic.com/raspberry-pi-4-specifications-pin-diagram-and-description](http://www.hackatronic.com/raspberry-pi-4-specifications-pin-diagram-and-description/).
+
+---
+
+##### Volatile vs non-volatile embedded memory
+
+Broadly speaking embedded memory that is found in a microcontroller can be classified into two categories: 
+
+::: {.incremental}
+- *Volatile*: data is lost when power is removed &ndash; this is *temporary storage*.
+- *Non-volatile*: data is retained when power is removed &ndash; this is *permanent storage*.
+:::
+
+---
+
+Volatile and non-volatile memory can be further classified as illustrated in @fig-vol-non-vol-memory.
+
+::: {#fig-vol-non-vol-memory}
+![](pictures/memory_types.png){fig-alt="Classification of volatile and non-volatile memmory"}
+
+Classification of volatile and non-volatile memory.
+:::
+
+---
+
+#### Instruction Set Architectures
+
+::: {fig-instruction_set}
+![](pictures/instruction_set.png){fig-alt="Architecture diagram showing instruction sets used in microcontrollers"}
+
+Architecture diagram showing instruction sets used in microcontrollers
+:::
+
+::: {.notes}
+The instruction set architecture (ISA) describes the format and operation of instructions the microcontroller can perform and a microcontroller will often be categorized as having a RISC based or CISC based architecture.
+:::
+
+---
+
+::: {.fragment}
+##### Reduced instruction Set Computer (RISC){.unnumbered}
+
+A RISC is a device with a small, highly optimized set of instructions which utilizes registers and a highly regular instruction pipeline, allowing instructions to be completed in a low number of clock cycles. 
+
+::: {.notes}
+In short, several instructions may need to be run to perform a task and this may complicate the coding.
+:::
+:::
+
+::: {.fragment}
+##### Complex Instruction Computer (CISC){.unnumbered}
+
+A CISC is a device in which single instructions can execute several low-level operations or are capable of multi-step operations or addressing modes within single instructions. 
+
+::: {.notes} 
+In CISC machines, a program may be easier to read by a human, but the timing will be irregular and difficult to debug or be monitored by a machine.
+:::
+:::
+
+---- 
+
+##### Example{.unnumbered .smaller}
+
+As an example, consider the case where you want to multiply two numbers stored at addresses 0x0010 and 0x0011 respectively.
+
+::: {.fragment}
+On a RISC based architecture microcontroller the code would look something like:
+
+```asm
+LDS r18, 0x0010
+LDS r19, 0x0011
+MUL r18, r19
+```
+:::
+
+::: {.fragment}
+However, on a CISC based architecture machine the multiply instruction may be able to perform the memory access instructions within its execution, meaning the code would look like this:
+
+```asm
+MUL 0x0010, 0x0011
+```
+:::
+
+---
+
+#### Memory Architectures
+
+:::{#fig-mem-arch} 
+![](pictures/mem_arch.png){fig-alt="Architecture diagram showing the memory architectures used in microcontrollers."}"
+
+Architecture diagram showing the memory architectures used in microcontrollers
+:::
+
+::: {.notes}
+Memory architecture is a different concept from embedded and external and volatile and non-volatile memory. Memory architecture classifications describe where program instructions and data are stored and how they are accessed. 
+
+There are two categories, *Von-Neumann* and *Harvard*.
+:::
+
+---
+
+##### Von-Neumann (Princeton) architecture
+
+:::{.notes}
+In a Von-Neumann architecture, the same memory and bus are used for both data and instructions used by the CPU and peripherals as illustrated in @fig-week1-vonneuman.
+:::
+
+::: {#fig-week1-vonneuman}
+![](pictures/von_neuman_arch.png){fig-alt="The Von Neumann architecture - data memory and program code use the same memory storage area and data busses."}
+
+The Von Neumann architecture&mdash;data memory and program code use the same memory storage area and data busses
+:::
+
+---
+
+##### Harvard architecture
+
+:::{.notes}
+The Harvard architecture stores machine instructions and data in separate memory units that are connected to the CPU and peripherals by different busses as illustrated in @fig-week1-harvard.
+:::
+
+::: {#fig-week1-harvard}
+![](pictures/harvard_arch.png){fig-alt="The Harvard architecture - data memory and program code use different memory storage areas and busses."}
+
+The Harvard architecture&mdash;data memory and program code use different memory storage areas and busses.
+:::
+
+---
+
+##### Modified Harvard architecture
+
+::: {.notes}
+Most modern microcontrollers don't have a physical separation between the memory spaces used by data and instructions, and therefore could be described as Von Neumann for this reason. However, since these microcontrollers often use separate busses for data and instructions as illustrated in @fig-week1-modified-harvard, a better way to represent these is as a *modified* Harvard architecture[^l1:note3].
+:::
+
+::: {#fig-week1-modified-harvard}
+![](pictures/modified_harvard.png){fig-alt="The modified Harvard architecture - data memory and program code use the same memory storage area, but data and program addresses use separate busses to access the memory."}
+
+The Harvard architecture&mdash;data memory and programcode use the same memory storage area, but data and program addresses use separate busses to access the memory.
+:::
+
+[^l1:note3]: This gets around the bottleneck that can occur using a Von-Neumann memory architecture with lower costs than having two separate memories.
+
+---
+
+### How is a Microcontroller Described?
+
+In summary, the final MCU classification shown in @fig-mcu-architecture represents some of categories under microcontroller architecture which are focused around the system itself.
+
+::: {.notes}
+There are further classifications as you move towards either the circuit design or the embedded system application.
+:::
+
+::: {#fig-mcu-architecture}
+![](pictures/mem_arch.png){fig-alt="Classification of microcontroller systems."}
+
+Classification of microcontroller systems
+:::
+
+---
+
+#### System or Core Architecure
+
+In general, most microcontroller manufacturers will present a system wide, or *core architecture* in the form of a diagram which will appear early on in the data sheet for the device.
+
+---
+
+##### Atmel ATMega328P AVR
+
+::: {.notes}
+For example, @fig-week1-avr is taken from Atmel ATMega328 data sheet [@atmel_data] and shows a block diagram of the Advanced Virtual RISC (AVR) architecture.
+:::
+
+::: {#fig-week1-avr}
+![](pictures/avr_architecture.png){fig-alt="Block Diagram of the AVR Architecture"}
+
+Block Diagram of the AVR Architecture (Source: Figure 6.1, Page 9 of the Atmel ATMega328P data sheet [@atmel_data])
+:::
+
+---
+
+##### NXP HCS08 MCU
+
+::: {.notes}
+As another example, the block diagram shown in @fig-week1-hcs08 represents the architecture of the NXP (formally Motorola) HCS08 MCU.
+
+This MCU, which was used on this module before the Arduino was adopted, does not have a bank of general purpose registers. Instead it has a single working register, known as the *accumulator*, which is involved in most computations that the MCU performs.
+:::
+
+::: {#fig-week1-hcs08} 
+![](pictures/hcs08.png){fig-alt="Block Diagram of the HCS08 MCU."}
+
+Block Diagram of the NXP HCS08 Architecture
+:::
+
+## The Atmel ATmega 328 Microcontroller {#sec-atmel-atmega328}
+
+::: {#fig-atmel-atmega-328}
+<a title="BregesT65421354, CC BY-SA 4.0 &lt;https://creativecommons.org/licenses/by-sa/4.0&gt;, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:ATMEL_MEGA328P_AU_1328.jpg"><img width="512" alt="ATMEL MEGA328P AU 1328" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/ATMEL_MEGA328P_AU_1328.jpg/512px-ATMEL_MEGA328P_AU_1328.jpg"></a>
+
+The Atmel&reg; ATMega328/P is a low-power CMOS 8-bit microcontroller based on the AVR&reg; enhanced RISC architecture.[^l1:atmen-atmega-328]
+:::
+
+[^l1:atmen-atmega-328]: Source of @fig-atmel-atmega-328 is BregesT65421354, CC BY-SA 4.0 &lt;https://creativecommons.org/licenses/by-sa/4.0&gt;, via Wikimedia Commons.
+
+---
+
+### Introducing the Atmel ATMega328 MCU{.smaller}
+
+::: {.incremental}
+- This is an 8-bit CMOS microcontroller based on the AVR&reg; enhanced **RISC architecture** with 131 instructions.
+
+- It has 2KB of Internal SRAM, 32 KB of Flash Memory and 1 KB of EEPROM.
+
+- It has **32 General Purpose Registers**.
+
+- It can achieve up to 20 MIPS at 20 MHz (maximum clock frequency).
+
+- There are **8 Analog I/O** pins connected to **10-bit analogue to digital converter (ADC)**.
+
+- There are **22 Digital I/O pins** (6 capable of *pulse-width modulation* (PWM)).
+
+- The AVR core uses a **Harvard memory architecture** &ndash; with separate memories and busses for program and data.
+:::
+
+---
+
+#### Arithmetic Logic Unit
+
+::: {.notes}
+The **Arithmetic Logic Unit** (ALU) (@fig-week1-alu), is the part of the processor that performs arithmetic and logic operations on numbers from the storage area &ndash; it is essentially the &ldquo;brain&rdquo; of the microcontroller.
+:::
+
+::: {#fig-week1-alu} 
+![](pictures/alu.png){fig-alt="General purpose arithmetic logic unit (ALU)"} 
+
+General purpose arithmetic logic unit (ALU)
+:::
+
+---
+
+##### Operation of the ALU
+
+::: {.incremental}
+- First, numbers are read from storage into the ALU's data input ports.
+
+- Once inside the ALU, they're modified by means of an arithmetic or logic operation (`ADD`, `SUB`, `AND`, `OR`...)
+
+- Flags are set in the *Status Register* according to the result of the operation.
+
+- Finally, the data is written back to storage via the ALU's output port.
+:::
+
+---
+
+##### Example instruction
+
+::: {#fig-add-no-carry}
+![](pictures/add_instruction.png){fig-alt="Add without carry instruction for the ATMega328."}
+
+Add without carry instruction for the ATMega328
+:::
+
+---
+
+##### Example of the ALU from the 74LS181
+
+The 74LS181 is a 4-bit microcontroller that supports 16 logical and 16 arithmetic operations.
+
+::: {.notes}
+You do not need to understand @fig-74LS181, it is just and example to show that an ALU isn't just a black box. Rather it contains complex logic circuitry by means of which it performs its operations.
+:::
+
+::: {#fig-74LS181} 
+![](pictures/74LS181_ALU.png){fig-alt="The ALU for the 74LS181 MCU."}
+
+The ALU for the 74LS181 MCU
+:::
+
+---
+
+### Registers
+
+A register is a group of memory bits with special addressing characteristics which is often used for a particular purpose.
+
+::: {.notes}
+- In most modern processors, regardless of architecture, data is loaded from a larger memory space into special registers where it is used for arithmetic operations, manipulation or testing by various machine instructions.
+- Data is then temporarily held in a register until it is overwritten, or the immediate instruction stores it back to main memory.
+:::
+
+::: {#fig-use-of-registers}
+![](pictures/registers.png){fig-alt="Use of registers in ATMega328 programms."}
+
+Use of registers in ATMega328 programms
+:::
+
+---
+
+#### Registers in the ATMega328 MCU
+
+::: {.notes}
+The Atmel ATmega328 is an 8-bit microcontroller and has 256
+addressable registers within the user data space. The first 32
+locations address the Register File, the next 64 location the standard
+I/O memory and then the remaining 160 locations for Extended I/O
+memory.
+
+@fig-memmap summarizes the memory map of the ATMega328 MCU. @fig-mem-map2 shows part of the full memory map that is given in the Atmel ATMega280/P data sheet [@atmel_data, pp. 275-280].
+:::
+
+::: {#fig-mem-map2}
+![](pictures/mem_map_atmel.png){fig-alt="Part of the memory map of the Atmel ATMega328/P MCU."}
+
+Part of the memory map of the Atmel ATMega328/P MCU
+:::
+
+--- 
+
+#### The Register File
+
+::: {.notes}
+The *register file* (see @fig-reg-file) contains 32 x 8-bit wide registers that are often referred to as general purpose or working registers in the CPU.
+:::
+
+::: {#fig-reg-file} 
+![](pictures/reg_file.jpg){fig-alt="The register file for the Atmel ATMega328/P MCU."}
+
+The register file for the Atmel ATMega328/P MCU
+:::
+
+---
+
+Each register is also assigned a data memory address, mapping them directly into the first 32 locations of the **user data space**.
+
+Most of the instructions operating on the Register File have direct access to all registers, and most of them are single cycle instructions, however:
+
+- `R0` &ndash; `R15` are not available for all instructions, and
+
+- `R26` &ndash; `R31` have some added functions as pointer registers.
+
+---
+
+#### Using the Register File
+
+::: {.notes}
+@fig-reg-for-add-no-carry shows an extract from the documentation for the use of registers in the add without carry (`ADD`) operation.
+@fig-reg-for-ldi shows an extract from the documentation for the use of registers for a load immediate (`LDI`) operation.
+:::
+
+::: {#fig-reg-for-add-no-carry}
+
+![](pictures/reg_file1.png){fig-alt="Using the registers for an ADD without carry operation."}
+
+Using the registers for an ADD without carry operation
+:::
+
+--- 
+
+::: {#fig-reg-for-ldi}
+![](pictures/reg_file2.png){fig-alt="Using the registers for an Load immediate (LDI) operation."}
+
+Using the registers for an Load immediate (LDI) operation
+:::
+
+---
+
+#### X- Y- Z-Pointer Registers
+
+::: {.notes}
+In addition to acting as general purpose
+registers, `R27` - `R31` can be used as 16-bit address pointers and
+referred to as the X-,Y-, Z-registers as illustrated in @fig-x-y-z-registers. These pointers can be used to
+indirectly address the SRAM portion of the data space.
+:::
+
+::: {#fig-x-y-z-registers}
+![](pictures/x-y-z-reg.png){fig-alt="The x-, y- and z- registers."}
+
+The x-, y- and z- registers
+:::
+
+::: {.notes}
+
+::: {.callout-note}
+::: {.callout-important}
+The start address of SRAM is 0x0100, this cannot be accessed with 8-bits (maximum is 0x00FF).
+:::
+We will look at this in more detail at the end of the module but this approach can be useful to access sets of data where we don't necessarily know the address.
+:::
+:::
+
+## Summary {.unnumbered}
+
+In this lecture we have:
+
+-   Familiarized ourselves with what a microcontroller is and where they are used.
+
+-   Introduced describing a microcontroller by considering parts of its
+	architecture and
+
+-   Begun to look at the Atmel ATmega328 microcontroller focusing on
+	its register file and the general-purpose registers.
+
+---
+
+### On Canvas{.unnumbered}
+
+There is a [Canvas quiz](https://canvas.swansea.ac.uk/courses/52902/assignments/407474) which tests your recall of the topics covered in this lecture.
+
+--- 
+
+### Next week{.unnumbered}
+
+Next week we will look at [Data Representation](/lectures/data_representation/).
+
+---
