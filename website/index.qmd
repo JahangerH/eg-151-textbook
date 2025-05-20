@@ -20,11 +20,11 @@ The PDF file linked to this page is updated automatically when the website is up
 ## Citing this Document {.unnumbered}
 When referencing this document please use the following format based on the library supported Swansea Vancouver Style [@lib_vancouver]:
 
-> Jobling, C.P., Jahanger, H., Davies, T., Clifford, B. EG-151 Microcontrollers [Internet]. Swansea: Swansea University; 2025 August. [cited 2025 Mmm dd]; Available from; https://cpjobling.github.io/eg-151-textbook.
+> Jobling, C.P., Jahanger, H., Davies, T., Clifford, B. EG-151 Microcontrollers [Internet]. Swansea: Swansea University; 2025 August. [cited 2025 Mmm dd]; Available from; https://jahangerh.github.io/eg-151-textbook.
 
 To cite a chapter, e.g. for a lab exercise, use the more precise citation, such as:
 
-> Davies, T. Experiment 1: Binary Counter [Internet]. Swansea: Swansea University; 2024 August. EG-151 Microcontrollers [Internet]; 2025 August [cited 2025 Mmm dd]; [1 screen]. Available from; https://cpjobling.github.io/eg-151-textbook/labs/lab01/index.html.
+> Davies, T. Experiment 1: Binary Counter [Internet]. Swansea: Swansea University; 2024 August. EG-151 Microcontrollers [Internet]; 2025 August [cited 2025 Mmm dd]; [1 screen]. Available from; https://jahangerh.github.io/eg-151-textbook/labs/lab01/index.html.
 
 ## Colophon {.unnumbereD}
 
