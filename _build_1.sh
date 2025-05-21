@@ -7,12 +7,15 @@ echo "Building website using Quarto book format"
 quarto render website --to html
 
 echo "Building weekly slides from website/lectures"
-for week in {01..11}
-do
-    echo "Rendering slides for week$week"
-    quarto render website/lectures/week$week/index.qmd \
-        --to revealjs \
-        --output slides/week$week.html
+for week in website/lectures/week*/; do
+    weekname=$(basename "$week")  # e.g., week01
+    echo "Rendering slides for $weekname..."
+
+    # Render the slide in-place
+    quarto render "$week/index.qmd" --to revealjs
+
+    # Move the generated HTML file to slides folder
+    mv "$week/index.html" "slides/${weekname}.html"
 done
 
 echo "Removing left-over slide files"
