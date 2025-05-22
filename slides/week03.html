@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/tabby.min.js"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting-dark-2b3e328b71be8d25427581baeb23079b.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.30">
+
+  <meta name="author" content="Ben Clifford">
+  <meta name="dcterms.date" content="2024-10-15">
+  <title>Introduction to Programming and Program Development</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="index_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="index_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+      }
+    pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+    div.sourceCode
+      { color: #f8f8f2;  }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #f8f8f2; } /* Normal */
+    code span.al { color: #f07178; } /* Alert */
+    code span.an { color: #d4d0ab; } /* Annotation */
+    code span.at { color: #00e0e0; } /* Attribute */
+    code span.bn { color: #d4d0ab; } /* BaseN */
+    code span.bu { color: #abe338; } /* BuiltIn */
+    code span.cf { color: #ffa07a; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #abe338; } /* Char */
+    code span.cn { color: #ffd700; } /* Constant */
+    code span.co { color: #f8f8f2; font-style: italic; } /* Comment */
+    code span.cv { color: #ffd700; } /* CommentVar */
+    code span.do { color: #f8f8f2; } /* Documentation */
+    code span.dt { color: #ffa07a; } /* DataType */
+    code span.dv { color: #d4d0ab; } /* DecVal */
+    code span.er { color: #f07178; text-decoration: underline; } /* Error */
+    code span.ex { color: #00e0e0; font-weight: bold; } /* Extension */
+    code span.fl { color: #d4d0ab; } /* Float */
+    code span.fu { color: #ffa07a; } /* Function */
+    code span.im { color: #abe338; } /* Import */
+    code span.in { color: #d4d0ab; } /* Information */
+    code span.kw { color: #ffa07a; font-weight: bold; } /* Keyword */
+    code span.op { color: #ffa07a; } /* Operator */
+    code span.ot { color: #00e0e0; } /* Other */
+    code span.pp { color: #dcc6e0; } /* Preprocessor */
+    code span.re { color: #00e0e0; background-color: #f8f8f2; } /* RegionMarker */
+    code span.sc { color: #abe338; } /* SpecialChar */
+    code span.ss { color: #abe338; } /* SpecialString */
+    code span.st { color: #abe338; } /* String */
+    code span.va { color: #00e0e0; } /* Variable */
+    code span.vs { color: #abe338; } /* VerbatimString */
+    code span.wa { color: #dcc6e0; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="index_files/libs/revealjs/dist/theme/quarto-091ebfb71d12db7fc524ec91495e1509.css">
+  <link href="index_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="index_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="index_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="index_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="index_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="index_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-dark">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="../../pictures/image1.png" data-background-opacity="0.9" data-background-size="contain" class="quarto-title-block center">
+  <h1 class="title">Introduction to Programming and Program Development</h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Ben Clifford 
+</div>
+        <p class="quarto-title-affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+    </div>
+</div>
+
+  <p class="date">2024-10-15</p>
+</section>
+<section class="slide level2">
+
+<aside class="notes">
+<p><a href=".\slides/lecture04.html">Presentation version</a> of these <a href="#/sec-week03-intro">notes</a>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+<img data-src="pictures/week03_chapter_heading.png" style="width:100.0%" alt="lecture cover image showing architecture, some gates and an Arduino nano board" class="r-stretch"></section>
+<section id="sec-week03-intro" class="slide level2 unnumbered scrollable">
+<h2>Introduction</h2>
+<p>When developing an application to run on a microcontroller or other embedded system, there are five key steps which should be followed:</p>
+<ol type="1">
+<li class="fragment">Clearly define the requirements of the system, planning the number of inputs and outputs required, speed, storage etc. to identify suitable hardware candidates.</li>
+<li class="fragment">Plan/design the software using flowcharts and pseudocode to describe the program and identify functions, or blocks of code, and how they link to other blocks.</li>
+<li class="fragment">Translate the flowchart into the required programming language.</li>
+<li class="fragment">Once the program is at a level where its functionality can start to be tested, testing and debugging is performed to look for errors or unexpected behaviour in software called bugs.</li>
+<li class="fragment">When the final software is commissioned, it is important to document the code so as a developer can come back to it at later date or pass the task to another team member.</li>
+</ol>
+</section>
+<section id="lecture-topics" class="slide level2 unnumbered">
+<h2>Lecture Topics</h2>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img data-src="pictures/week03_contents_image.png" style="width:100.0%" data-img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><a href="#/sec-week03-useful-terminology" class="quarto-xref">Section&nbsp;1</a>: <a href="#/sec-week03-useful-terminology">Useful Terminology</a></li>
+<li><a href="#/sec-week03-programming-languages" class="quarto-xref">Section&nbsp;2</a>: <a href="programming-languages">Programming Languages</a></li>
+<li><a href="#/sec-week03-flowcharts" class="quarto-xref">Section&nbsp;3</a>: <a href="#/sec-week03-flowcharts">Flowcharts</a></li>
+<li><a href="#/sec-example-programs" class="quarto-xref">Section&nbsp;4</a>: <a href="#/sec-example-programs">Example Programs</a></li>
+<li><a href="#/sec-week03-modular-programming" class="quarto-xref">Section&nbsp;5</a>: <a href="#/sec-week03-modular-programming">Modular Programming</a></li>
+</ul>
+</div></div>
+</section>
+<section id="sec-week03-useful-terminology" class="slide level2 center" data-background-image="pictures/prog_wallpaper.png" data-fig-alt="decorative image used for slide background">
+<h2>Useful Terminology</h2>
+</section>
+<aside class="notes">
+<p><img data-src="pictures/prog_wallpaper.png"></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<section class="slide level2">
+
+<h3 id="hello-world">Hello, World!</h3>
+<aside class="notes">
+<p><a href="#/lst-week03-hello-world" class="quarto-xref">Listing&nbsp;1</a> is a reproduction of “Hello, world!” written in C.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="lst-week03-hello-world" class="listing quarto-float quarto-figure quarto-figure-left">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-week03-hello-world-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;1: Hello World Program written in C (Code reproduced from: <a href="https://en.wikipedia.org/wiki/File:C_Hello_World_Program.png">en.wikipedia.org/wiki/File:C_Hello_World_Program.png</a>). Run this programme by following this link <a href="https://onlinegdb.com/6M8mL90DS">hello_world.c</a>.
+</figcaption>
+<div aria-describedby="lst-week03-hello-world-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href=""></a><span class="co">/* </span></span>
+<span id="cb1-2"><a href=""></a><span class="co"> * This line basically imports the "stdio" header file, part of</span></span>
+<span id="cb1-3"><a href=""></a><span class="co"> * the standard library. It provides input and output functionallity </span></span>
+<span id="cb1-4"><a href=""></a><span class="co"> * to the program.</span></span>
+<span id="cb1-5"><a href=""></a><span class="co"> */</span></span>
+<span id="cb1-6"><a href=""></a> <span class="pp"># include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb1-7"><a href=""></a></span>
+<span id="cb1-8"><a href=""></a> <span class="co">/* </span></span>
+<span id="cb1-9"><a href=""></a><span class="co">    * Function (method) declaration. This outputs "Hello, world\n" to</span></span>
+<span id="cb1-10"><a href=""></a><span class="co">    * standard output when invoked.</span></span>
+<span id="cb1-11"><a href=""></a><span class="co">    */</span></span>
+<span id="cb1-12"><a href=""></a><span class="dt">void</span> sayHello<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-13"><a href=""></a>    <span class="co">// printf() in C outputs the specified text (with optional</span></span>
+<span id="cb1-14"><a href=""></a>    <span class="co">// formatting options) when invoked.</span></span>
+<span id="cb1-15"><a href=""></a>    printf<span class="op">(</span><span class="st">"Hello, world</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb1-16"><a href=""></a><span class="op">}</span></span>
+<span id="cb1-17"><a href=""></a></span>
+<span id="cb1-18"><a href=""></a><span class="co">/* </span></span>
+<span id="cb1-19"><a href=""></a><span class="co"> * This is a "main function"/ The compiled program will run the code</span></span>
+<span id="cb1-20"><a href=""></a><span class="co"> * defined here.</span></span>
+<span id="cb1-21"><a href=""></a><span class="co"> */</span></span>
+<span id="cb1-22"><a href=""></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-23"><a href=""></a>    <span class="co">// invoke the sayHello() function.</span></span>
+<span id="cb1-24"><a href=""></a>    sayHello<span class="op">();</span></span>
+<span id="cb1-25"><a href=""></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span> </span>
+<span id="cb1-26"><a href=""></a> <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<p>The first version of <strong>Hello, World!</strong> was published in the classic book <em>The C Programming Language</em> <span class="citation" data-cites="kandr">[@kandr]</span>.</p>
+<p>Since then, it has become common to introduce each new programming language with a version of this program.</p>
+<p>Unfortunately, there is a lot of hidden complexity in this simple program, and it is not easy to run “Hello, World!” on a microcontroller!</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="what-is-a-program">What is a program?</h3>
+<p>A program or algorithm is a <strong>recorded sequence of instructions</strong> that <strong>performs a task</strong> or set of tasks when executed <strong>to produce a specific result</strong>.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="what-is-software">What is software?</h3>
+<p>Software is the term used to describe <strong>collections of programs, libraries, and related data</strong>.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="what-is-a-programming-language">What is a programming language?</h3>
+<p>A programming language is a <strong>formal notation comprising a set of instructions and rules</strong> for writing programs.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="development-of-programming">Development of programming</h3>
+<aside class="notes">
+<p>The next few slides provide some historical context to the development of computer programming. For example <a href="#/fig-week03-ibm704" class="quarto-xref">Figure&nbsp;1</a> is a photograph, taken in 1957, of an early mainframe computer based at NASA Langley Research Centre. This may have well been used in the research that led to the moon landing in 1969.</p>
+<p>In the early days of programming, programs were typed on teletypes and encoded as ASCII characters onto paper tape (<a href="#/fig-week03-punch-tape" class="quarto-xref">Figure&nbsp;2</a>). These paper tapes where used to load programs and data into mainframes like that shown in <a href="#/fig-week03-ibm704" class="quarto-xref">Figure&nbsp;1</a>`. Later, programs were stored on magnetic tape, then magnetic disks and these days are stored servers to be downloaded over networks and loaded into powerful PCs or mobile devices using flash memory and SSD drives.</p>
+<p><a href="#/fig-week03-modern-programming" class="quarto-xref">Figure&nbsp;3</a> shows an image of a modern laptop and the programming tools and languages (in this case Python) that are used to develop programs these days.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/ibm704.png" alt="Man and woman shown working with IBM type 704 electronic data processing machine used for making computations for aeronautical research at Langley Research Center." class="r-stretch quarto-figure-center" id="fig-week03-ibm704"><p class="caption">
+Figure&nbsp;1: IBM type 704 electronic data processing machine used for making computations for aeronautical research at NASA Langley Research Center – 21st March 1957. (Image source: <a href="https://www.flickr.com/photos/nasacommons/9467782802">www.flickr.com/photos/nasacommons/9467782802</a>)
+</p></section>
+<section class="slide level2">
+
+
+<img data-src="pictures/punch_tape.png" alt="A picture of some punched paper tape" class="r-stretch quarto-figure-center" id="fig-week03-punch-tape"><p class="caption">
+Figure&nbsp;2: Early program source code! Input into a computer with punched paper tape. Image Source: <a href="https://www.eetimes.com/how-it-was-paper-tapes-and-punched-cards/">How it was: Paper tapes and punched cards | EETimes</a>
+</p></section>
+<section class="slide level2">
+
+
+<img data-src="pictures/modern_programming.png" alt="A computer screen with a bunch of code on it." class="r-stretch quarto-figure-center" id="fig-week03-modern-programming"><p class="caption">
+Figure&nbsp;3: Writing programs on a modern high resolution display screen. (Image source: <a href="https://unsplash.com/photos/ieic5Tq8YMk">unsplash.com/photos/ieic5Tq8YMk</a> by Chris Reid)
+</p></section>
+<section id="sec-week03-programming-languages" class="slide level2 center" data-background-image="pictures/prog_lang_wallpaper.jpg" data-fig-alt="Decorative section background - showing code">
+<h2>Programming Languages</h2>
+</section>
+<aside class="notes">
+<p><img data-src="pictures/prog_lang_wallpaper.jpg">{fig-alt=“Decorative section background - showing code.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<section class="slide level2">
+
+<h3 id="programming-language-level-vs-complexity">Programming Language Level vs Complexity</h3>
+<aside class="notes">
+<p><a href="#/fig-week03-pl-complexity" class="quarto-xref">Figure&nbsp;4</a> shows how code complexity that must be handled by the programmer is related to language level.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+<img data-src="pictures/prog_lang_complexity.png" alt="A pyramid comparing code complexity with language level." class="r-stretch quarto-figure-center" id="fig-week03-pl-complexity"><p class="caption">
+Figure&nbsp;4: Programming language level versus complexity
+</p><aside class="notes">
+<p>There is more code complexity at the top because the languages there are “low level” - you need to tell the computer what to do at a very granular level. Languages at the bottom of the pyramid are “high-level” because they provide a simpler way for the programmer to define complex operations without needing to be explicit about how the processor will perform the tasks. Tools are needed to convert that code into the low-level instructions that the computer needs to execute. High-level codes are converted into machine code by compilers, interpreters and web browsers.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="programming-levels">Programming levels</h3>
+
+<img data-src="pictures/wc_programming_languages.png" alt="Word cloud of common programming languages." class="r-stretch quarto-figure-center" id="fig-week03-wc-programming-languages"><p class="caption">
+Figure&nbsp;5: Word cloud of common programming languages
+</p></section>
+<section class="slide level2">
+
+<h4 id="high-level-languages">High-level languages</h4>
+<ul>
+<li class="fragment">High level languages&nbsp;are written in a form that&nbsp;is close to human language, enabling the programmer to just focus on the problem being solved without any knowledge of the hardware it is running on.</li>
+<li class="fragment">Examples include: C++, Java, Pascal, Python, Visual Basic.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="low-level-languages">Low-level languages</h4>
+<ul>
+<li class="fragment">Low level languages are used to write programs that relate to the specific architecture and hardware of a particular type of computer and are much closer to the native language of a computer (binary).</li>
+<li class="fragment">Examples include: Assembly Language, Machine Code</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="the-c-programming-language">The C Programming language</h4>
+<blockquote>
+<p>C is a general-purpose computer programming language. It was created in the 1970s by Dennis Ritchie, and remains very widely used and influential. <a href="https://en.wikipedia.org/wiki/C_(programming_language)">Wikipedia - C (programming language)</a></p>
+</blockquote>
+<ul>
+<li class="fragment">C might be described as a “mid-level language”. It is a compiled language and it has features that allow code to be written at a fair distance from the machine instructions. At the same time it provides structures that allow the detailed manipulation of data, memory and I/O at a level that is quite close to the machine.</li>
+<li class="fragment">In this course, we will be using a dialect of C that has been specifically designed for the programming of Arduino devices such as the 8-bit Atmel ATmega328 which is used in the Arduino Nano.</li>
+<li class="fragment">C is a very influential language. It is still used widely for writing operating system kernels, command-line tools, hardware drivers, and microcontroller applications. The syntax of C is the basis of many of the compiled and interpreted high-level languages that are in use today.</li>
+</ul>
+</section>
+<section id="sec-week03-flowcharts" class="slide level2 center" data-fig-alt="A flowchart" data-background-image="pictures/Flowchart_structured_programming.svg" data-background-color="white">
+<h2>Flowcharts</h2>
+</section>
+<aside class="notes">
+<p><img data-src="pictures/Flowchart_structured_programming.svg" alt="A flowchart"> https://upload.wikimedia.org/wikipedia/commons/a/a6/</p>
+<p>A flowchart – This <a href="https://commons.wikimedia.org/wiki/File:Flowchart_structured_programming.svg">Image</a> by Unknown Author is licensed under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA</a></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<section class="slide level2">
+
+<h3 id="what-is-a-flowchart">What is a Flowchart?</h3>
+<p>A flowchart is a <strong>pictorial representation</strong> of the <strong>logic flow</strong> through a program.</p>
+<div class="fragment">
+<p>Flowcharts are a useful tool for planning, visualizing and documenting a program without having to write any code.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<p>Basic flowcharts are convenient because they</p>
+<ul>
+<li class="fragment">Don’t require the viewer to have an in-depth knowledge of programming</li>
+<li class="fragment">Don’t require the viewer to have knowledge of a specific programming language</li>
+<li class="fragment">Useful for visualizing how blocks of code interact with one another</li>
+<li class="fragment">Can be a useful tool in identifying flaws and bottlenecks in large and complex algorithms</li>
+</ul>
+</section>
+<section class="slide level2 scrollable">
+
+<h3 id="flowcharts-vs-code">Flowcharts vs Code</h3>
+<aside class="notes">
+<p>Consider the simple flowchart shown in <a href="#/fig-week03-flowchart-hello-world" class="quarto-xref">Figure&nbsp;6</a> representing the printing of the text string “Hello, World!”<sup>1</sup>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="fig-week03-flowchart-hello-world" class="quarto-float quarto-figure quarto-figure-center" alt="A flowchart representing the hellow world program.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week03-flowchart-hello-world-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/flowchart_hello_world.png" style="width:50.0%" alt="A flowchart representing the hellow world program.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week03-flowchart-hello-world-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: A flowchart representing the “Hello, World!” program.
+</figcaption>
+</figure>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>In most programming languages, text is stored in memory as a sequence of binary codes which each represent the individual characters as in <code>'H'</code>, <code>'e'</code>, <code>'l'</code>, <code>'l'</code>, <code>'o'</code>, <code>','</code>, <code>' '</code>, <code>'W'</code>, <code>'o'</code>, <code>'r'</code>, <code>'l'</code>, <code>'d'</code>, <code>'!'</code>. Such a sequence is usually called a <em>string</em>.</p></li></ol></aside></section>
+<section class="slide level2">
+
+<table>
+<tbody><tr>
+<td>
+<p><strong>Bash</strong> (a command-line <em>shell</em> used in Unix and MacOS)</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href=""></a>echo <span class="st">"Hello, World!"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</td>
+<td>
+<p><strong>BASIC</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource basic number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a href=""></a>PRINT "Hello, World!"</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</td>
+</tr>
+<tr>
+<td>
+<p><strong>MATLAB</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource matlab number-lines code-with-copy"><code class="sourceCode matlab"><span id="cb4-1"><a href=""></a><span class="va">disp</span>(<span class="ss">'Hello, World!'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</td>
+<td>
+<p><strong>Python</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="bu">print</span>(<span class="st">"Hello, World!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</td>
+</tr>
+<tr>
+<td>
+<p><strong>C (for Arduino)</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href=""></a>puts<span class="op">(</span><span class="st">"Hello, World!"</span><span class="op">);</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</td>
+<td>
+<p><strong>C++</strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource cpp number-lines code-with-copy"><code class="sourceCode cpp"><span id="cb7-1"><a href=""></a><span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">"Hello, World!"</span> <span class="op">&lt;&lt;</span> std<span class="op">:</span>endl<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</td>
+</tr>
+<tr>
+<td>
+<p><strong>HTML</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource html number-lines code-with-copy"><code class="sourceCode html"><span id="cb8-1"><a href=""></a><span class="dt">&lt;</span><span class="kw">p</span><span class="dt">&gt;</span>Hello, World!<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</td>
+<td>
+<p><strong>JavaScript</strong></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource javascript number-lines code-with-copy"><code class="sourceCode javascript"><span id="cb9-1"><a href=""></a><span class="bu">document</span><span class="op">.</span><span class="fu">write</span>(<span class="st">'Hello, World!'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</td>
+</tr>
+</tbody></table>
+</section>
+<section class="slide level2">
+
+<h3 id="flowchart-building-blocks">Flowchart building blocks</h3>
+<div class="columns">
+<div class="column" style="width:33%;">
+<h4 class="unnumbered" id="terminal-startend-block">Terminal: start/end block</h4>
+<p><img data-src="pictures/fc_terminal.png" alt="Flowchart start/end block"></p>
+<h4 class="unnumbered" id="suprocess-block">Suprocess block</h4>
+<p><img data-src="pictures/fc_subprocess.png" alt="Flowchart suprocess block"></p>
+</div><div class="column" style="width:33%;">
+<h4 class="unnumbered" id="terminal-program-flow">Terminal: program flow</h4>
+<p><img data-src="pictures/fc_flow.png" alt="Flowchart program flow" height="128"></p>
+<h4 id="decision-block">Decision block</h4>
+<p><img data-src="pictures/fc_decision.png" alt="Flowchart decision block"></p>
+</div><div class="column" style="width:33%;">
+<h4 class="unnumbered" id="process-block">Process block</h4>
+<p><img data-src="pictures/fc_process.png" alt="Flowchart process block"></p>
+<h4 class="unnumbered" id="io-block">I/O block</h4>
+<p><img data-src="pictures/fc_io.png" alt="Flowchart I/O block"></p>
+</div></div>
+</section>
+<section class="slide level2">
+
+<h3 id="rules-for-drawing-flowcharts">Rules for drawing flowcharts</h3>
+<ul>
+<li class="fragment">Flowcharts are usually drawn top to bottom but can be also be drawn left to right.</li>
+<li class="fragment">Flowcharts must begin with a “start” symbol and finish with an “end” symbol.</li>
+<li class="fragment">The spacing between all items should be consistent</li>
+<li class="fragment">The direction of flow between each block should be indicated with an arrow.</li>
+<li class="fragment">Connecting lines should never overlap.</li>
+</ul>
+<div class="fragment">
+<p>In short flow charts should look visually tidy and the program flow should be obvious to the viewer.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="flowchart-drawing-packages">Flowchart Drawing Packages</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<h4 id="microsoft-visio-windows-and-web-only">Microsoft Visio (Windows and web only)</h4>
+<div id="fig-week03-visio" class="quarto-float quarto-figure quarto-figure-center" alt="A screenshot of the Microsoft visio program being used to draw a flowchart.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week03-visio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/visio.png" alt="A screenshot of the Microsoft visio program being used to draw a flowchart.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week03-visio-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: A screenshot of the Microsoft Visio program being used to draw a flowchart.
+</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<h4 id="microsoft-365">Microsoft 365</h4>
+<div id="fig-week03-ms365" class="quarto-float quarto-figure quarto-figure-center" alt="Screenshot of the flowchart symbols available in Microsoft 365 - Word, PowerPoint, Excel, etc.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week03-ms365-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/ms265_flowchart_symbols.png" alt="Screenshot of the flowchart symbols available in Microsoft 365 - Word, PowerPoint, Excel, etc.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week03-ms365-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Screenshot of the flowchart symbols available in Microsoft 365 - Word, PowerPoint, Excel, etc
+</figcaption>
+</figure>
+</div>
+<aside class="notes">
+<p>Get <a href="https://myuni.swansea.ac.uk/it-services/software-enquiry/office-365/">Microsoft 365)</a> from myuni.swan.ac.uk.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div></div>
+</section>
+<section class="slide level2">
+
+<h3 id="other-flowchart-drawing-tools">Other flowchart drawing tools</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<h4 id="smartdraw">SmartDraw</h4>
+<p>For MacOS</p>
+<div id="fig-week03-smartdraw" class="quarto-float quarto-figure quarto-figure-center" alt="Screenshot from the smartdraw flowchart editor">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week03-smartdraw-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/smartdraw.png" alt="Screenshot from the smartdraw flowchart editor">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week03-smartdraw-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Screenshot from the smartdraw flowchart editor <a href="https://www.smartdraw.com/">www.smartdraw.com</a>
+</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<h4 id="creately">Creately</h4>
+<p>Web-based drawing tool</p>
+<div id="fig-week03-creately" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week03-creately-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/creately.png">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week03-creately-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Screenshot from the creately flowchart editor <a href="https://creately.com/diagram-type/flowchart/">creately.com/diagram-type/flowchart/</a>
+</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section class="slide level2 scrollable">
+
+<h3 id="using-flowcharts-to-capturing-the-most-common-program-constructs">Using flowcharts to capturing the most common program constructs</h3>
+<div class="fragment">
+<p>From a software designer’s point of view, any program function can be described using only three program constructs:</p>
+</div>
+<ul>
+<li class="fragment"><strong>Sequence</strong>: this construct performs one task after another in a sequence. It is a group of instructions to be performed one after another in the order shown in the program.</li>
+<li class="fragment"><strong>Decision</strong>: this construct performs a task or a sequence of tasks based on the result of a test condition.</li>
+<li class="fragment"><strong>Repetition</strong>: this construct is for a process that repeats until a condition which will stop the process is satisfied<sup>1</sup>. Repetition is used to repeat a a sequence over and over again.</li>
+</ul>
+<aside class="notes">
+
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside><ol class="aside-footnotes"><li id="fn2"><p>Repetition is used a lot in microcontroller programming.</p></li></ol></aside></section>
+<section class="slide level2 scrollable">
+
+<h4 id="sequence">Sequence</h4>
+<aside class="notes">
+<p>A sequence (<a href="#/fig-week03-fc-sequence" class="quarto-xref">Figure&nbsp;11</a>) is represented as a set of process blocks (tasks) connected by program flows. The tasks are executed in the order shown by the arrows from top to bottom.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="fig-week03-fc-sequence" class="quarto-float quarto-figure quarto-figure-center" alt="Flowchart for a sequence of instructions computed in the order shown, one after the other.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week03-fc-sequence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/fc_sequence.png" style="width:40.0%" alt="Flowchart for a sequence of instructions computed in the order shown, one after the other.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week03-fc-sequence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Flowchart for a sequence of tasks
+</figcaption>
+</figure>
+</div>
+<aside class="notes">
+<p>The program shown in <a href="#/fig-week03-fc-sequence" class="quarto-xref">Figure&nbsp;11</a> might be represented in <em>psuedocode</em><sup>1</sup> as</p>
+<pre><code>START;
+ Task 1;
+ Task 2;
+ Task 3;
+END;</code></pre>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside><ol class="aside-footnotes"><li id="fn3"><p>Pseudocode is a formal text which is used to represent the operation of a section of code in a way that can be understood without needing to resort to formal rules of a programming language.</p></li></ol></aside></section>
+<section class="slide level2">
+
+<h4 id="decision">Decision</h4>
+<aside class="notes">
+<p>A decision (<a href="#/fig-week03-fc-decision" class="quarto-xref">Figure&nbsp;12</a>) is represented as a decision block followed by flows which depend on the outcome of the decision.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+<img data-src="pictures/decision.png" style="width:50.0%" alt="Flowchart for a decision." class="r-stretch quarto-figure-center" id="fig-week03-fc-decision"><p class="caption">
+Figure&nbsp;12: Flowchart for a decision
+</p><aside class="notes">
+<p>The program shown in <a href="#/fig-week03-fc-decision" class="quarto-xref">Figure&nbsp;12</a> might be represented in psuedocode as</p>
+<pre><code>START;
+ IF condition one is true
+     DO
+             Task 1;
+             :
+     END_DO
+ IF condition two is true
+     DO
+             Task 2;
+             :
+     END_DO
+END;</code></pre>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h4 id="repetition">Repetition</h4>
+<aside class="notes">
+<p>Repetition (<a href="#/fig-week03-fc-repetition" class="quarto-xref">Figure&nbsp;13</a>) is represented as a decision block, then a sequence of tasks and a flow that returns to the original decision. The tasks are repeated until the condition for ending the repeated sequence is met.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+<img data-src="pictures/repetition.png" style="width:50.0%" alt="Flowchart for a sequence of instructions with repetition." class="r-stretch quarto-figure-center" id="fig-week03-fc-repetition"><p class="caption">
+Figure&nbsp;13: Flowchart for a sequence of tasks
+</p><aside class="notes">
+<p>The program shown in <a href="#/fig-week03-fc-repetition" class="quarto-xref">Figure&nbsp;13</a> might be represented in psuedocode as</p>
+<pre><code>START;
+ UNTIL condition is true
+     Task 1;
+     :
+     Task n;
+ THEN
+     Task 2;
+     :
+END;</code></pre>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="sec-example-programs" class="slide level2 center" data-background-image="pictures/laptop-technology-text-multimedia-screenshot-computer-hardware-125852-pxhere.com.jpg">
+<h2>Example Programs</h2>
+</section>
+<aside class="notes">
+<p><img src="pictures/laptop-technology-text-multimedia-screenshot-computer-hardware-125852-pxhere.com.jpg" alt="laptop, technology, text, multimedia, screenshot, computer hardware, computer program, Free Images In PxHere" width="100%"><br> <a href="https://c.pxhere.com/photos/b5/18/photo-125852.jpg!d">Image Source: Free Images In PxHere</a>]</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<section class="slide level2">
+
+<h3 id="example-1-a-sequence">Example 1: A sequence</h3>
+<div class="fragment">
+<p>Task: <em>Find the sum of the numbers 1 to 10</em></p>
+</div>
+<div class="fragment">
+<p>Program design method 1:</p>
+<ul>
+<li>Brute force method using the Sequence construct,</li>
+<li>Add number 1 to sum, then add, number 2, then add number 3 …</li>
+<li>Continue the process until all numbers are added!</li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h4 id="solution-to-task-as-a-sequence">Solution to task as a sequence</h4>
+<p><a href="#/fig-week03-task1-sequence" class="quarto-xref">Figure&nbsp;14</a> shows the flow chart of this program.</p>
+
+<img data-src="pictures/task1_sequence.png" style="width:50.0%" alt="Flowchart of a program to sum the first 10 numbers written as a sequence." class="r-stretch quarto-figure-center" id="fig-week03-task1-sequence"><p class="caption">
+Figure&nbsp;14: Flowchart of a program to sum the first 10 numbers written as a sequence.
+</p></section>
+<section class="slide level2">
+
+<h4 id="program-shown-in-fig-week03-task1-sequence-written-in-pseudo-code">Program shown in <a href="#/fig-week03-task1-sequence" class="quarto-xref">Figure&nbsp;14</a> written in pseudo code</h4>
+<pre><code>START
+    sum = 0
+    sum = sum + 1
+    sum = sum + 2
+    sum = sum + 3
+    sum = sum + 4
+    sum = sum + 5
+    sum = sum + 6
+    sum = sum + 7
+    sum = sum + 8
+    sum = sum + 9
+    sum = sum + 10
+END</code></pre>
+</section>
+<section class="slide level2">
+
+<h3 id="sec-week03-sum-example">Example 2: Decision and a Loop</h3>
+<p>Task: <em>Find the sum of numbers 1 to 10</em></p>
+<div class="fragment">
+<p>Program design method 2:</p>
+<ul>
+<li>Use the decision and repetition constructs:</li>
+</ul>
+</div>
+</section>
+<section class="slide level2">
+
+<h4 id="solution-to-task-1-using-a-decision-and-repetition">Solution to task 1 using a decision and repetition</h4>
+<p><a href="#/fig-week03-task1-loop" class="quarto-xref">Figure&nbsp;15</a> shows the solution of task 1 using a decision and repetition.</p>
+
+<img data-src="pictures/task1_loop.png" style="width:50.0%" alt="Flowchart of the solution to task 1 using a decision and repetition." class="r-stretch quarto-figure-center" id="fig-week03-task1-loop"><p class="caption">
+Figure&nbsp;15: Flowchart of the solution to task 1 using a decision and repetition.
+</p></section>
+<section class="slide level2">
+
+<h4 id="program-shown-in-fig-week03-task1-loop-written-in-pseudo-code">Program shown in <a href="#/fig-week03-task1-loop" class="quarto-xref">Figure&nbsp;15</a> written in pseudo code</h4>
+<pre><code>START
+    sum = 0
+    counter = 1
+    WHILE counter &lt; 11
+    DO 
+        sum = sum + counter
+        counter = counter + 1
+    END_DO
+END</code></pre>
+</section>
+<section class="slide level2">
+
+<h3 id="another-example-program">Another Example Program</h3>
+<p>Consider a program that asks a user for a ‘limit’ value and sums the numbers up to that limit before outputting the sum?</p>
+<p>I.e. <span class="math inline">\(\mathrm{sum} = 1 + 2 + 3 + \dots n\)</span></p>
+<aside class="notes">
+<p>The program that solves this project is illustrated by the flowchart shown in <a href="#/fig-week03-example2" class="quarto-xref">Figure&nbsp;16</a>. This program has a sequence, a decision and repetition. It also has an input where the limit (<span class="math inline">\(n\)</span>) is entered and an output where the sum is displayed.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/example2.png" style="width:50.0%" alt="A program that asks for a limit value and sums numbers up to that limit before outputting the sum." class="r-stretch quarto-figure-center" id="fig-week03-example2"><p class="caption">
+Figure&nbsp;16: A program that asks for a limit value and sums numbers up to that limit before outputting the sum.
+</p></section>
+<section class="slide level2">
+
+<p>Let us tabulate the results of this program assuming that <span class="math inline">\(n=4\)</span>.</p>
+<div class="fragment">
+<p>We will complete the table in class:</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong><code>sum</code></strong></th>
+<th style="text-align: right;"><strong><code>counter</code></strong></th>
+<th style="text-align: left;"><strong><code>counter &gt; limit</code></strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(0\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: left;"><code>No</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><span class="math inline">\(2\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><span class="math inline">\(3\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><span class="math inline">\(4\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><span class="math inline">\(5\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="how-many-ways-can-we-write-the-same-program">How many ways can we write the same program?</h3>
+<p>For our program summing the numbers up to a limit, there are three key parts.</p>
+<ul>
+<li>Sum (<strong>S</strong>): <code>sum = sum + counter</code></li>
+<li>Increment (<strong>I</strong>): <code>counter = counter + 1</code></li>
+<li>Check (<strong>C</strong>): Has condition been met?</li>
+</ul>
+<aside class="notes">
+<p>These can be theoretically be combined in 8 different ways, the first six of which as shown in <a href="#/tbl-week03-1" class="quarto-xref">Table&nbsp;1</a>.</p>
+<p>Three implementations three are illustrated in <a href="#/fig-week03-sic" class="quarto-xref">Figure&nbsp;17</a> (variation 6), <a href="#/fig-week03-isc" class="quarto-xref">Figure&nbsp;18</a> (variation 4), <a href="#/fig-week03-cis" class="quarto-xref">Figure&nbsp;19</a> (variation 2).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div id="tbl-week03-1" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-week03-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: How many ways can a program be written?
+</figcaption>
+<div aria-describedby="tbl-week03-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Variation</th>
+<th>Part 1</th>
+<th>Part 2</th>
+<th>Part 3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>C</td>
+<td>S</td>
+<td>I</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>C</td>
+<td>I</td>
+<td>S</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>I</td>
+<td>C</td>
+<td>S</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>I</td>
+<td>S</td>
+<td>C</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>S</td>
+<td>C</td>
+<td>I</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>S</td>
+<td>I</td>
+<td>C</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/sic.png" style="width:50.0%" alt="Variation 6 - Sum - Increment - Check" class="r-stretch quarto-figure-center" id="fig-week03-sic"><p class="caption">
+Figure&nbsp;17: Variation 6: Sum - Increment - Check
+</p></section>
+<section class="slide level2">
+
+
+<img data-src="pictures/isc.png" style="width:50.0%" alt="Variation 4 - Increment - Sum - Check" class="r-stretch quarto-figure-center" id="fig-week03-isc"><p class="caption">
+Figure&nbsp;18: Variation 4: Increment - Sum - Check
+</p></section>
+<section class="slide level2">
+
+
+<img data-src="pictures/cis.png" style="width:50.0%" alt="Variation 2 - Check - Increment - Sum" class="r-stretch quarto-figure-center" id="fig-week03-cis"><p class="caption">
+Figure&nbsp;19: Variation 2: Check - Increment - Sum
+</p></section>
+<section class="slide level2">
+
+<h3 id="any-more">Any more?</h3>
+<div class="fragment">
+<p>What if we counted backawards from <span class="math inline">\(n\)</span>?</p>
+<p><span class="math display">\[\mathrm{sum} = 1 + 2 + 3 + \cdots + \left(n - 1\right) + n\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[\equiv\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[\mathrm{sum} = n + \left(n-1\right) + \cdots 3 + 2 + 1\]</span></p>
+</div>
+</section>
+<section class="slide level2">
+
+<p>Let us tabulate the results of this program assuming that <span class="math inline">\(n=4\)</span>.</p>
+<div class="fragment">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: right;"><strong><code>sum</code></strong></th>
+<th style="text-align: right;"><strong><code>counter</code></strong></th>
+<th style="text-align: left;"><strong><code>counter &gt; limit</code></strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><span class="math inline">\(0\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(4\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><span class="math inline">\(3\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><span class="math inline">\(2\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><span class="math inline">\(0\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<p>A flow chart that implements this variation is given in <a href="#/fig-week03-var4" class="quarto-xref">Figure&nbsp;20</a>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/var4.png" style="width:50.0%" data-fig-var="Another variation - Check - Decrement - Sum" class="r-stretch quarto-figure-center" id="fig-week03-var4"><p class="caption">
+Figure&nbsp;20: Another variation: Check - Decrement - Sum
+</p></section>
+<section class="slide level2 scrollable">
+
+<h3 id="sec-flow-chart-task">Self-directed learning</h3>
+<ol type="1">
+<li class="fragment">See if you can write the other eight flowcharts for a program that sums the numbers 1 to n.</li>
+<li class="fragment">To get you thinking from a programmer’s point of view, consider the steps required to perform a task we usually take for granted, such as making a cup of tea, and what a flowchart for this might look like.</li>
+<li class="fragment">After you’ve had a go at these, drop a message on the <a href="https://canvas.swansea.ac.uk/courses/52902/discussion_topics/468327">discussion forum for this week</a> to let us know how you got on and which drawing package you found the best. Feel free to include any tips you find useful.</li>
+</ol>
+</section>
+<section id="sec-week03-modular-programming" class="slide level2 center" data-background-image="pictures/modular_prog_wallpaper.png">
+<h2>Modular Programming</h2>
+</section>
+<aside class="notes">
+<p><img data-src="pictures/modular_prog_wallpaper.png"></p>
+<p>This <a href="https://commons.wikimedia.org/wiki/File:Flowchart_structured_programming.svg">Image</a> by Unknown Author is licensed under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA</a></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<section class="slide level2 scrollable">
+
+<h3 id="what-is-a-module">What is a module?</h3>
+<p>The basic approach to modularization is to consider a top-down design where the top level defines the main function, and a separate module represents each smaller function in the program (see <a href="#/fig-week03-a-modular-program" class="quarto-xref">Figure&nbsp;21</a>).</p>
+<div class="fragment">
+<div id="fig-week03-a-modular-program" class="quarto-float quarto-figure quarto-figure-center" data-fig-at="A program built from modules.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week03-a-modular-program-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/modules.png" data-fig-at="A program built from modules.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week03-a-modular-program-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21: A program built from modules
+</figcaption>
+</figure>
+</div>
+</div>
+<aside class="notes">
+<p>Each module is treated as a <em>black box</em><sup>1</sup> which operates on its <em>input</em> and produces an <em>output</em>.</p>
+<p>As long as the input and output requirements remain the same, the module code can be changed without affecting the rest of the program.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside><ol class="aside-footnotes"><li id="fn4"><p>In science, computing, and engineering, a <em>black box</em> is a system which can be viewed in terms of its inputs and outputs (or transfer characteristics), without any knowledge of its internal workings. Its implementation is “opaque” (black). The term can be used to refer to many inner workings, such as those of a transistor, an engine, an algorithm, the human brain, or an institution or government.—<a href="https://en.wikipedia.org/wiki/Black_box">Blackbox (Wikipedia)</a></p></li></ol></aside></section>
+<section class="slide level2">
+
+<h4 id="example-task">Example Task</h4>
+<p>Write a program to perform n different tasks with a ten second delay between each task.</p>
+<p>The program we have been discussing that sums the numbers 1-10 can be used to simulate a delay.</p>
+</section>
+<section class="slide level2">
+
+<h5 id="example-program---non-modular-approach">Example program - Non-Modular Approach</h5>
+<pre><code>DO 
+    Task 1
+END
+
+/* Delay between task 1 and task 2 */
+DO
+    number = 0
+    WHILE number &lt; 11
+        DO
+            number = number + 1
+        END_DO
+    END_WHILE
+END
+
+DO 
+    Task 2
+END
+
+/* Delay between task 2 and task 3 */
+DO
+    number = 0
+    WHILE number &lt; 11
+        DO
+            number = number + 1
+        END_DO
+    END_WHILE
+END
+
+DO 
+    Task 3
+END
+
+:</code></pre>
+</section>
+<section class="slide level2">
+
+<h5 id="change-the-specification">Change the specification</h5>
+<p>Now suppose that we want to change the delay between tasks to 20 seconds.</p>
+<div class="fragment">
+<p>Using a non-modular approach the developer/programmer now needs to change the line</p>
+<pre><code>WHILE number &lt; 11</code></pre>
+<p>to</p>
+<pre><code>WHILE number &lt; 21</code></pre>
+<p>For each of the n-1 times it is used.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h5 id="example-program---modular-approach">Example program - Modular Approach</h5>
+<p>The code that implements the delay is made into a module which is called when needed</p>
+<pre><code>MODULE delay
+    DO
+        number = 0
+        WHILE number &lt; 21
+            DO
+                number = number + 1
+            END_DO
+        END_WHILE
+    END
+END_MODULE</code></pre>
+</section>
+<section class="slide level2">
+
+<p>The modular program becomes:</p>
+<pre><code>DO 
+    Task 1
+END
+
+/* Delay between task 1 and task 2 */
+DO
+    delay
+END
+
+DO 
+    Task 2
+END
+
+/* Delay between task 2 and task 3 */
+DO 
+    delay
+END
+
+DO 
+    Task 3
+END
+
+:</code></pre>
+<aside class="notes">
+<p>By using a modular approach to program this task, the developer/programmer need only change one value to adjust the delay, independent of how many times the delay is called between tasks in the program.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside class="notes">
+<p>We can take this idea further by parameterising the delay value itself. To code might now look like:</p>
+<pre><code>MODULE delay(delay)
+    DO
+        number = 0
+        WHILE number &lt; delay
+            DO
+                number = number + 1
+            END_DO
+        END_WHILE
+    END
+END_MODULE</code></pre>
+<p>We can now have variable length delays between tasks:</p>
+<pre><code>DO 
+    Task 1
+END
+
+/* Ten second delay between task 1 and task 2 */
+DO
+    delay(10)
+END
+
+DO 
+    Task 2
+END
+
+/* Twenty second delay between task 2 and task 3 */
+DO 
+    delay(20)
+END
+
+DO 
+    Task 3
+END
+
+:</code></pre>
+<p>We will return to this idea when we look at functions in C.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h4 id="activity">Activity</h4>
+<p>With the time remaining can you represent this program as a flow chart?</p>
+<p>Feel free to work individually or in small groups.</p>
+</section>
+<section class="slide level2">
+
+<h5 id="solution">Solution</h5>
+<p>See <a href="#/fig-week03-exercise-solution" class="quarto-xref">Figure&nbsp;22</a> in the notes online.</p>
+<aside class="notes">
+<div id="fig-week03-exercise-solution" class="quarto-float quarto-figure quarto-figure-center" alt="Implementing a delay sub-program.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week03-exercise-solution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/exercise_soln.png" alt="Implementing a delay sub-program.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week03-exercise-solution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22: Implementing a delay sub-program using a modular approach
+</figcaption>
+</figure>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="summary" class="slide level2 unnumbered">
+<h2>Summary</h2>
+<p>In this chapter we have:</p>
+<ul>
+<li class="fragment">Defined terminology relating to programming and looked at how languages can be classified as high or low based on the level of abstraction from the architecture it is to be run on.</li>
+<li class="fragment">Looked at flowcharts defining the standard symbols and looking at how they are used to represent a program.</li>
+<li class="fragment">Looked at some example programs presented as flow charts and in pseudo code.</li>
+<li class="fragment">Noted that there may be more than one way to present a program to achieve the same results.</li>
+<li class="fragment">Introduced the use of sub-processes to allow modular programming for splitting up a program or repeating common elements.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="on-canvas">On Canvas</h3>
+<div class="fragment">
+<p>This week on the canvas course page, there is:</p>
+</div>
+<ul>
+<li class="fragment">a <a href="https://canvas.swansea.ac.uk/courses/52902/pages/introduction-to-programming-languages?module_item_id=2882148">short video by Ben Clifford providing more of an introduction to programming languages and the compilation process</a>;</li>
+<li class="fragment">a <a href="https://canvas.swansea.ac.uk/courses/52902/discussion_topics/468327">discussion forum</a> to talk about the <a href="#/sec-flow-chart-task" class="quarto-xref">Section&nbsp;4.6</a>;</li>
+<li class="fragment">some <a href="https://canvas.swansea.ac.uk/courses/52902/pages/week-3-supplementary-resources?module_item_id=2882150">supplementary resources</a>; and</li>
+<li class="fragment">a <a href="https://canvas.swansea.ac.uk/courses/52902/assignments/407478?display=full_width">quiz to test your knowledge</a>.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 class="unnumbered" id="any-questions">Any Questions?</h3>
+<p>Please use the <a href="https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656">Course Question Board</a> on Canvas or take advantage of the lecturers’ office hours.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="next-time">Next time</h3>
+<ul>
+<li><a href=".\lectures/week04">Introduction to Programming with C</a></li>
+</ul>
+</section>
+<section class="slide level2">
+
+
+</section>
+
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="index_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="index_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="index_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="index_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="index_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="index_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="index_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="index_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="index_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="index_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="index_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+            let selectedAnnoteEl;
+            const selectorForAnnotation = ( cell, annotation) => {
+              let cellAttr = 'data-code-cell="' + cell + '"';
+              let lineAttr = 'data-code-annotation="' +  annotation + '"';
+              const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+              return selector;
+            }
+            const selectCodeLines = (annoteEl) => {
+              const doc = window.document;
+              const targetCell = annoteEl.getAttribute("data-target-cell");
+              const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+              const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+              const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+              const lineIds = lines.map((line) => {
+                return targetCell + "-" + line;
+              })
+              let top = null;
+              let height = null;
+              let parent = null;
+              if (lineIds.length > 0) {
+                  //compute the position of the single el (top and bottom and make a div)
+                  const el = window.document.getElementById(lineIds[0]);
+                  top = el.offsetTop;
+                  height = el.offsetHeight;
+                  parent = el.parentElement.parentElement;
+                if (lineIds.length > 1) {
+                  const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+                  const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+                  height = bottom - top;
+                }
+                if (top !== null && height !== null && parent !== null) {
+                  // cook up a div (if necessary) and position it 
+                  let div = window.document.getElementById("code-annotation-line-highlight");
+                  if (div === null) {
+                    div = window.document.createElement("div");
+                    div.setAttribute("id", "code-annotation-line-highlight");
+                    div.style.position = 'absolute';
+                    parent.appendChild(div);
+                  }
+                  div.style.top = top - 2 + "px";
+                  div.style.height = height + 4 + "px";
+                  div.style.left = 0;
+                  let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+                  if (gutterDiv === null) {
+                    gutterDiv = window.document.createElement("div");
+                    gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                    gutterDiv.style.position = 'absolute';
+                    const codeCell = window.document.getElementById(targetCell);
+                    const gutter = codeCell.querySelector('.code-annotation-gutter');
+                    gutter.appendChild(gutterDiv);
+                  }
+                  gutterDiv.style.top = top - 2 + "px";
+                  gutterDiv.style.height = height + 4 + "px";
+                }
+                selectedAnnoteEl = annoteEl;
+              }
+            };
+            const unselectCodeLines = () => {
+              const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+              elementsIds.forEach((elId) => {
+                const div = window.document.getElementById(elId);
+                if (div) {
+                  div.remove();
+                }
+              });
+              selectedAnnoteEl = undefined;
+            };
+              // Handle positioning of the toggle
+          window.addEventListener(
+            "resize",
+            throttle(() => {
+              elRect = undefined;
+              if (selectedAnnoteEl) {
+                selectCodeLines(selectedAnnoteEl);
+              }
+            }, 10)
+          );
+          function throttle(fn, ms) {
+          let throttle = false;
+          let timer;
+            return (...args) => {
+              if(!throttle) { // first call gets through
+                  fn.apply(this, args);
+                  throttle = true;
+              } else { // all the others get throttled
+                  if(timer) clearTimeout(timer); // cancel #2
+                  timer = setTimeout(() => {
+                    fn.apply(this, args);
+                    timer = throttle = false;
+                  }, ms);
+              }
+            };
+          }
+            const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+            for (let i=0; i<annoteTargets.length; i++) {
+              const annoteTarget = annoteTargets[i];
+              const targetCell = annoteTarget.getAttribute("data-target-cell");
+              const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+              const contentFn = () => {
+                const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+                if (content) {
+                  const tipContent = content.cloneNode(true);
+                  tipContent.classList.add("code-annotation-tip-content");
+                  return tipContent.outerHTML;
+                }
+              }
+              const config = {
+                allowHTML: true,
+                content: contentFn,
+                onShow: (instance) => {
+                  selectCodeLines(instance.reference);
+                  instance.reference.classList.add('code-annotation-active');
+                  window.tippy.hideAll();
+                },
+                onHide: (instance) => {
+                  unselectCodeLines();
+                  instance.reference.classList.remove('code-annotation-active');
+                },
+                maxWidth: 300,
+                delay: [50, 0],
+                duration: [200, 0],
+                offset: [5, 10],
+                arrow: true,
+                appendTo: function(el) {
+                  return el.parentElement.parentElement.parentElement;
+                },
+                interactive: true,
+                interactiveBorder: 10,
+                theme: 'light-border',
+                placement: 'right',
+                popperOptions: {
+                  modifiers: [
+                  {
+                    name: 'flip',
+                    options: {
+                      flipVariations: false, // true by default
+                      allowedAutoPlacements: ['right'],
+                      fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+                    },
+                  },
+                  {
+                    name: 'preventOverflow',
+                    options: {
+                      mainAxis: false,
+                      altAxis: false
+                    }
+                  }
+                  ]        
+                }      
+              };
+              window.tippy(annoteTarget, config); 
+            }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
