@@ -18,8 +18,8 @@ for week in website/lectures/week*/; do
     mv "$week/index.html" "slides/${weekname}.html"
 done
 
-#echo "Removing left-over slide files"
-#rm -rf slides/lecture*_files
+echo "Removing left-over slide files"
+rm -rf slides/lecture*_files
 
 echo "Building PDF version of the book"
 quarto render book --to pdf
