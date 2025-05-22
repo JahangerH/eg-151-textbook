@@ -35,7 +35,7 @@ book:
       chapters:
         - lectures/intro.qmd
         - lectures/week01/index.qmd
-        - lectures/data_representation/index.qmd
+ #       - lectures/data_representation/index.qmd
         - lectures/week02/index.qmd
         - lectures/week03/index.qmd
         - lectures/week04/index.qmd
@@ -44,6 +44,7 @@ book:
         - lectures/week07/index.qmd
         - lectures/week08/index.qmd
         - lectures/week09/index.qmd
+        - lectures/week010/index.qmd
 
     - part: lab_intro/intro.qmd 
       chapters: 
