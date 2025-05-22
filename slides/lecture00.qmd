@@ -1,1 +1,221 @@
 ../website/lectures/intro.qmd
+
+---
+footer: Welcome to EG-151 Microcontrollers
+author:
+  name: Dr Chris Jobling
+  affiliation: Department of Electronic and Electrical Engineering
+date: 10/01/2024
+---
+
+::: {.notes}
+[Presentation version](/slides/lecture00.html) of these [notes](#welcome).
+:::
+
+## EG-151 Microcontrollers&mdash;Module Staff {.unnumbered #welcome:module_staff }
+
+---
+
+### Dr Chris Jobling{.smaller #welcome:staff:chris}
+
+::: {#photo_dr_jobling} 
+![](pictures/chris.jpg){fig-alt="A photograph of Dr Chris Jobling" width=269}
+
+Dr Chris Jobling
+:::
+
+**Module Coordinator**
+
+**Email**: [c.p.jobling@swansea.ac.uk](mailto:c.p.jobling@swansea.ac.uk)
+
+**Office Hour**: Tuesdays 13:00 on Zoom. (From Monday 8th October)
+
+**Office Location**: Room B206, Engineering East
+
+---
+
+### Dr Hayder Jahanger{.smaller #welcome:staff:hayder}
+
+::: {#photo_dr_jahanger}
+![](pictures/jahanger.png){fig-alt="A photograph of Dr Hayder Jahanger" width=269}
+
+Dr Hayder Jahanger
+:::
+
+**Module Lecturer**
+
+**Email**: [hayder.jahanger@swansea.ac.uk](mailto:hayder.jahanger@swansea.ac.uk)
+
+**Office Hour**: TBC
+
+**Office Location**: Room 202, Engineering North
+
+---
+
+### Dr Ben Clifford {.smaller #welcome:staff:ben}
+
+
+::: {#photo_dr_clifford}
+![](pictures/ben.png){ fig-alt="A photograph of Dr Ben Clifford" width=269}
+
+Dr Ben Clifford
+:::
+
+**Guest Lecturer** Ben wrote the original lecture notes.
+
+---
+
+### Dr Timothy Davies {.smaller #welcome:staff:timothy}
+
+::: {#photo_dr_davies}
+![](pictures/tim.jpg){fig-alt="A photograph of Dr Timothy Davies" width=269}
+
+Dr Timothy Davies
+:::
+
+**Honoury Lecturer** Timothy developed the laboratory exercises and the mini project.
+
+[t.davies@swansea.ac.uk](mailto:t.davies@swansea.ac.uk)
+
+## Course Site {#welcome:course_site}
+
+::: {.notes}
+The home page for this course is "2425_EG-151_Microcontrollers" on your Canvas dashboard.
+:::
+
+::: {#fig-course-entry-page-on-canvas}
+[![](pictures/image8.png){fig-alt="The course entry page on Canvas dashboard."}](https://canvas.swansea.ac.uk/courses/52902)
+
+The course entry page on Canvas dashboard
+:::
+
+## Course Delivery {.smaller #welcome:course_delivery}
+
+
+- Lecture Class
+
+  - Tuesday 11:00 &ndash; 11:50
+
+  - Great Hall, Room 029
+
+- Laboratory class
+
+  - 10:00 &ndash; 12:00 Thursday and Friday
+
+  - Engineering East, Room B107 Electronics Lab
+
+- Self Directed Learning (50 Hours over 10 Weeks)
+
+  - Review lecture material and supporting content
+
+  - Online activities including quizzes and discussion forums
+
+## Course Overview {#welcome:course_overview}
+
+This course is made up of lectures which introduce the basics of microcontroller architecture and operation, 
+and how they are programmed
+
+---
+
+### Course syllabus
+
+Applications of microcontrollers, and programming in both assembly and 'C' languages. The lectures will be supported by a series of practical sessions where you will learn how to implement the lecture content to commission simple programs on an Arduino microcontroller.
+
+---
+
+### Key Topics
+
+::: {.incremental}
+- Microcontroller fundamentals and architecture.
+
+- Microcontroller programming: instruction execution; basic instructions.
+
+- Software design and development tools.
+
+- Assembly and C programming languages.
+:::
+
+---
+
+### Course Assessment {#welcome:course_assessment}
+
+There are five formal assessment components to this course:
+
+::: {.fragment}
+#### 1. Laboratory Training Requirements (Pass/Fail)
+
+::: {.notes}
+It is an accreditation requirement that you have demonstrated competence in **C12 Workshop and
+practical skills**. To pass the module you **must** pass the laboratory training requirements.
+In order to pass the laboratory training requirements, you are required to keep a full record of lab
+attendance and record the completion date of each lab exercise in your lab diary. This record will
+be regularly evaluated and signed oﬀ by the laboratory support staﬀ during the lab sessions.
+
+There will be two COMPULSORY two-hour lab sessions per week on Thursdays and Friday 10:00-12:00. The department requires that each student has achieved at least 80% attendance (18 of 22
+available sessions) in the lab. Catch-up sessions are provided for labs missed for valid reasons.
+:::
+:::
+
+::: {.fragment}
+#### 2. Lab introduction exercise &ndash; 15%
+
+::: {.notes}
+During the first four weeks of term, the laboratory will be used
+for a laboratory introduction exercise covering health and
+safety, a breadboard construction exercise, a simulation
+exercise and a soldering exercise.The laboratory introduction is
+COMPULSORY and must be passed if a student is to work in the
+laboratory.
+:::
+:::
+
+::: {.fragment}
+#### 3. Five short 'C' language programming exercises &ndash; 20% (4% each)
+
+::: {.notes}
+An example program will be provided which students are expected
+to modify so as it performs the required functions. The 5
+exercises involve creating a binary counter, reading a digital
+input, reading an analogue input and working with arrays, and writing 
+information to an LCD display device.
+
+Assessment will be through submission of a lab diary containing
+the modified and commented code, a flow chart and a description
+of the changes made. Submission will be through the Canvas
+platform.
+:::
+:::
+
+:::{.fragment}
+#### 4. A mini project &ndash; 30%
+
+::: {.notes}
+The mini project will require each student to create a program
+to achieve a certain task making use of the knowledge gained
+during the lectures and four lab exercises. Assessment will be
+through submission of a lab diary containing the modified and
+commented code, a flow chart and a description of the changes
+made. Submission will be through the Canvas platform.
+:::
+:::
+
+:::{.fragment}
+#### 5. Formal Class Test  &ndash; 35%
+
+::: {.notes}
+The class test will be online and based on content covered in the
+lectures and laboratory sessions.These questions will be similar
+to those presented in each weekly quiz. For the practical
+assessment marks to count, you must achieve at least 40% in the
+Formal Test.You will have one attempt to redeem a failure before
+the end of semester 1. If you achieve less than 40% after this,
+then the course mark will be just the Class Test mark and you
+will be required to sit a supplementary exam in August.
+:::
+:::
+
+---
+
+### Lab attendance
+
+**Additionally, to be allowed a supplementary examination for this course you must have an 80% attendance rate in laboratory classes**.

@@ -1,1 +1,748 @@
-../website/lectures/week02/index.qmd
+#../website/lectures/week02/index.qmd
+
+---
+title: Architecture of the Atmel ATmega 328 Microcontroller
+author: 
+  name: Ben Clifford
+  affiliation: Welsh Centre for Printing and Coatings
+copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
+date: 10/08/2024
+---
+::: {.notes}
+[Presentation version](/slides/lecture03.html) of these [notes](#sec-week02).
+:::
+
+![](pictures/week02_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+
+## Introduction{#sec-week02 .unnumbered} 
+
+In [Introduction to Microcontrollers and Microcontroller Architecture](/lectures/week1) we described what a microcontroller is and looked at how one can be described by considering its architecture. We finished the lecture looking at [The Atmel ATmega 328 Microcontroller](/lectures/week01/#sec-atmel-atmega328) which provides an overview of the AVR core architecture and we introduced the general purpose registers and the ALU.
+
+## Lecture Topics{.unnumbered}
+
+:::: {.columns}
+
+::: {.column width="25%"}
+![](pictures/week02_contents_image.png){img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module." width=100%}
+:::
+
+::: {.column width="75%"}
+- @sec-week02-intro: [Introducing the Atmel ATmega 328 MCU](#sec-week02-intro)
+- @sec-week02-status-register: [The Status Register](#sec-week02-status-register)
+- @sec-week02-program-counter: [The Program Counter](#sec-week02-program-counter)
+- @sec-week02-stack-pointer: [The Stack Pointer](#sec-week02-stack-pointer)
+- @sec-week02-io: [Introduction to Microcontroller I/O](#sec-week02-io)
+:::
+
+::::
+
+## Introducing the Atmel ATmega 328 MCU{#sec-week02-intro}
+
+### Architecture of the Atmel ATmega 328 MCU{.unnumbered}
+
+::: {#fig-week02-atmel-arch} 
+![](pictures/atmel_arch.png){fig-alt="The architecture of the Atmel ATMega328 Microcontroller"}
+
+The architecture of the Atmel ATMega328 Microcontroller
+:::
+
+---
+
+Referring to @fig-week02-atmel-arch, we note that
+
+::: {.incremental}
+- This is an 8-bit CMOS microcontroller based on the AVR enhanced **RISC architecture** with 131 instructions
+- It has 2KB of Internal SRAM, 32 KB of Flash Memory and 1 KB of EEPROM
+- It has **32 General Purpose Registers**
+- It can achieve up to 20 MIPS at 20 MHz (maximum clock frequency)
+- There are **8 Analog I/O Pins** connected to 10-bit ADC
+- There are **22 Digital I/O Pins** (6 capable of PWM)
+- The AVR core uses a **Harvard memory  architecture** – with separate memories and buses for program and data.
+:::
+
+::: {.center}
+## The Status Register{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background" #sec-week02-status-register}
+:::
+
+::: {.notes}
+![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+:::
+
+---
+
+### What is the status register?
+
+::: {.fragment}
+::: {#fig-week02-sreg} 
+![](pictures/sreg.png){fig-alt="SREG - The AVR Status Register"}
+
+SREG - The AVR Status Register
+:::
+:::
+
+::: {.incremental}
+- An 8-bit register containing flags that contain information about the result of the most recently executed instruction and the current **state of the processor** (@fig-week02-sreg).
+- The status register is updated after all ALU instructions as specified by the instruction set reference.
+:::
+
+
+---
+
+#### Example - Effect on SREG of `ADC` instruction
+
+::: {#fig-week02-sreg-setting} 
+![](pictures/AVR-instruction.png){fig-alt="Example instruction showing how the status register is affected by the `ADC` (add with carry) instruction."}
+
+Example instruction showing how the status register is affected by the `ADC` (add with carry) instruction [@avr_instruction_set p. 24]
+:::
+
+---
+
+### Status Register Flags
+
+| Bit | Flag | Meaning |
+|---------|--------------------|---------|
+| Bit 0 | **Carry Flag (C)** | The carry flag is set when the execution of the previous arithmetic or logic instruction produced a carry out of bit-7 or required a borrow. |
+| Bit 1 | **Zero Flag (Z)** | The zero flag is set when the result of the previous arithmetic or logic instruction resulted in a zero |
+| Bit 2 | **Negative Flag (N)** | The negative flag is set when the result of the previous arithmetic or logic instruction is negative |
+| Bit 3 | **Two’s Complement Overflow Flag (V)** | The Two’s Complement Overflow Flag V supports two’s complement arithmetic. +ve + +ve = -ve  or  -ve + -ve = +ve |
+| Bit 4 | **Sign Bit (S)** | The S-bit is always an exclusive or between the Negative Flag and the Two’s Complement Overflow Flag. |
+| Bit 5 | **Half Carry Flag (H)** | The half carry flag is set when the execution of the previous arithmetic or logic instruction produced a carry out of bit-3 or required a borrow from bit-4.|
+| Bit 6 | **Bit Copy Storage (T)** | A bit from a register in the Register File can be copied into T by the BST instruction, and a bit in T can be copied into a bit in a register in the Register File by the BLD instruction. |
+| Bit 7 | **Global Interrupt Enable (I)** | The Global Interrupt Enable bit is set to enable interrupts. The individual interrupt enable control is then performed in separate control registers. |
+
+: Status Register Flags {tbl-colwidths="[10,30,60]" #tbl-status-register-flags} 
+
+---
+
+### Status Register Example
+
+::: {#fig-example-of-sr-working} 
+![](pictures/sreg-example.png) {fig-alt="An example of how the status register works."}
+
+An example of how the status register works
+:::
+
+---
+
+### Status Register Demonstration {#sec-week2-sr-examples}
+
+:::: {.columns}
+
+::: {.column}
+
+Code to be executed
+```asm
+LDI R16, Addend
+LDI R17, Augend
+ADD R16, R17
+```
+:::
+
+::: {.column}
+![Status register](pictures/status-reg.png)
+:::
+
+::::
+
+Record status of SREG at line 3.
+
+---
+
+#### Examples {.center .unnumbered }
+
+---
+
+$$
+\begin{array}{lrr}
+\mathrm{Addend} & 0\,1\,1\,0\,1\,1\,1\,0 & 110_{10}\\
+\mathrm{Augend} & 1\,1\,1\,0\,0\,0\,1\,1 & 227_{10}\\
+\hline
+\mathrm{Sum} & &
+\end{array}
+$$
+
+---
+
+$$
+\begin{array}{lrr}
+\mathrm{Addend} & 0\,0\,1\,1\,0\,1\,1\,1 & 55_{10}\\
+\mathrm{Augend} & 0\,1\,0\,1\,0\,0\,0\,0 & 80_{10}\\
+\hline
+\mathrm{Sum} & &
+\end{array}
+$$
+
+---
+
+$$
+\begin{array}{lrr}
+\mathrm{Addend} & 1\,0\,0\,0\,0\,0\,0\,0 & 128_{10}\\
+\mathrm{Augend} & 1\,0\,0\,0\,0\,0\,0\,0 & 128_{10}\\
+\hline
+\mathrm{Sum} & &
+\end{array}
+$$
+
+::: {.center}
+## The Program Counter{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background" #sec-week02-program-counter}
+:::
+
+::: {.notes}
+![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+:::
+
+---
+
+### What is The Program Counter?
+
+::: {.incremental}
+* A program is a sequence of instructions written in a particular order to perform a specific task
+* The instructions of the program are stored sequentially in non-volatile memory.
+* The program counter is a register which holds the address of the next instruction to be executed
+:::
+
+---
+
+### Example of a program
+@fig-week02-a-program illustrates a simple program to add two numbers. 
+
+::: {#fig-week02-a-program} 
+![](pictures/pc_example.png){fig-alt="An example program showing three instructions located at memory locations 0 through 2."}
+
+An example program showing three instructions located at memory locations 0 through 2.
+:::
+
+::: {.notes}
+It is written in assembly code for the Atmel ATmega328 MCU. Each instruction is a programmer-friendly rendition of an 16- or 32-bit binary code that is stored at the memory locations shown.
+:::
+
+---
+
+### Organisation of program memory
+
+::: {.incremental}
+* The ATmega328 microcontroller has a 32 Kbyte flash memory which is organised into 256 pages each containing 64 Words of program.
+* The program counter is 14-bits and can access each of these memory locations `0x0000` – `0x3FFE`
+* The remaining addresses `0x3FFF` – `0x7FA5` (the boot flash section) are reserved for the bootloader
+:::
+
+---
+
+@fig-week02-prog-mem illustrates the organisation of the program memory for the ATmega328.
+
+::: {#fig-week02-prog-mem} 
+![](pictures/prog_mem.png){fig-alt="The program memory of the ATmega328 microcontroller."}
+
+The program memory of the ATmega328 microcontroller
+:::
+
+::: {.notes}
+Remember a word is 16 bits
+
+64 (words) = 128 bytes
+
+256 (pages) each of 128 bytes = 32 KB (or decimal 32768 / binary 32678)
+:::
+
+---
+
+@fig-week02-prog-counter shows how the program counter is used to access the next instruction.
+
+::: {#fig-week02-prog-counter} 
+![](pictures/prog_counter.png){fig-alt="How the program counter is used to access instructions within the available pages of program memory."}
+
+How the program counter is used to access instructions within the available pages of program memory
+:::
+
+::: {.notes}
+The Least significant six bits address the instruction words within a given page. Note: $2^6 = 64$ words which is $128$ bytes.
+
+The 8 most significant bits address the *page* in program memory in which the instruction word is to be found. Note: $2^8 = 256$ and that $256 \times 64 \times 2 = 32,768$ bytes.
+
+### The Bootloader
+In short, microcontrollers are usually programmed through a programmer (specialist piece of hardware) unless you have a piece of firmware in your microcontroller that allows installing new firmware without the need of an external programmer. This small piece of firmware is called a bootloader and can allow the program to be rewritten by the microcontroller itself e.g. via an over-the-air (OTA) updates.
+
+The bootloader also contains the reset routine (power-on-reset)
+
+During reset, all I/O Registers are set to their initial values, and the program starts execution from the Reset Vector. For the ATmega168A/168PA/328/328P family of microcontrollers, the instruction placed at the Reset Vector must be a JMP – Absolute Jump – instruction to the reset handling routine.
+:::
+
+---
+
+### Program Counter Demonstration
+
+| Instruction | Number of words |
+|:------------|:----------------|
+| `ADD`       | 1               | 
+| `LDI`       | 1               | 
+| `LDS`       | 2               | 
+| `STS`       | 2               | 
+: A selection of instructions and the number of 16-bit words they need for storage. {#tbl-counter-example} 
+
+When executing these instructions, the program counter advances by the number of words in each instruction.
+We will demonstrate this later.
+
+::: {.notes}
+Consider the instructions `LDI` (load immediate) and `LDS` (load from store).
+
+Refering to the data manual [@avr_instruction_set] we see that the LDI instruction is a one word instruction (@fig-ldi-instruction) taking the opcode and the 8-bit data value. We also see that the `LDS` instruction (@fig-lds-instruction) is a two word instruction: taking a 16 bit memory address as its operand. 
+:::
+
+---
+
+#### `LDI` instruction
+
+::: {#fig-ldi-instruction}
+![](pictures/wk2_ldi_instruction.png){fig-alt="An extract from the Atmel ATmega328 data manual for the LDI instruction."} 
+
+The `LDI` instruction: takes a four bit opcode, a 4-bit register number (0-31) and an 8-bit value. The program counter is incremented by one when this instruction is executed. [@avr_instruction_set p.92].
+:::
+
+
+---
+
+#### `LDS` instruction
+
+::: {#fig-lds-instruction}
+![](pictures/wk2_lds_instruction.png){fig-alt="An extract from the Atmel ATmega328 data manual for the LDS instruction."} 
+
+The `LDS` instruction: takes an  bit opcode, an 12-bit opcode, a 4-bit register number (0-31) and an 16-bit value which represents a data location on memory (0-65535). The program counter is incremented by two when this instruction is executed. [@avr_instruction_set p.93].
+:::
+
+::: {.notes}
+You can lookup `ADD` and `STS` (store to store) to confirm the details given in @tbl-counter-example. 
+:::
+
+---
+
+#### Example program
+
+::: {.notes}
+The assembly program shown in @lst-week2-addition illustrates the use of the registers, program counter and the `ADC` instruction. By changing the values of the data at lines 14 nd 15, you can verify the final state of the status register explored in @sec-week2-sr-examples.
+:::
+
+```{.asm lst-cap="Assembly program illustrating the use of registers, the ADC function and the status register" #lst-week2-addition code-line-numbers="|14|15|23|24|25|27|28|30|31|32|33"}
+;
+; Assembly - simple addition.asm
+;
+; Created: 11/10/2022 14:14:16
+; Author : Ben Clifford
+;
+
+		.device ATmega32
+
+    .equ    VARIABLES   = 0x0100        ;Start address in internal RAM for variables (default)
+		.equ    PROGRAMME   = 0x0000        ;Start address in Flash for programme (default)
+		.equ    STACK       = 0x08FF		;Last address in RAM to be used for the Stack (default)
+
+		.equ    num1 = 110
+		.equ    num2 = 227
+
+		.DSEG
+		.org VARIABLES
+
+		.CSEG
+		.org PROGRAMME					
+
+MAIN:		
+		LDI R16, num1
+		STS 0x0100, R16;
+
+		LDI R16, num2
+		STS 0x0101, R16;
+
+		LDS R16, 0x0100;
+		LDS R17, 0x0101;
+		ADC R16, R17
+		STS 0x0100, R16;
+```
+
+
+::: {.center}
+## The Stack Pointer{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background" #sec-week02-stack-pointer}
+:::
+
+::: {.notes}
+![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+:::
+
+---
+
+### The Stack
+
+In a microcontroller, the ‘stack’ is a space in memory with a fixed origin and a variable size that can be used for temporary storage purposes, such as storing local variables and saving return address for subroutine calls and interrupts.
+
+::: {.fragment}
+The stack supports two types of operations:
+:::
+
+::: {.incremental}
+1. Push – a data item is placed at the location pointed to by the stack pointer
+2. Pop or Pull – a data item at the current location pointed to by the stack pointer is removed.
+:::
+
+::: {.fragment}
+The stack typically operates as a “Last In First Out” (LIFO) buffer
+:::
+
+---
+
+### What is the stack pointer?
+
+The *stack pointer register* keeps track of the top of the stack.
+
+::: {.incremental}
+* A stack `PUSH` command will decrement the stack pointer.
+* A stack `POP` command will increment the stack pointer.
+:::
+
+---
+
+
+The AVR stack pointer is implemented as two 8-bit registers in the I/O space.
+
+The are called `SPH` (stack pointer high byte) and `SPL` (stack pointer low byte) as illustrated in @fig-week02-sp-register.
+
+
+::: {#fig-week02-sp-register} 
+![](pictures/sp_register.png){fig-alt="The AVR stack pointer implemented as two bytes SPH and SPL."}
+
+The AVR stack pointer implemented as two bytes SPH and SPL
+:::
+
+---
+
+@fig-week02-sp-operation illustrates the operation of the stack pointer as it appears to the user of the stack.
+
+::: {#fig-week02-sp-operation} 
+![](pictures/sp_operation.png){fig-alt="Illustration of the operation of a stack."}
+
+Illustration of the operation of a stack.
+:::
+
+::: {.notes}
+Like a box of Pringles, when you pop an item of the stack, it comes from the top. The pringle below the one you have just taken off becomes the new top. If you were to put the Pringle back, it becomes the new top. When the pringles box is empty, there is nothing on the stack and the stack pointer will be pointing at the memory address of the bottom of the stack.
+:::
+
+---
+
+### Stack Pointer Demonstration
+
+::: {.notes}
+An example of the use of the stack is given in @lst-week2-stack. We will demonstrate this program in class.
+:::
+
+```{.asm lst-cap="Example of the use of the stack" #lst-week2-stack code-line-numbers="|21|22|23|24|25|26|27|29|30|31"}
+;
+; Assembly - Stack pointer example.asm
+;
+; Created: 11/10/2022 14:14:16
+; Author : Ben Clifford
+;
+
+		.device ATmega32
+
+    .equ    VARIABLES   = 0x0100        ;Start address in internal RAM for variables (default)
+		.equ    PROGRAMME   = 0x0000        ;Start address in Flash for programme (default)
+		.equ    STACK       = 0x08FF		;Last address in RAM to be used for the Stack (default)
+		
+
+		.DSEG
+		.org VARIABLES
+
+		.CSEG
+		.org PROGRAMME					
+
+MAIN:	
+		LDI R16, 1;
+		LDI R17, 2;
+		LDI R18, 3
+		PUSH R16
+		PUSH R17
+		PUSH R18
+
+		POP R16
+		POP R17
+		POP R18
+```
+
+::: {.center}
+## Introduction to Microcontroller I/O{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background [wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)" #sec-week02-io}
+:::
+
+::: {.notes}
+![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+:::
+
+---
+
+### I/O on the ATmega328
+
+::: {.notes}
+@fig-week02-arduino-nano illustrates the layout of the input-output (I/O) pins of the Atmel ATmega328 packaged as an Arduino Nano that you will be using in the lab and project.
+:::
+
+::: {#fig-week02-arduino-nano} 
+![](pictures/arduino_nano.png){fig-alt="Input/output pins for the Arduino nano."}
+
+
+Input/output pins for the Arduino nano
+:::
+
+---
+
+::: {.notes}
+@fig-week02-atmega325-schematic is the schematic diagram of the Atmel ATmega328 reproduced from the reference manual.
+:::
+
+::: {#fig-week02-atmega325-schematic} 
+![](pictures/atmega325_schematic.png){fig-alt="Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller."}
+
+Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller [@atmel_data p. 6]
+:::
+
+---
+
+### MCU Inputs
+
+Consider a switch which on one side is connected to a 5V power source and on the other side to a microntroller input.
+
+![](pictures/wk2_switch.png)
+
+::: {.fragment}
+What voltage is read at the I/O port when the switch is closed and when it is open?
+:::
+
+---
+
+### Pull Ups
+
+To get around this issue, microcontrollers use pull-up (or pull-down) circuitry to hold the port high (or low) (see @fig-week02-pullup).
+
+::: {#fig-week02-pullup} 
+![](pictures/pullup.png){fig-alt="Schematic of the pullup circuitry for the ATmega328."}
+
+Schematic of the pullup circuitry for the ATmega328 (from the manual [@atmel_data p. 58]
+:::
+
+---
+
+What voltage is read at the I/O port when the switch 'S1' is closed and when it is open now?
+
+::: {#fig-week2-pu-enabled}
+![](pictures/pu_enabled.png){fig-alt="Port with pull-up enabled."}
+
+Port with pull-up enabled
+:::
+
+---
+
+
+### Ports as General Digital I/O
+
+::: {#fig-week02-general-io} 
+![](pictures/general_io.png){fig-alt="The PORTC register."}
+
+The `PORTC` register
+:::
+
+::: {.notes}
+The ports are bi-directional I/O ports with optional internal pull-ups meaning they can be configured to read an input such as a switch or a sensor or to write to an output such as an LED or control an actuator. @fig-week02-general-io shows a functional description of one I/O-port pin, which we give the notation `Pxn`.
+:::
+
+---
+
+### Configuring a pin
+
+::: {#fig-week02-iomap}
+![](pictures/iomap.png){fig-alt="A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers."}
+
+A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers
+:::
+
+::: {.notes}
+Recall the 64 I/O registers early on in the user data space (see @fig-week02-iomap):
+
+* General purpose registers – `0x0000` – `0x001F`
+* Three I/O memory address locations are allocated for each port, one each for:
+    *  the *Data Registers* – `PORTx`,
+    *  the *Data Direction Register* – `DDRx`, and
+    *  the *Port Input Pins* – `PINx`
+
+Note: `x` refers to the numbering letter for the port (`B`, `C`, or `D` in our case).
+:::
+
+---
+
+### Configuring a Pin - Data Direction
+
+The `DDxn` bit in the `DDRx` Register (illustrated for `DDRB` in @fig-week02-ddrb) selects the data direction (input or output) of this pin.
+
+::: {#fig-week02-ddrb} 
+![](pictures/ddrb.png){fig-alt="DDRB - The port B data direction register."}
+
+`DDRB` - The port B data direction register.
+:::
+
+::: {.notes}
+* Writing **logic one** to `DDxn`, `PORTxn` is configured as an **output pin**.
+* Writing **logic zero** to `DDxn`, `PORTxn` is configured as an **input pin**. .
+:::
+
+---
+
+### Writing to a Pin - Output
+
+The `Pxn` bit in the `PORTx` Register (illustrated for `PORTC` in @fig-week02-portc) has two purposes dependent on the condition of the corresponding bit in the `DDRx` register. 
+
+
+::: {#fig-week02-portc}
+![](pictures/portc.png){fig-alt="PORTC - the port C data register"}
+
+`PORTC` - the port C data register
+:::
+
+::: {.notes}
+If the `DDRx` bit is configured as an output:
+
+* Writing logic one to `PORTxn` drives the pin high (on-state).
+* Writing logic zero to `PORTxn` to logic zero drives the pin low (off-state).
+:::
+
+---
+
+### Reading from a Pin - Input
+
+The port pin can be read through the **`PINxn` Register bit** (illustrated for `PINB` in @fig-week02-pinb. 
+
+::: {#fig-week02-pinb} 
+![](pictures/pinb.png){fig-alt="PINB - the port B input pins address"}
+
+`PINB` - the port B input pins address
+:::
+
+::: {.notes}
+
+This is independent of the setting of Data Direction bit `DDxn`, however is good practice to have it set.
+
+**Writing** a logic one to `PINxn` toggles the value of `PORTxn`, independent on the value of `DDRxn`.
+:::
+
+---
+
+### Configuring a Pin - Pull Up Enable
+
+Providing a port is configured as an input.
+
+* If `PORTxn` is written **logic one** when the pin is configured as an input pin, the **pull-up resistor** is activated.
+
+* To switch the **pull-up resistor** off, `PORTxn` has to be written logic zero or the pin has to be configured as an output pin.
+
+---
+
+### Basic I/O Demonstration
+
+::: {.notes}
+Code listing @lst-week2-simple-io is an example program written in assembly that illustrates simple IO. We will demonstrate this in class. Please refer to @fig-week2-basic-io-demonstration which shows what the demo looks like.
+
+::: {#fig-week2-basic-io-demonstration} 
+![](pictures/ide_for_demo.png){fig-alt="Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O."}
+
+Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O
+:::
+:::
+
+```{.asm lst-cap="Demonstration of simple I/O" #lst-week2-simple-io code-line-numbers="|"}
+
+;.EQU DDRB = 0x04
+;.EQU PORTB = 0x05
+
+;.EQU PIND = 0x09
+;.EQU DDRD = 0x0A
+;.EQU PORTD = 0x0B
+
+.CSEG
+.ORG 0x0200
+	;setup bits 2 and 3 of port D as inputs
+	IN R16, DDRD
+	ANDI R16, 0b11110011
+	OUT DDRD, R16
+
+	;setup bits 0 and 1 of port B as outputs
+	IN R16, DDRB
+	ORI R16, 0b00000011
+	OUT DDRB, R16
+
+	;both pins B0 (D8) and B1 (D9) start low
+	IN	R16, PORTB
+    ANDI R16, 0b11111100
+    OUT PORTB, R16
+
+	;Enable the pull up resistor for bits 2 and 3 of port D
+	IN	R16, PORTD
+    ORI	R16, 0b00001100
+    OUT PORTD, R16
+
+LOOP:
+	SBIC PIND, 2 ; skip RJMP if bit 2 is set (button pressed)
+	RJMP LED1
+
+	SBIC PIND, 3 ; skip RJMP if bit 3 is set (button pressed)
+	RJMP LED2
+
+	IN R16, PORTB
+	ANDI R16, 0b11111100
+	OUT PORTB, R16
+	RJMP LOOP
+
+LED1:
+	SBI PORTB, 0
+	RJMP LOOP
+
+LED2:
+	SBI PORTB, 1
+	RJMP LOOP
+
+.EXIT
+```
+
+---
+
+## Summary{.unnumbered}
+
+In this chapter we have:
+
+* Introduced a few more parts of the AVR core, namely, the status register, program counter and stack pointer and how these are used under normal operation
+
+* Started  to look at I/O on a microcontroller including the concept of pull up resistors as well as some of the specific registers used in the AVR core to enable the use of both input and output device
+
+---
+
+### On Canvas{.unnumbered}
+
+Canvas module [Week 2: Microcontroller Architecture and I/O](https://canvas.swansea.ac.uk/courses/44971/modules/305537?wrap=1), along with these notes, there is some additional self study material on canvas on page [Week 2: Atmel ATmega328 Architecture Overview](https://canvas.swansea.ac.uk/courses/44971/pages/week-3-atmel-atmega328-architecture-overview?module_item_id=2258072). This includes a video demonstration, from my former colleague Ben Clifford, of the various topics discussed in this session. 
+
+There is also a quiz on Microcontroller Architecture.
+
+---
+
+### Any Questions?{.unnumbered}
+
+Please use the [Course Question Board](https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656) on Canvas or take advantage of the lecturers' office hours. 
+
+---
+
+### Next time{.unnumbered}
+
+* [Introduction to Programming and Program Development](/lectures/week03)
+
+---

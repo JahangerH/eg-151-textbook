@@ -1,1 +1,949 @@
 ../website/lectures/week06/index.qmd
+
+---
+title: Interfacing to Analogue I/O with C
+author: 
+  name: Ben Clifford
+  affiliation: Welsh Centre for Printing and Coatings
+copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
+date: 11/05/2024
+---
+::: {.notes}
+[Presentation version](/slides/lecture07.html) of these [notes](#sec-week06-intro).
+:::
+
+![](pictures/week06_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+
+## Introduction{.unnumbered #sec-wk6-intro}
+C is a high-level structured programming language which is often used for writing microcontroller applications. This lecture looks at how I/O operations are performed on analogue inputs.
+
+
+
+## Lecture topics{.unnumbered}
+
+:::: {.columns}
+
+::: {.column width="25%"}
+
+![](pictures/week06_contents_image.png){fig-alt="Decorative image used as a slide background."}
+
+:::
+
+::: {.column width="75%"}
+* @sec-wk6-sect1: [What are analogue signals?](#sec-wk6-sect1)
+* @sec-wk6-sect2: [ADC Architecture](#sec-wk6-sect2)
+* @sec-wk6-sect3: [The Atmel ATmega328 Analog-digital-converter](#sec-wk6-sect3)
+* @sec-wk6-sect4: [Analogue I/O Example program](#sec-wk6-sect4)
+:::
+
+::::
+
+---
+
+### Outline{.unnumbered}
+In this lecture we will be looking at how we can read analogue signals into a microcontroller using an analogue to digital converter (ADC). 
+
+::: {.incremental}
+- We begin by introducing analogue signals and the fundamental principals of an ADC.
+- We move on to look at the ADC contained on the Atmel ATmega328 microcontroller, focussing on the key registers and how to use them. 
+- We conclude with an example program for the Atmel ATmega328 microcontroller which reads the voltage from a potentiometer and turns on some LEDs based on the voltage.
+:::
+
+
+::: {.center}
+## What are analogue signals?{#sec-wk6-sect1 background-image="pictures/waves_wallpaper.jpg"}
+:::
+
+::: {.notes}
+![](pictures/waves_wallpaper.jpg){fig-alt="Decorative image of some analogue waveforms."}
+
+[This image](https://paperpcb.dernulleffekt.de/doku.php?id=analog_computer:confetti703_multiplier) by Unknown Author [CC-BY-SA-NC](https://creativecommons.org/licenses/by-nc-sa/3.0/).
+:::
+
+---
+
+### Analogue signals
+
+Analogue signals are those that are both continuous in time and continuous in amplitude i.e. they are continuous signals.
+
+In the real world, most measurable parameters are actually analogue. They include such signals as temperature, humidity, light, sound, etc. 
+
+
+---
+
+#### An analogue sensor{.unnumbered}
+An analogue sensor for measuring light intensity is shown in @fig-wk7-analogue-sensor along with a calibration graph that would be typically supplied in the data sheet for such a sensor.
+
+::: {#fig-wk7-analogue-sensor}
+![](pictures/photo_sensor.png){fig-alt="photograph of a light sensor and its calibration data."}
+
+A photograph of a light sensor and its calibration data
+:::
+
+---
+
+### Sampling and quantization
+
+Since microcontrollers can only handle 0s and 1s (digital signals) we need a way of converting analogue signals to digital signals. This is done using an **analogue-to-digital** converter or ADC.
+
+::: {.fragment}
+An ADC converts a **continuous-time** and **continuous-amplitude** analogue signal to a **discrete-time and discrete-amplitude** digital signal through the process called **sampling and quantization** illustrated in @fig-wk6-sampling.
+:::
+
+---
+
+#### Sampling and quantization of an analogue signal{.unnumbered}
+
+::: {#fig-wk6-sampling}
+![](pictures/Sampling.png){fig-alt="Sampling and quantization of an analogue signal."}
+
+Sampling and quantization of an analogue signal
+:::
+
+---
+
+### ADC Principles
+
+An analogue signal is continuous in time and amplitude and to convert it to a digital signal it is necessary to **periodically sample the analogue signal**.  The rate at which the signal is sampled is referred to as the **sampling rate**.
+
+::: {.fragment}
+Each time the signal is sampled the analogue value must be represented in one of several discrete *bins* (digital values). The number of discrete bins available is called the **resolution**.
+:::
+
+::: {.fragment}
+Both the sampling rate and the conversion resolution need to be sufficiently high to create an accurate digital reconstruction of the analogue signal.
+:::
+
+---
+
+### ADC Sampling Rate
+The Nyquist–Shannon sampling theorem implies that to get an accurate reproduction of the original signal, the sampling rate must be higher than twice the highest frequency of the signal. Lower than this and the reproduced signal will be distorted, and data lost.
+
+::: {.notes}
+
+::: {.callout-note}
+This will be covered in more detail in EG-247 Digital Signal Processing in year 2
+:::
+
+:::
+
+---
+
+#### Example{.unnumbered}
+Consider the sine wave governed by the equation $x(t) = sin(t)$. The period is $2\pi$ (approx. 6.3 seconds) so the frequency is 0.16 Hz (@fig-wk6-sinewave).
+
+::: {#fig-wk6-sinewave} 
+![](pictures/sinewave.png){fig-alt="Analogue signal x(t) = sin(t) - a sine wave."}
+
+Analogue signal $x(t) = \sin(t)$ - a sine wave.
+:::
+
+
+---
+
+##### Sampled sine wave
+
+If we sample this at 0.5 Hz (once every 2 seconds), which is over 3 times the original frequency, we get the orange trace @fig-wk6-sampled-wave. From this it would be enough to accurately recreate the blue trace.
+
+::: {#fig-wk6-sampled-wave} 
+![](pictures/sampled_wave.png){fig-alt="Sine wave x(t) = sin(t) sampled at 0.5 Hz."}
+
+Sine wave $x(t) = \sin(t)$ sampled at 0.5 Hz.
+:::
+
+---
+
+### ADC Resolution
+As well as the sampling rate, the resolution of the converter is crucial to getting an accurate representation of the input signal. The resolution indicates the number of discrete values that can be used over the total range of analogue values.
+
+---
+
+#### A 2-bit ADC
+As an example a 2-bit ADC has $2^2 = 4$ quantization levels (@fig-wk6-2bit).
+
+::: {#fig-wk6-2bit} 
+![](pictures/2bitadc.png){fig-alt="Illustration of the resolution of a 2 bit ADC."}
+
+Illustration of the resolution of a 2 bit ADC
+:::
+
+---
+
+#### A 3-bit ADC has $2^3 = 8$ quantization levels (@fig-wk6-3bit).
+
+
+
+::: {#fig-wk6-3bit} 
+![](pictures/3bitadc.png){fig-alt="Illustration of the resolution of a 3 bit ADC."}
+
+Illustration of the resolution of a 3 bit ADC
+:::
+
+---
+
+#### Resolution of a 3-bit ADC
+
+To calculate the resolution of an ADC we use @eq-adc-res[^floor].
+
+[^floor]: Note the symbols $\lfloor \ldots \rfloor$ are called *floor*. They round a decimal number to the next lowest integer value. That is the decimal part is simply eliminated. Thus quantization is always going to choose the bin that is the closest to the truncated part of the decimal number.
+
+$$
+\mathrm{Digital\ Output} = \left\lfloor\frac{\left(2^N-1\right)\times\mathrm{Analogue\ Input\ Voltage}}{\mathrm{Reference\ Voltage}}\right\rfloor
+$$ {#eq-adc-res}
+
+---
+
+The graph in @fig-wk6-resolution shows the values (*bins*) that are available for a three bit ADC.
+
+:::{#fig-wk6-resolution} 
+![](pictures/3bitresolution.png){fig-alt="The resolution of a 3 bit ADC."}
+
+The resolution of a 3 bit ADC
+:::
+
+---
+
+::: {.center}
+### Examples{.unnumbered}
+:::
+
+---
+
+#### Example 1{.unnumbered}
+Let's say that we have a **10-bit ADC** and the reference voltage is **5V**.
+
+::: {.fragment}
+If our input is **2.2V** the the digital output will be:
+
+\begin{align}
+\mathrm{Digital\ Ouput} &= \left\lfloor \frac{1023 \times 2.2}{5}\right\rfloor \\
+&= \lfloor 450.12 \rfloor = 450_{10}\\
+&= 10\ 1100\ 0010_2
+\end{align}
+
+
+:::
+
+::: {.notes}
+
+Notice in the first example when the resolution is 10-bit the answer consists of 10 bits not 12 or 16.
+
+:::
+
+---
+
+#### Example 2{.unnumbered}
+
+Let's say that we have a **6-bit ADC** and the reference voltage is **3.3**.
+
+::: {.fragment}
+If our input is **1V** the the digital output will be:
+
+\begin{align}
+\mathrm{Digital\ Ouput} &= \left\lfloor \frac{63 \times 1}{3.3}\right\rfloor \\
+&= \lfloor 19.09 \rfloor = 19_{10}\\
+&= 01\ 0011_2
+\end{align}
+
+:::
+
+---
+
+::: {.center}
+#### Illustrating the sampling theorem
+:::
+
+---
+
+##### Violation of the sampling theorem
+
+::: {.notes}
+Consider the signal with frequency $F_c = 1$Hz, sampling frequency of $F_s = 1$Hz, and resolution = 3 bits. The sampled signal is illustrated in @fig-wk6-violation. The Nyquist-Shannon sampling theorem has clearly been violated and the original signal cannot be reconstructed from the sampled signal.
+:::
+
+::: {#fig-wk6-violation} 
+![](pictures/violation.png){fig-alt="Illustration of the violation of the sampling thereom - signal cannot be reconstructed from sampled signal."}
+
+Violation of the sampling thereom: signal cannot be reconstructed from sampled signal
+:::
+
+---
+
+##### Sampling at twice the signal frequency 
+
+::: {.notes}
+Consider the signal with frequency $F_c = 1$Hz, sampling frequency of $F_s = 2$Hz (the so-called Nyquist frequency), and resolution = 3 bits. The sampled signal is illustrated in @fig-wk6-nyquist. The reconstructed signal is on the border of acceptable. In practice, we need to sample at a higher frequency than $F_s = 2F_c$.
+:::
+
+::: {#fig-wk6-nyquist} 
+![](pictures/nyquist.png){fig-alt="Illustration of a signal sampled at the Nyquist frequency. Signal is just about reconstructable from the sampled data."}
+
+Signal sampled at the Nyquist frequency and 3-bit resolution. Signal is just about reconstructable from the sampled data.
+:::
+
+---
+
+::: {.center}
+#### Illustrating sampling and quantization
+:::
+
+##### Sampling at five times the signal frequency 
+
+::: {.notes}
+Consider the signal with frequency $F_c = 1$Hz, sampling frequency of $F_s = 5$Hz, and resolution = 3 bits. The sampled signal is illustrated in @fig-wk6-5fs. The reconstructed signal (in the bottom trace) is starting to look like a sine wave.
+:::
+
+::: {#fig-wk6-5fs} 
+![](pictures/5fs.png){fig-alt="Illustration of a signal sampled at the 5 x Nyquist frequency."}
+
+Signal sampled at the $Fs = 5 F_c$ and 3-bit resolution.
+:::
+
+---
+
+##### Sampling at ten times the signal frequency 
+
+::: {.notes}
+Consider the signal with frequency $F_c = 1$Hz, sampling frequency of $F_s = 10$Hz, and resolution = 3 bits. The sampled signal is illustrated in @fig-wk6-10fs. The reconstructed signal now starting to look like a sine wave. In general, the faster the sampling frequency compared to the frequency of the analogue signal, the better the approximation.
+:::
+
+::: {#fig-wk6-10fs} 
+![](pictures/10fs.png){fig-alt="Illustration of a signal sampled at the 5 x Nyquist frequency."}
+
+Signal sampled at the $Fs = 10 F_c$ and 3-bit resolution.
+:::
+
+
+## ADC Architecture{#sec-wk6-sect2} 
+
+::: {#fig-wk6-atmel-adc}
+![](pictures/adc_arch.png){fig-alt="The architecture of the ADC system in the Atmel ATmega328 Processor."}
+
+The architecture of the ADC system in the Atmel ATmega328 Processor (source [ATmega48A-PA-88A-PA-168A-PA-328-P-DS-DS40002061B](https://ww1.microchip.com/downloads/en/DeviceDoc/ATmega48A-PA-88A-PA-168A-PA-328-P-DS-DS40002061A.pdf), Page 247)
+:::
+
+---
+
+### ADC Components
+
+The architecture of the Atmel ATmega328 is shown in @fig-wk6-atmel-adc. It contains the following major components:
+
+::: {.incremental}
+* Multiplexer[^mux]
+* Voltage Reference
+* Digital to Analogue Converter (DAC)
+* Sample and Hold Circuit
+* Control and Result Registers
+:::
+
+::: {.notes}
+The most important components are described in more detail in the following sections.
+:::
+
+[^mux]: The multiplexer allows multiple inputs to share one set of ADC hardware.
+
+---
+
+### Architectures
+
+There are several achitectures for ADCs summarized as:
+
+::: {.incremental}
+* Sigma-Delta ($\Sigma-\Delta$)
+* Successive Approximation Register (SAR)
+* Pipelined
+* Flash
+:::
+
+::: {.fragment}
+Each has their own advantages and disadvantages in terms of price, conversion speed, noise and complexity as summarized in @fig-wk6-adc_archs.
+:::
+
+---
+
+#### ADC Architecture vs Resolution and Sample Rate 
+
+::: {#fig-wk6-adc_archs} 
+![](pictures/adc_archs.png){fig-alt="ADC Architecture vs Resolution and Sample Rate."}
+
+ADC Architecture vs Resolution and Sample Rate (Source [calstate.edu](https://scholarworks.calstate.edu/downloads/v979v314q))
+:::
+
+::: {.fragment}
+Most general-purpose microcontrollers contain SAR-based architecture ADCs.
+:::
+
+---
+
+### SAR based ADC Architecture
+
+::: {.notes}
+Successive-approximation-register (SAR) ADCs are the most common architecture for medium-to-high-resolution applications with sample rates under 5 megasamples per second.
+
+The SAR converter is essentially a binary search algorithm which compares the input to the ADC with the output from a digital to analogue converter (DAC) until the input matches the DAC output and the device is able to output the corresponding binary value. 
+
+While the internal circuitry of the ADC may be running at several megahertz, the ADC sample rate is a fraction of that number due to the multiple step successive-approximation algorithm needed to convert the measured input to a binary number.
+
+The SAR converter is at the heart of the ATmega328 microcontroller and is highlighted in @fig-wk6-sar.
+:::
+
+::: {#fig-wk6-sar}
+![](pictures/sar_converter.png){fig-alt="Schematic diagram of the Atmel ATMega328 ADC system with the SAR highlighted."}
+
+Schematic diagram of the Atmel ATMega328 ADC system with the SAR highlighted.
+:::
+
+---
+
+#### SAR based ADC Operation
+
+::: {.notes}
+Consider the schematic diagram shown in @fig-wk6-sar-converter.
+:::
+
+::: {#fig-wk6-sar-converter}
+![](pictures/sar.png){fig-alt="Schematic diagram used to illustrate the hardware used to achieve SAR conversion." width="200%""}
+
+Schematic diagram of the hardware used to achieve SAR conversion (image source: Analog Devices[^sar_conversion]).
+:::
+
+[^sar_conversion]: [Understanding SAR ADCs: Their Architecture and Comparison with Other ADCs](https://www.analog.com/en/technical-articles/successive-approximation-registers-sar-and-flash-adcs.html), Analog Devices.
+
+---
+
+#### SAR operation
+
+::: {.incremental}
+- The analogue input signal is held by a track/hold circuit and fed as $V_\mathrm{IN}$ into a comparator. 
+- To implement the binary search algorithm, the $N$-bit register is first set to mid-scale (that is the MSB is set to 1 and all other bits set to 0) so that the voltage at $V_\mathrm{DAC} = V_\mathrm{REF}/2$. 
+- A comparison is then performed to determine if $V_\mathrm{IN} \le  V_\mathrm{DAC}$. 
+  - If $V_\mathrm{IN} >  V_\mathrm{DAC}$, the comparator output will be logic high (or 1), and the MSB of the $N$-bit register remains at 1. 
+  - If $V_\mathrm{IN} <  V_\mathrm{DAC}$, the comparator output is a logic low (0) and the MSB of the $N$-register is cleared to logic 0.
+- The SAR control logic then moves to the next bit along[^next_bit_along], forces that bit high, and repeats the comparison. The sequence continues all the way down to the LSB (bit 0). 
+- Once the input has been compared with the full $N$-bit register the conversion is complete and the $N$-bit digital word is sent to the ADC output register.
+:::
+
+[^next_bit_along]: The "next bit along" will be the MSB-$1^\mathrm{th}$ bit. That is, for a 12-bit ADC, MSB is bit 11, and the next bit along will be bit 10. If the previous comparison produced a 1, the binary value we are testing is now $2^{11} + 2^{10} = 2048 + 1024 = 3072$. If the comparison at the previous step was 0, the binary value we are testing is now $2^{10} = 1024$. The corresponding values of $V_\mathrm{DAC}$ will now be either $3072/4096 V_\mathrm{REF} = 0.75 V_\mathrm{REF}$ or $1024/4096 V_\mathrm{REF} = 0.25 V_\mathrm{REF}$. This process continues until all bits have been considered.
+
+---
+
+#### 4-bit SAR based ADC Example
+
+::: {#fig-wk6-sar-example}
+![](pictures/sar_operation.png){fig-alt="Example of the successive approximation method in action."}
+
+Example of the successive approximation method in action: a 4 bit ADC converting a signal for which $V_\mathrm{IN}$ is in "bin" 5.
+:::
+
+::: {.notes}
+
+Consider @fig-wk6-sar-example:
+
+1. Bit 3 is set high (compare signal is $1000_2$) 
+   * $V_\mathrm{IN} < V_\mathrm{DAC}$ so the comparator output is low (0).
+2. Bit 3 is set low and bit 2 is set high (compare signal is now $0100_2$). 
+   * $V_\mathrm{IN} > V_\mathrm{DAC}$ so the comparator output is high (1).
+3. Bit 2 remains high and now Bit 1 is set high too (compare signal is $0110_2$). 
+   * $V_\mathrm{IN} < V_\mathrm{DAC}$ so the comparator output is low (0).
+4. Bit 1 is set low and bit 0 is set high (compare signal is $0101_2$) 
+   * $V_\mathrm{IN} > V_\mathrm{DAC}$ so the comparator output is high (1).
+
+The final output of the conversion is $0101_2 = 5/16 V_\mathrm{REF} = 0.3125 V_\mathrm{REF}$.
+:::
+
+::: {.center}
+## The Atmel ATmega328 Analog-digital-converter{#sec-wk6-sect3 background-image="pictures/week6_arduino_nano_wallpaper.jpg"}
+:::
+
+::: {.notes}
+
+![](pictures/week6_arduino_nano_wallpaper.jpg){fig-alt="Decorative section background - showing an Arduino nano microcontroller and an LED light strip."}
+
+Image source: [This Photo](https://www.flickr.com/photos/netlcom/36486445205/) by Unknown Author is licensed under [CC BY-NC](https://creativecommons.org/licenses/by-nc/3.0/)
+:::
+
+---
+
+### The Atmel ATMega328 ADC
+
+The Atmel ATMega328 features a **10-bit successive approximation ADC**. 
+
+The ADC is connected to an 8-channel **Analog Multiplexer** which allows eight single-ended voltage inputs (referenced to GND) constructed from the pins of Port C.
+
+---
+
+#### Technical specifications
+
+The ADC provides:
+
+::: {.incremental}
+- 10-bit Resolution
+- 13 - 260μs Conversion Time
+- Up to 76.9kSPS[^SPS] (Up to 15kSPS at Maximum Resolution)
+- 9 Multiplexed Single Ended Input Channels
+:::
+
+[^SPS]: SPS = Samples per second.
+
+---
+
+#### Hardware registers used
+
+::: {.incremental}
+- `ADMUX` - ADC Multiplexer Selection Register.
+- `ADCSRA` - ADC Status and Control Register A.
+- `ADCSRB` - ADC Status and Control Register B.
+- `ADCL` and `ADCH` - The ADC Output Registers.
+- `DIDR0` - Digital Input Disable Register 0.
+:::
+
+::: {.fragment}
+These registers are described in the following sections.
+:::
+
+---
+
+##### ADMUX – ADC Multiplexer Selection
+
+The `ADMUX` is an 8-bit register arranged as shown in @fig-wk6-admux.
+
+::: {#fig-wk6-admux}
+![](pictures/admux.png){fig-alt="The ADMUX Register."}
+
+The ACD Multplexer Selection Register `ADMUX` (Source: Atmel Documentation).
+:::
+
+---
+
+##### Reference selection bits
+
+![](pictures/admux-bits76.png){fig-alt="The ADMUX Register with bits 7 and 6 highlighted."}
+
+Bits 7 and 6&mdash;`REFS1` and `REFS0`&mdash;select the reference voltage for the ADC[^refs].
+
+
+
+[^refs]: The internal voltage reference options may not be used if an external reference voltage is being applied to the *AREF* pin of the microcontroller chip.
+
+::: {.notes}
+The settings for the reference selection bits are tabulated in @tbl-wk6-table1.
+
+|  REFS1 | REFS0 | Voltage Reference Selection |
+|:-------|:------|:----------------------------|
+|  0 | 0 | AREF, Internal $V_\mathrm{REF}$ turned off. |
+|  0 | 1 | AVCC with external capacitor on `AREF`. |
+|  1 | 0 | Reserved |
+|  1 | 1 | Internal 1.1V reference with external capacitor at `AREF` pin. |
+: The settings for the reference selection bits of the `ADMUX` register. {#tbl-wk6-table1}
+:::
+
+
+---
+
+##### Bit 5 – `ADLAR`: ADC Left Adjust Result
+
+![](pictures/admux-bit5.png){fig-alt="The ADMUX Register with bit5 highlighted."}
+
+`ADLAR` bit (bit 5) affects the presentation of the ADC conversion result in the **ADC Data Register**. 
+
+We write 1 to `ADLAR` to *left adjust* the result. 
+
+Otherwise, the result is *right adjusted*.
+
+
+::: {.notes}
+
+*We will revisit this in a couple of slides when we discuss the results registers*.
+
+:::
+
+---
+
+##### Bits 3:0 – `MUX[3:0]`: Analog Channel Selection Bits
+
+![](pictures/admux-mux.png){fig-alt="The ADMUX Register with bit5 highlighted."}
+
+The value of these bits selects which analogue inputs are connected to the ADC (see @fig-wk6-admux-mux and @tbl-wk6-table2).
+
+---
+
+::: {#fig-wk6-admux-mux}
+![](pictures/mux_pins.png){fig-alt="The pins on the Atmel ATmega328 that may be multiplexed to act as ADC inputs."}
+
+The pins on the Atmel ATmega328 that may be multiplexed to act as ADC inputs
+:::
+
+---
+
+|   MUX3:0 | Input Selected |
+|:---------|:---------------|
+|   $0000$ | ADC0 |
+|   $0001$ | ADC1 |
+|   $0010$ | ADC2 |
+|   $0011$ | ADC3 |
+|   $0100$ | ADC4 |
+|   $0101$ | ADC5 |
+|   $0110$ | ADC6 - Not used on the Arduino nano board |
+|   $0111$ | ADC7 - Not used on the Arduino nano board |
+|   $1000$ | ADC8 - Used for internal temperature sensor. |
+|   $1001$ | Reserved |
+|   $1010$ | Reserved |
+|   $1011$ | Reserved |
+|   $1100$ | Reserved |
+|   $1101$ | Reserved |
+|   $1110$ | 1.1V ($V_\mathrm{BG}$) |
+|   $1111$ | GND |
+: ADC multiplexer bit settings for the ADMUX register {#tbl-wk6-table2}
+
+---
+
+##### `ADCSRA` - ADC Control and Status Register A
+
+###### Bit 7 - `ADEN`: ADC Enable
+
+![](pictures/adcsra7.png){fig-alt="ADCSRCA with bit 7 highlighted."}
+
+Writing 1 to bit 7 of the `ADCSRA` register enables the ADC. Writing 0 to this bit turns the ADC off.
+
+---
+
+###### Bit 6 - `ADSC`: ADC Start Conversion
+
+![](pictures/adcsra6.png){fig-alt="ADCSRCA with bit 6 highlighted."}
+
+::: {.incremental}
+* In *Single Conversion Mode*, writing 1 to bit 6 of the `ADCSRA` register starts the conversion.
+* In *Free Running Mode*, writing 1 to this bit starts the first conversion.
+:::
+
+---
+
+###### Bit 5 - `ADATE`: ADC Start Conversion
+
+![](pictures/adcsra5.png){fig-alt="ADCSRCA with bit 5 highlighted."}
+
+When 1 is written to bit 5 of the `ADCSRA` register, the ADC will start a conversion on a positive edge of the selected trigger signal[^clock]
+
+[^clock]: This bit is used for clock-based ADC operation when you need a controlled and predictable sampling rate.
+
+---
+
+###### Bit 4 - `ADIF`: ADC Interrupt Flag
+
+![](pictures/adcsra4.png){fig-alt="ADCSRCA with bit 4 highlighted."}
+
+This bit is set when an ADC conversion completes, and the data registers are updated. The *ADC Conversion Complete Interrupt* is executed if the `ADIE` bit and the I-bit in the status register are set.
+
+---
+
+###### Bit 3 - `ADIE`: ADC Interrupt Enable
+
+![](pictures/adcsra3.png){fig-alt="ADCSRCA with bit 3 highlighted."}
+
+Writing 1 to bit30 of the `ADCSRA` register, when the I-bit in the status register is set, activates the *ADC Conversion Complete Interrupt*
+
+---
+
+##### Bits 2-0 - `ADPS[2:0]`: ADC Interrupt Enable
+
+![](pictures/adcsra2-0.png){fig-alt="ADCSRCA with bit2 2-0 highlighted."}
+
+Bits 2-0 of `ADCSRA` determine the division factor between the system clock frequency and the input clock to the ADC. That is they set the sample rate for free-running mode. The prescaler settings are tabulated in @tbl-wk7-table3.
+
+---
+
+|   `ADPS2` | `ADPS1` | `ADPS0` | Division Factor |
+|-----------|---------|---------|----------------:|
+|   0 | 0 | 0 | 2 |
+|   0 | 0 | 1 | 2 |
+|   0 | 1 | 0 | 4 |
+|   0 | 1 | 1 | 8 |
+|   1 | 0 | 0 | 16 |
+|   1 | 0 | 1 | 32 |
+|   1 | 1 | 0 | 64 |
+|   1 | 1 | 1 | 128 |
+: Clock Division Factor selected by Prescaler Select Bits 2-0 {#tbl-wk7-table3}
+
+---
+
+##### ADCSRB - ADC Control and Status Register B
+
+###### Bit 6 - `ACME`: Analogue comparator multiplexer enable
+
+![](pictures/adcsrb6.png){fig-alt="ADCSRB with bit 6 highlighted."}
+
+When logic 1 is written to bit 6 of `ADCSRB` the ADC is switched off, the ADC multiplexer selects the negative input to the *Analog Comparator*. When 0 is written to this bit,  `AIN1` is applied to the negative input of the Analog Comparator.
+
+::: {.notes}
+
+Note: The Analog Comparator compares the input values on the positive pin `AIN0` and negative pin `AIN1`. When the voltage on the positive pin AIN0 is higher than the voltage on the negative pin `AIN1`, the Analog Comparator output, `ACO`, is set.
+
+:::
+
+---
+
+###### Bits 2:0 - `ADT[2:0]`: ADC Autotrigger source
+
+![](pictures/adcsrb6.png){fig-alt="ADCSRB with bit 6 highlighted."}
+
+If logic 1 is written to the `ADATE` bit in the `ADCSRA` register, the value of the `ADTS` bits selects which source will trigger an ADC conversion. The trigger source settings are tabulated in @tbl-wk7-table4.
+
+---
+
+|   `ADTS2` | `ADTS1` | `ADTS0` | Trigger Source |
+|-----------|---------|---------|:----------------|
+|   0 | 0 | 0 | Free Running Mode |
+|   0 | 0 | 1 | Analogue Comparitor |
+|   0 | 1 | 0 | External Interrupt Request 0 |
+|   0 | 1 | 1 | Timer/Counter 0 Compare Match A |
+|   1 | 0 | 0 | Timer/Counter 0 Overflow |
+|   1 | 0 | 1 | Timer/Counter 0 Compare Match B |
+|   1 | 1 | 0 | Timer/Counter 1 Overflow |
+|   1 | 1 | 1 | Timer/Counter 1 Capture Event |
+: ADC Trigger Source. {#tbl-wk7-table4}
+
+---
+
+##### ADCL and ADCH - The ADC Data Registers
+
+The ADC Data Registers are illustrated in @fig-wk6-adc-data.
+
+::: {#fig-wk6-adc-data}
+![](pictures/adc_results.png){fig-alt="The ADC Data Registers."}
+
+The ADC Data Registers `ADCH` and `ADCL` when (a) ADLAR = 0 and (b) when ADLAR = 1.
+:::
+
+When an ADC conversion is complete, the result is put in these two registers[^precision].
+
+[^precision]: Recall that the ADC has a precision of up to 10 bits so two data registers are required. Register `ADCL` contains the least significant 8 bits, bits [0-7] and `ACDH` contains the most significant bits bit 8 and bit 9.
+
+When `ADCL` is read, the ADC Data Register is not updated until `ADCH` is read. 
+
+If the result is left adjusted and no more than 8-bit precision is required, it is sufficient to read `ADCH`. Otherwise, `ADCL` must be read first, then `ADCH`.
+
+---
+
+##### `DIDR0` - Digital Input Disable Register 0
+
+###### Bits 5:0 - ADC5D...ADC0D: ADC5...0 Digital Input Disable
+
+![](pictures/didr0.png){fig-alt="Register DIDR0 with bits 0-5 highlighted."}
+
+When logic 1 is written to one of these bits, the digital input buffer on the corresponding ADC pin is disabled. (i.e. the corresponding PIN register bit will always read zero).
+
+When an analog signal is applied to the ADC5...0 pin and the digital input from this pin is not needed, logic 1 should be written to this bit to reduce power consumption in the digital input buffer.
+
+---
+
+#### Setting up the ADC
+
+::: {.notes}
+The following steps are illustrated in flow-chart form in @fig-wk6-flc1.
+:::
+
+::: {#fig-wk6-flc1}
+![](pictures/flc1.png){fig-alt="A flow chart of the ADC initialization steps." width="30%"}
+
+A flow chart of the ADC initialization steps
+:::
+
+::: {.notes}
+
+In words, the operations to be completed are:
+
+1. **Define** convenient **names** for the required registers.
+2. Set the **data direction** of the relevant pins to input (`DDRxn`)
+3. Set the corresponding pin in the **input disable register** to 1 to disable the input buffer (`DIDR0`)
+4. Select the **reference voltage**, **result alignment** and **input channel** (`ADMUX`)
+5. Select the **ADC prescaler value** in the A control and status register (`ADCSRA`)
+6. Write a **1 to the `ADEN` bit** of the A control and status register to enable the ADC (`ADCSRA`)
+:::
+
+---
+
+::: {.notes}
+The **main code** is illustrated in the flowchart shown in @fig-wk6-flc2.
+:::
+
+::: {#fig-wk6-flc2}
+![](pictures/flc2.png){fig-alt="A flow chart of the ADC operation loop." width="25%"}
+
+A flow chart of the ADC operation loop
+:::
+
+::: {.notes}
+
+In words, the operations to be completed are:
+
+1. Within the infinite for loop, **Write a 1 to the `ADSC` bit** of the A control and status register each time you want to start a conversion (`ADCSRA``) 
+2. Monitor for the **`ADSC` bit going low** (or the `ADIF` bit going high) of the A control and status register.
+3. Read the converted value from the result registers (`ADCH`  and `ADCL`).
+4. Do something with the ADC result.
+
+We illustrate this in @sec-wk6-sect4.
+:::
+
+::: {.center}
+## Analogue I/O Example program{#sec-wk6-sect4 background-image="pictures/adc_board_wallpaper.png"}
+:::
+
+::: {.notes}
+![](pictures/adc_board_wallpaper.png){fig-alt="Decorative image showing a protopype ADC application for the Arduino nano."}
+:::
+
+---
+
+### Single Conversion Example 
+
+::: {#fig-wk6-adc_board}
+![](pictures/adc_board.jpg){fig-alt="The prototype board showing the finished Arduino nano application with ADC and digital outputs."}
+
+The prototype board showing the finished Arduino nano application with ADC and digital outputs.
+:::
+
+---
+
+::: {.incremental}
+- The centre tap of the blue potentiometer shown in @fig-wk6-adc_board is connected to the analogue input `A0` which represents Port C Bit 0 on the ATmega328 microcontroller. 
+- As the voltage at the input changes, the value is reflected on the 6 LEDs.
+- What does the code for this look like without using the predefined Arduino function – `analogRead`?
+:::
+
+---
+
+### Example code - aligning port names to the I/O memory map
+
+We showed how we use the `#define` function to map our program variables to the I/O memory map shown in [Example code - aligning port names to the I/O memory map](/lectures/week05/#sec-wk5-align-to-io-mem-map). We use the same technique to map the digital and analogue registers to programmer friendly names:
+
+---
+
+```{.c code-line-numbers="|6-11|6|7|8|9|10|11"}
+//I/O and ADC Register definitions taken from datasheet
+#define PORTB  (*(volatile uint8_t *)(0x25))
+#define DDRB   (*(volatile uint8_t *)(0x24))
+#define PINB   (*(volatile uint8_t *)(0x23))
+
+#define ADMUX  (*(volatile uint8_t *)(0x7C))
+#define ADCSRA (*(volatile uint8_t *)(0x7A))
+#define ADCRSB (*(volatile uint8_t *)(0x7B))
+#define ADCH   (*(volatile uint8_t *)(0x79))
+#define ADCL   (*(volatile uint8_t *)(0x78))
+#define DIDR0  (*(volatile uint8_t *)(0x7E))
+```
+
+---
+
+We now define some unsigned integers as either 8 or 16 bits:
+
+::: {.incremental}
+
+* Variable type: `uint16_t`
+* first variable name: `adc_result`
+* High and low byte of `adc_result`: `adc_result_high`, `adc_result_low`
+* second variable name: `previous_result`
+* Initial value of `previous_result = 0;`"
+:::
+
+::: {.fragment}
+
+The definitions are:
+
+```c
+uint16_t adc_result, previous_result = 0;
+uint8_t  adc_result_low, adc_result_high;
+```
+
+:::
+
+---
+
+### Example - the main function
+
+We discussed this in [Example Code - the main function](/lectures/week05/#sec-wk5-main-c).
+
+---
+
+### Example - set up I/O using the registers
+
+```{.c code-line-numbers="|2|5|8|10|12|14"}
+// Set Data Direction Registers
+DDRB = DDRB | 0b00111111; // Setup bits 0 - 5 of port B as outputs
+
+// Turn all LEDs off
+PORTB = PORTB & 0b11000000; // Pins B0 (D8) - B5 (D13) start low
+	
+// Set up ADC on pin A0
+DIDR0 = DIDR0 | 0b00000001; //Disable pin A0 as a digital input
+	
+ADMUX = 0b01000000; // Select reference voltage, right adjusted result and select channel ADC0 - A0
+
+ADCSRA = ADCSRA | 0b00000111; // Select ADC Prescaler
+
+ADCSRA = ADCSRA | 0b10000000; // Enable ADC
+```
+
+---
+
+### Example - the processing loop
+
+```{.c code-line-numbers="|1-15|1|3|5|7|8|11"}
+for(;;)
+{
+	ADCSRA = ADCSRA | 0b01000000;	      //start conversion by writing 1 to the ADSC bit
+		
+	while((ADCSRA & 0b01000000) != 0) { } //wait until the ADSC bit changes to 0
+
+	adc_result_low  = ADCL;		//read the low byte of the result into adc_result_low
+	adc_result_high = ADCH;		//read the high byte of the result into adc_result_high
+    /* shift whole 8 bits of ADC high byte into most significant byte of ADC result and 
+       add in ADC low byte using bitwise OR. */
+	adc_result = (adc_result_high<<8) | adc_result_low; 
+
+    // do somethinhg interesting with the ADC readings
+
+}
+```
+
+---
+
+### Example - the full program
+
+The full program is available as a GitHub gist: [main.c](https://gist.github.com/cpjobling/db5e3e157b6e6153f7cb75157dae1e94). You will need a fully featured IDE, such as Microchip Studio, to compile and upload the code to the Ardino nano board.
+
+### Simulation of the full program
+
+> Wokwi is an online Electronics simulator. You can use it to simulate Arduino, ESP32, STM32, and many other popular boards, parts and sensors.
+-- [Welcome to Wokwi!](https://docs.wokwi.com/?utm_source=wokwi)
+
+My 2024-2025 EG-353 Individual Engineering Project student, Yousef Alsayegh, has created Wokwi simulations of Ben Clifford's demonstration programs. Here is the simulation of this week's simulation [Week 6: Interfacing to analogue I/O with C](https://wokwi.com/projects/413612952684749825). You can run the simulation and play with the code.
+
+## Summary{.unnumbered}
+
+In this section we have:
+
+::: {.incremental}
+* Discussed the differences between analogue and digital signals and the challenges in working with them.
+* Explored analogue to digital conversion looking at the architectures and focusing on SAR based ADCs.
+* Continued looking at I/O operations on the Atmel ATmega328 microcontroller focusing on analogue signals and using the ADC registers.
+:::
+
+---
+
+### On Canvas{.unnumbered}
+
+This week on the [canvas course pages](https://canvas.swansea.ac.uk/courses/44971/pages/example-program-analogue-to-digital-conversion-with-registers?module_item_id=2258104), you will find the sample program from today's lecture, look through this and ensure you are confident in how it works and how the registers are set for analogue inputs and how masks are used for the digital outputs to the LEDS. 
+
+There is also a short quiz to test your knowledge on these topics.
+
+---
+
+### Any Questions?{.unnumbered}
+
+Please use the [Course Question Board](https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656) on Canvas or take advantage of the lecturers' office hours. 
+
+---
+
+### Next time{.unnumbered}
+
+* [Introduction to Assembly Language](/lectures/week07)

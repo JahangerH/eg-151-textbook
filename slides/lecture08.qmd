@@ -1,1 +1,951 @@
 ../website/lectures/week07/index.qmd
+
+---
+title: Introduction to Assembly Language
+author: 
+  name: Ben Clifford
+  affiliation: Welsh Centre for Printing and Coatings
+copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
+date: 11/12/2024
+---
+
+::: {.notes}
+[Presentation version](/slides/lecture08.html) of these [notes](#sec-week07-intro).
+:::
+
+![](pictures/week07_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+
+## Introduction{.unnumbered #sec-wk7-intro}
+So far in this course a number of topics have been covered including 
+
+::: {.incremental}
+- [Introduction to Data Representation](/lectures/data_representation/),
+- [Architecture of the Atmel ATmega 328 Microcontroller](/lectures/week02),
+- [Introduction to Programming and Program Development](/lectures/week03), and 
+- [Introduction to Programming with C](/lectures/week04). 
+:::
+
+---
+
+In this lecture we will study assembly language which is a low level language that provides a one-to-one mapping between mnemonic instructions and the machine code that is executed on the microcontroller. 
+
+::: {.fragment}
+This will allow you to see how complex high-level instructions and functions in C are written in assembly language and the final program that gets transferred to the microcontroller.
+:::
+
+---
+
+### Topics discussed{.unnumbered}
+
+In this lecture we will present an introduction to assembly language, including program structure and syntax as well as operation classifications. 
+
+We will also revisit the **Direct Port Manipulation in C** example from [Digital I/O Example Program](/lectures/week05/#sec-wk5-digital-io-example) and translate this into assembly language looking at some of the key instructions involved.
+
+---
+
+### Contents{.unnumbered}
+
+:::: {.columns}
+
+::: {.column width="25%"}
+
+![](pictures/week07_contents_image.png){fig-alt="Decorative image used as a slide background."}
+
+:::
+
+::: {.column width="75%"}
+
+* @sec-wk7-sect1: [Machine Code and Assembly Language](#sec-wk7-sect1)
+* @sec-wk7-sect2: [Introduction to Assembly Language](#sec-wk7-sect2)
+* @sec-wk7-sect3: [Interfacing with Digital I/O example](#sec-wk7-sect3)
+
+:::
+
+::::
+
+::: {.center}
+## Machine Code and Assembly Language{#sec-wk7-sect1 background-image="pictures/machine_code_wallpaper.jpg"}
+:::
+
+::: {.notes}
+![](pictures/machine_code_wallpaper.jpg){fig-alt="A decaorative image of machine code."}
+
+[This Photo](https://stackoverflow.com/questions/16512580/how-do-i-stop-xcode-from-showing-me-this-assembly-language-when-im-debugging-an) by Unknown Author is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
+:::
+
+---
+
+### Machine code
+
+Programs are stored on a microcontroller as a series of binary codes located within sequential memory addresses ...
+
+::: {.fragment}
+
+... this is known as **machine code**[^machine_code].
+
+[^machine_code]: Programs are stored on a microcontroller as a series of binary codes located within sequential memory addresses. These instructions are executed in order, dictated by the program counter, unless an instruction modifies the program counter and changes the program flow e.g. for a function call.
+
+:::
+
+::: {.fragment}
+
+The program in our microntroller looks like this
+
+```
+1000101010110001 1000001101111111 1000101010111001 
+1000010010110001 1000001101100000 1000010010111001
+1000010110110001 1000110001111111 1000010110111001
+```
+
+:::
+
+---
+
+::: {.center}
+
+### So what is wrong with machine code?{background-image="pictures/machine_code.png"}
+:::
+
+::: {.notes}
+
+![](pictures/machine_code.png){fig-alt="A photograph showing some machine code."}
+
+A photograph showing some machine code[^source-image-1]
+
+[^source-image-1]: Image source: [www.shutterstock.com/image-vector/binary-code-digital-numbers-green-background-1724376772](https://www.shutterstock.com/image-vector/binary-code-digital-numbers-green-background-1724376772).
+
+:::
+
+---
+
+Well nothing really ... if you are a computer!
+
+::: {.fragment}
+
+Otherwise ... if you're a human...[^source-image-2] 
+
+![](pictures/confused_human.png){fig-alt="Human beings looking confused."}
+
+[^source-image-2]: Image source [www.shutterstock.com/search/confused+person](https://www.shutterstock.com/search/confused+person).
+
+:::
+
+::: {.fragment}
+... machine code is difficult to:
+:::
+
+---
+
+::: {.incremental}
+* Write,
+* Read,
+* Understand,
+* Debug,
+:::
+
+::: {.fragment}
+
+and most importantly
+
+:::
+
+::: {.fragment}
+
+* Maintain
+
+:::
+
+::: {.fragment}
+
+Instead, instructions can be written in a mnemonic form termed **assembly language** and then translated into machine code by an **assembler**.
+
+:::
+
+---
+
+### Assembly Language
+
+::: {.fragment}
+Every CPU (or family of CPUs) has an instruction set where each operation that can be performed is represented by a certain binary combination.
+:::
+
+::: {.fragment}
+The next step up in language levels is to represent each of these binary patterns with a **short mnemonic**.
+:::
+
+::: {.fragment}
+Programs written using these mnemonics are known as **assembly language programs**[^disassembly].
+:::
+
+[^disassembly]: Because each mnemonic is associated with a single machine code, it is also easy to convert machine code to assembly language. This is sometimes useful for debugging programs. It is known as **disassembly**.
+
+---
+
+::: {#fig-wk7-adc-code}
+![](pictures/adc_code.png){fig-alt="An example of an assembly code instruction."}
+
+An example of an assembly code instruction `ADC` - Add with carry. Extracted from the Atmel ATmega328 reference manual.
+:::
+
+---
+
+### A Short history of assembly languages
+
+::: {.fragment}
+Assembly languages were first developed in the 1950s and were referred to as **2nd generation programming languages**. 
+:::
+
+::: {.fragment}
+Assembly language is a low level language that uses mnemonic codes (symbols) to represent machine code instructions, rather than using the instructions' numeric (binary) values. 
+:::
+
+::: {.fragment}
+Essentially, assembly languages are a much more readable but directly translatable representation of machine code. 
+:::
+
+::: {.fragment}
+Assembly language is commonly called just assembly, ASM, or symbolic machine code.
+:::
+
+---
+
+Despite the giant leap from machine code to assembly language, by the 1980s its use had largely been overtaken by higher-level languages, such as Fortran and C, and more recently Python, for many applications.
+
+---
+
+### Why learn low level languages
+
+::: {.incremental}
+- High Level Language (HLL) programs are designed to be independent of a particular machine architecture. 
+- As a result, they rarely take into account any special features of the machine &ndash; features which are commonly available to assembly language programmers. 
+- Assembly language is therefore good for hardware-specific jobs such as device drivers.
+:::
+
+---
+
+::: {.incremental}
+- If you understand assembly language, you’ll have an appreciation for the compiler, and you’ll know exactly what it is doing with HLL statements. 
+- Once you see how compilers translate seemingly innocuous statements into a machine code, you will begin to understand how HLL code could be optimised.
+- Good assembly language programmers make better HLL programmers because they understand the limitations of the compiler and they know what it is doing with their code.
+:::
+
+::: {.notes}
+
+As well as these points, assembly programmers will have a better understanding of
+
+- how data is represented in memory and other external devices;
+- how processors access and execute instructions and how instructions access and process data;
+- how a program accesses external devices – I/O;
+- how to write efficient code as it requires less memory and execution time.
+
+:::
+
+---
+
+### Why do people use assembly language?
+
+In short:
+
+::: {.incremental}
+
+* **Speed** - assembly language programs are generally the fastest programs around (up to ten times faster that optimized HLL programs [@hyde2010][^warning].
+* **Space** - assembly language programs are often the smallest.
+* **Capability** - you can do things in assembly which are difficult or impossible in HLLs.
+* **Knowledge** - your knowledge of assembly language will help you write better programs, even when using HLLs.
+* **Reverse Engineer/modify (Hack)** pre-assembled programs.
+
+:::
+
+[^warning]: Please don't get carried away! There are few tasks for which the cost of not starting in a HLL is going to be paid back by writing complete programs in assembly code.
+
+---
+
+::: {.center}
+## Introduction to Assembly Language{#sec-wk7-sect2 background-image="pictures/assembly_wallpaper.png"}
+:::
+
+::: {.notes}
+![](pictures/assembly_wallpaper.png){fig-alt="A decaorative image of assembly code."}
+
+[This Photo](https://www.flickr.com/photos/132889348@N07/20607150556) by Unknown Author is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
+:::
+
+---
+
+### Assembly Language 101
+
+An assembly language program consists of a series of instructions to an assembler which will then produce the machine code program that is loaded to the microcontroller.
+
+::: {.fragment}
+
+A program is written as a sequence of statements - one statement per line:
+
+::: {.incremental}
+* Lines can be empty to separate sections of code.
+* Statements cannot span multiple lines.
+:::
+
+:::
+
+---
+
+Each statement contains up to four fields each separated by one or more space or tab characters as shown below:
+
+::: {.fragment}
+```asm
+[label:]    operator    [operand]     [;comment]
+```
+:::
+
+::: {.notes}
+
+All statements must have something in the Operator field, but the label, operand and comment fields can be empty.
+
+:::
+
+---
+
+#### Assembly language labels
+
+The label field is used to create a reference point in the program than can be used to identify/locate a collection of instructions.
+
+::: {.fragment}
+Examples:
+```{asm}
+
+
+SECTION1    operator
+```
+:::
+
+::: {.notes}
+
+Labels must follow a set of rules and a particular format:
+
+* All labels must be **unique** and cannot use **system reserved phrases**.
+* All labels **must start with a letter**.
+* Labels can contain **letters, numbers, and special characters** (symbols, such as `@`, `$, `_` ).
+* Labels that **don't begin at column 1** must be followed by a colon character ( `:` ).
+* Labels are written in **all capitals**.
+
+:::
+
+---
+
+#### Assembly Language Operators
+
+::: {.fragment}
+The **operator field** contains either an assembly directive or a mnemonic/instruction.
+:::
+
+::: {.fragment}
+**Assembly directives**, sometimes termed *pseudo-operations* are directives to the assembler that will not be translated to machine code but provide information critical to the program's function or is required by the assembler.
+:::
+
+::: {.notes}
+
+Assembly directives can be used to specify the starting address in memory, generate fixed tables and data, indicate the end of a program and several others.
+
+:::
+
+---
+
+#### Assembly mnemonics
+
+A **mnemonic**  is an instruction that will be directly translated into machine code and is used to manipulate data in some way.
+
+::: {.fragment}
+
+The list of allowed mnemonics/instructions is called the **instruction set** and is specific to a particular microcontroller architecture.
+
+:::
+
+---
+
+However in general, the mnemonics can be classified into one of six groups:
+
+::: {.incremental}
+
+- **Data Transfer**: `IN`, `LD`, `LDI`, `LDS`, `MOV`, `OUT`, `ST`, `STS`;
+- **Arithmetic**: `ADD`, `ADC`, `ADIW`, `SUB`, `SUBI`, `SBC`, `INC`, `DEC`, `MUL`, `MULS`, `FMUL`;
+- **Logical**: `AND`, `ANDI`, `EOR`, `OR`, `ORI`;
+- **Program flow**: `BREQ`, `BRGE`, `BRNE`, `BRLO`, `BRMI`, `BRPL`, `CALL`, `JMP`, `RET`, `RJMP`;
+- **Bit and Bit Test**: `LSL`, `LSR`, `ROL`, `ROR`, `ASR`, `SBI`, `CBI`, `BSET`, `BCLR`;
+- **MCU Control**: `BREAK`, `NOP`, `SLEEP`, `WDR`.
+
+:::
+
+::: {.notes}
+
+For this module we have been working  with an Atmel ATmega328 microcontroller which is based on the  AVR® enhanced (AVRe+) architecture.
+
+:::
+
+---
+
+#### Assembler Directives
+
+The **operator field** contains either an **assembly directive** or a **mnemonic/instruction**.
+
+::: {.frament}
+Assembly directives, sometimes termed pseudo-operations are **directives to the assembler** that will not be translated to machine code but provide information critical to the program's function that is **required by the assembler**.
+:::
+
+---
+
+Some common directives include;
+
+::: {.incremental}
+- `.CSEG` / `.DSEG` / `.ESEG`
+- `.ORG` / `.EXIT`
+- `.EQU` / `.SET` / `.DEF` / `INCLUDE`
+- `.DB` / `.DW `/ `.BYTE`
+:::
+
+::: {.fragment}
+Directives are specific to a particular microcontroller family (different to the instruction set). A list of supported directives for the AVR based microcontrollers can be found [here](https://onlinedocs.microchip.com/pr/GUID-0B644D8F-67E7-49E6-82C9-1B2B9ABE6A0D-en-US-1/index.html?GUID-BA59618D-4850-490B-B176-0BCC3D9438A1).
+:::
+
+---
+
+#### Assembly Language Operands
+
+::: {.incremental}
+- The operand field follows the operator and contains the **address or data** to be used by the instruction.
+- A name (‘label’) can be used to represent the address of the data or a symbol to represent a data constant.
+- The **field can be empty** if the instructions given by the operator do not need an address or data.
+  - As an example the operator `NOP` (no-operation) requires no operand.
+- **Some operators allow for multiple operands** and in these cases the operands are separated by commas (`,`).
+:::
+
+---
+
+##### Examples 1
+
+```{.asm code-line-numbers="|1|2|3|4|5"}
+LDI     R16, 0b01010101
+ADD     R16, R17
+LDS     R2, 0xFF00
+NOP
+MOV     R16, R17
+```
+
+::: {.notes}
+- Line 1: Load Register `R16` with binary value `0b01010101`
+- Line 2: Add the contents of register `R16` to the contents of register `R17`
+- Line 3: Load Register `R2` with contents of data memory with address `0xFF00`
+- Line 4: No operation - do nothing for one clock cycle
+- Line 5: Move the contents of register `R16` to register `R17`
+::: 
+
+---
+
+#### Assembly Language Comments
+
+::: {.fragment}
+As with the C language, the comment field is there to allow the programmer to include any comments which may make the program easier to understand at a later time or by another reader.
+:::
+
+::: {.fragment}
+When the **assembler is reading** the line of text, the **comment field is ignored**.
+:::
+
+---
+
+::: {.fragment}
+Comments also follow a set of rules and a particular format dependent on the assembler being used[^comments_in_asm]:
+:::
+
+::: {.incremental}
+- If an **entire line** is a comment, it must start with a **semicolon** or an **asterisk symbol** in the first column.
+- If **not starting in the first column**, the comment must start with a **semicolon**.
+- The comment must be separated from the operator or operand field by at least one space. 
+:::
+
+[^comments_in_asm]: As assembly codes are generally less readable than higher level languages, like the C language, it is good practice to be very liberal with comments in assembly code programs.
+
+---
+
+##### Examples 2
+
+```{.asm code-line-numbers="|1|2|4|5"}
+;This comment line starts with a semicolon
+*This comment line starts with an asterisk
+
+operator ;This comment follows an operator
+operator
+```
+
+---
+
+#### Assembler{#sec-wk7-assembler}
+
+::: {.notes}
+It is important to be aware of the assembler and the structure assembly language programs follow.
+
+The assembler takes the sequence of mnemonics (instructions) written in assembly language and translates them into machine code using the process illustrated in @fig-wk7-assembly.
+:::
+
+::: {#fig-wk7-assembly}
+![](pictures/assembler.png){fig-alt="The assembly process."}
+
+The assembly process
+:::
+
+---
+
+The assembler processes the assembly language file and generates an object file and listing file(s)
+
+::: {.incremental}
+- An object file is essentially a one-to-one mapping of mnemonics against the binary (sometimes hexadecimal) instruction set.
+- The listing file shows each line of the assembly language input along with the memory addresses resolved by the assembler, resulting machine code or data and other diagnostic information.
+:::
+
+::: {.fragment}
+The linker combines multiple object files as well as any library files and generates an executable which can be loaded onto the microcontroller (this file is often a `*.hex` file).
+:::
+
+---
+
+::: {.center}
+## Interfacing with Digital I/O example.{#sec-wk7-sect3 background-image="pictures/week07_breadboard_wallpaper.jpg"}
+:::
+
+::: {.notes}
+![](pictures/week07_breadboard_wallpaper.jpg){fig-alt="Decorative background image showing the circuit discussed in the example."}
+:::
+
+---
+
+### Example
+
+::: {.notes}
+Recall the example from [Digital I/O Example Program](/lectures/week05/#sec-wk5-digital-io-example) reproduced again here as @fig-wk7-example-circuit. The left and right push buttons connected to the digital inputs `D3` and `D2` respectively corresponding with Port D Bits 3 and 2 on the Atmega328 microcontroller. 
+
+When the left push button is pressed the red LED (Port B Bit 1) is illuminated and the green LED (Port B Bit 0) illuminated when the right push button is pressed.
+:::
+
+::: {#fig-wk7-example-circuit} 
+![](pictures/week07_breadboard.jpg){fig-alt="A photograph of the example circuit which has two buttons and two LEDs."}
+
+A photograph of the example circuit which has two buttons and two LEDs discussed in [Digital I/O Example Program](/lectures/week05/#sec-wk5-digital-io-example). 
+:::
+
+---
+
+#### C-Language Code
+
+::: {.notes}
+Let us start with the C-language program we wrote for this (@lst-wk7-example-c-program).
+:::
+
+```{#lst-wk7-example-c-program .c lst-cap="Example Program [main.c](https://gist.github.com/cpjobling/07585093f8eafe69a4eeff1186110883)"}
+#include <stdint.h>
+
+//I/O and ADC Register definitions taken from datasheet
+#define	PORTD (*(volatile uint8_t *)(0x2B))
+#define DDRD (*(volatile uint8_t *)(0x2A))
+#define PIND (*(volatile uint8_t *)(0x29))
+
+#define PORTB (*(volatile uint8_t *)(0x25))
+#define DDRB (*(volatile uint8_t *)(0x24))
+#define PINB (*(volatile uint8_t *)(0x23))
+
+int main(void)
+{
+	//Set Data Direction Registers
+	DDRD = DDRD & 0b11110011; //setup bits 2 and 3 of port D as inputs
+	DDRB = DDRB | 0b00000011; //setup bits 0 and 1 of port B as outputs
+
+	PORTB = PORTB & 0b11111100; //both pins B0 (D8) and B1 (D9) start low
+	
+	PORTD = PORTD | 0b00001100; // Enable the pull up resistor for bits 2 and 3 of port D
+	
+	for(;;)
+	{
+		if((PIND & 0b00000100) == 0)
+		{
+			PORTB = PORTB | 0b00000001; //sets port B, bit 0 to logic 1/high, switches the LED connected to D8 on
+		}
+		else if ((PIND & 0b00001000) == 0)
+		{
+			PORTB = PORTB | 0b00000010; //sets port B, bit 1 to logic 1/high, switches the LED connected to D9 on
+		}
+		else
+		{
+			PORTB = PORTB & 0b11111100; //sets bits 0-5 of port B to logic 0/low, switches off both the LED's
+		}
+	}
+	
+}
+```
+
+---
+
+#### I/O Addresses
+
+::: {#fig-wk7-io-addresses}
+![](pictures/io_registers.png){fig-alt="The addresses of the IO registers with information on which can be used in particular contexts."}
+
+The addresses of the IO registers with information on which can be used in particular contexts.
+:::
+
+---
+
+#### Assigning a name to the I/O addresses
+
+::: {.notes}
+We use `.EQU`, `.SET` or `.DEF` to assign a name to a memory location[^assembly_names] (@lst-assign-names-to-memory-locations):
+
+[^assembly_names]: The purpose of these assembly directives is to assign a meaningful name to a label, constant, data value (*variable*), or memory location.
+:::
+
+```{.asm #lst-assign-names-to-memory-locations lst-cap="Assigning a name to the I/0 addresses" code-line-numbers="|2|3|5|6|7"}
+; Equate easy to read names to the I/O addresses
+.EQU DDRB = 0x04
+.EQU PORTB = 0x05
+
+.EQU PIND = 0x09
+.EQU DDRD = 0x0A
+.EQU PORTD = 0x0B
+```
+---
+
+#### Assembly equivalent of `int main(void)`
+
+::: {.notes}
+In C language we put our code (or calls to external functions) within a main function, written as @lst-wk7-main-c:
+:::
+
+```{.c #lst-wk7-main-c lst-cap="Program start in C language: the *main* function"}
+int main(void) {
+  // Program code
+}
+```
+---
+
+::: {.notes}
+
+In assembly language, there isn't a main function as such but rather the `.CSEG` / `.DSEG` / `.ESEG` directives along with the `.ORG` directive are used to define the start address of code, data and EEPROM segments, repectivley, in memory.
+
+In the lines shown in @lst-code-segment-start we are telling the assembler that we want the code segment to start at memory location with address $200_{16}$.
+
+:::
+
+::: {.fragment}
+
+```{.asm #lst-code-segment-start lst-cap="Define the code segment start address" code-line-numbers="|1|2"}
+.CSEG
+.ORG 0x0200
+```
+
+:::
+
+---
+
+#### I/O port access and bitmasking operations
+
+::: {.fragment}
+We can use the `IN` and `OUT` operations for reading from and writing to ports respectively, and the `ANDI` and `ORI` operations for setting up bitmasks.
+:::
+
+::: {.fragment}
+We include scans of the documentation for these operators in the following images.
+:::
+
+---
+
+![](pictures/in.png){fig-alt="The IN operator."}
+
+---
+
+![](pictures/out.png){fig-alt="The OUT operator."}
+
+---
+
+![](pictures/andi.png){fig-alt="The ANDI operator."}
+
+---
+
+![](pictures/ori.png){fig-alt="The ORI operator."}
+
+---
+
+#### Setting up the I/O Ports
+
+::: {.fragment}
+Using the C language, we wrote:
+
+```c
+DDRD = DDRD & 0b11110011;
+```
+
+to ensure bits 2 and 3 of port D are configured as inputs. 
+:::
+
+::: {.fragment}
+Similar lines were written to set up the output bits in Port B, the starting condition of these bits and then to enable the pull up resistors on Port D.
+:::
+
+---
+
+::: {.notes}
+The direct translation to Assembly language involves three lines for each action as illustrated in @lst-wk7-port_io.
+:::
+
+```{.asm #lst-wk7-port_io lst-cap="Assembly code to set up the inputs and outputs." code-line-numbers=|2-4|7-9|12-14|17-19} 
+;setup bits 2 and 3 of port D as inputs
+IN R16, DDRD
+ANDI R16, 0b11110011
+OUT DDRD, R16
+
+;setup bits 0 and 1 of port B as outputs
+IN R16, DDRB
+ORI R16, 0b00000011
+OUT DDRB, R16
+
+;both pins B0 (D8) and B1 (D9) start low
+IN R16, PORTB
+ANDI R16, 0b11111100
+OUT PORTB, R16
+
+;Enable the pull up resistor for bits 2 and 3 of port D
+IN R16, PORTD
+ORI R16, 0b00001100
+OUT PORTD, R16
+```
+
+---
+
+#### Infinite loop
+
+::: {.fragment}
+Using the C language, we created an infinite loop as follows:
+:::
+	
+::: {.fragment}
+```c
+for (;;) {
+  // Program code
+}
+```
+:::
+
+::: {.fragment}
+This essentially "*traps*" the program to ensure it continuously loops executing the program code within the code block.
+:::
+
+---
+
+In assembly language we can produce the same result by creating a "Label" and using the operation `RJMP` (*relative jump*): 
+
+::: {.fragment}
+```{.asm #lst-jump-to-label lst-cap="Infinite loop in assembly code: jump to a label with `RJMP`."}
+LOOP:
+	RJMP LOOP
+```
+:::
+
+---
+
+The documention for `RJMP` is shown here:
+
+
+![](pictures/rjmp.png){fig-alt="The RJMP operator."}
+
+---
+
+#### Detecting a button press
+
+::: {.notes}
+In C language, to detect a button press we used the 'if statement' below with a bit mask corresponding to a particular bit of the port and monitoring for its state changing to 0 or Low (@lst-detect-button-press).
+:::
+
+::: {.fragment}
+
+```{.c #lst-detect-button-press lst-cap="Detecting a button press in C" code-line-numbers="|1|3"}
+if ( (PIND & 0b00000100) == 0)
+{
+  PORTB = 0b00000001;	 // sets port B, bit 0 to logic 1 (high)
+						 // which switches the LED connected to D8 on
+}
+```
+:::
+
+::: {.fragment}
+In assembly we can use the *compare* (`CP`) and *branch if equal* (`BREQ`) instructions to achieve this same implementation.
+:::
+
+---
+
+![](pictures/cp.png){fig-alt="Documentation for the CP (compare) operation."}
+
+---
+
+![](pictures/breq.png){fig-alt="Documentation for the BREQ (branch if equal) operation."}
+
+---
+
+::: {.notes}
+Consider the assembly code shown in @lst-detect-switch below.
+:::
+
+```{.asm #lst-detect-switch lst-cap="Assembly code for detecting button presses in main loop." code-line-numbers="|2-6|8-12|14-16|17|1"}
+LOOP: 
+	IN R16, PIND
+	ANDI R16, 0b00000100
+	LDI R17, 0x00
+	CP R16, R17
+	BREQ LED1
+
+    IN R16, PIND
+	ANDI R16, 0b00001000
+	LDI R17, 0x00
+	CP R16, R17
+	BREQ LED1 
+
+	IN R16, PORTB
+	ANDI R16, 0b11111100
+	OUT PORTB, R16
+	RJMP LOOP
+```
+
+::: {.notes}
+
+- In lines 2&ndash;6 we read `PIND`, use a bit mask to select bit 2, compare the value of the selected bit with zero and branch to label `LED1` if the value is zero (`0x00`).
+- In lines 9-12 we read `PIND`, use a bit mask to select bit 3, compare the value of the selected bit with zero and branch to label `LED2` if the value is zero (`0x00`).
+- If we reach line 14, then both buttons were high (not pressed) so we use the bitmask `0x11111100` to ensure that both LEDs connected to bits 0 and 1 of port B are turned off (lines 14&ndash;16). 
+- We then jump to the label `LOOP` (line 17).
+
+:::
+
+---
+
+::: {.notes}
+In the next few lines (see @lst-turn-leds-on) we:
+
+1. Line 2: read the current value of Port B into `R16` 
+2. Line 3: perform a bitwise or operation with the immediate pattern provided (mask). 
+3. Line 4: The new value stored in `R16` is then sent to the `PORTB` register essentially changing the state of the LED to on. 
+4. Line 5: Finally the `RJMP` instruction ensures the program loops back to the start.
+:::
+
+```{.asm #lst-turn-leds-on lst-cap="Assembly code to switch on the LEDs." code-line-numbers="|2-4|5|8-10|11"}
+LED1:
+	IN R16, PORTB
+	ORI R16, 0b00000001
+	OUT PORTB, R16
+	RJMP LOOP
+
+LED2:
+ 	IN R16, PORTB
+	ORI R16, 0b00000010
+	OUT PORTB, R16
+	RJMP LOOP
+```
+::: {.notes}
+A similar process is used for LED2.
+:::
+
+---
+
+#### Comparison with C
+
+::: {.notes}
+In @fig-wk7-comp-asm-with-c we compare the C program with the equivalent assembly program. 
+:::
+
+::: {#fig-wk7-comp-asm-with-c} 
+![](pictures/comp_asm_with_c.png){fig-alt="Comparing an I/O program written in C with an equvalent assembly program."}
+
+Comparing an I/O program written in C with an equvalent assembly program. The assembly code is available for study as a Gist [main.asm](https://gist.github.com/cpjobling/e72f37ff363353b6ed10ecdbeaa970af).
+:::
+
+---
+
+#### An Advantage of Assembly Language
+
+::: {.incremental}
+- Using C language, it is not possible to read or write individual bits of a register or I/O port.
+- In assembly language, this *is possible* using bit operations such as `SBI`, `CBI`, `SBIC`, `SBIS` and a handful of others:
+:::
+
+---
+
+![](pictures/sbi.png){fig-alt="The SBI operation."}
+
+---
+
+![](pictures/sbic.png){fig-alt="The SBIC operation."}
+
+---
+
+These can only be used on certain registers as identified in the documentation for the I/O memory map:
+
+![](pictures/io_mem_map2.png){fig-alt="The I/O memory map showing the registers for which bitwise operations are available."}
+
+---
+
+::: {.notes}
+The code given in @lst-using-bit-manipulation shows the equivalent code implemented with `SBI` and `SBIC` operations.
+:::
+
+```{.asm #lst-using-bit-manipulation lst-cap="Equivalent assembly program using the SBI and SBIC operations."}
+LOOP:
+	SBIC PIND, 2
+	RJMP LED1
+
+	SBIC PINC, 3
+	RJMP LED2
+
+	IN R16, PORTB
+	ANDI R16, 0b11111100
+	OUT PORTB, R16
+	RJMP LOOP
+
+LED1:
+	SBI PORTB, 0
+	RJMP LOOP
+
+LED2: 
+	SBI PORTB, 1
+	RJMP LOOP
+```
+
+#### Comparison
+
+::: {#fig-wk7-comparison}
+![](pictures/comparison.png){fig-alt="Comparison of three equivalent programs."}
+
+Comparison of three equivalent programs
+:::
+
+::: {.notes}
+In @fig-wk7-comparison we show the original C program, the first version of the assembly program, and a version that is using `SBIC` to directly branch based on the value of a single bit in Port D. These three programs
+all work in the same way.
+:::
+
+
+## Summary{.unnumbered}
+
+In this section:
+
+::: {.incremental}
+- We have introduced assembly language as a direct mapping of mnemonics to machine code.
+- We have explored the basic structure of an assembly language program including operator classification, operands and comments.
+- Finally, we have revisited out digital switch example from C and looked at how this can directly translate to Assembly language and how it can be optimized using specific features of the Atmel ATmega328 microcontroller.
+:::
+
+--- 
+
+### On Canvas{.unnumbered}
+
+This week on the [Canvas course pages](https://canvas.swansea.ac.uk/courses/52902/pages/week-7-assembler-directives?module_item_id=2882187), you will find the sample program from today's lecture, look through this and ensure you are confident in how it works and how the masks are defined and registers set. 
+
+There is also a [short quiz](https://canvas.swansea.ac.uk/courses/52902/assignments/407482?display=full_width) to test your knowledge on these topics.
+
+---
+
+### Next time{.unnumbered}
+
+- [Microcontroller Architecture – Program Operation](/lectures/week08)
