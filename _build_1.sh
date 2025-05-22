@@ -7,15 +7,20 @@ echo "Building website using Quarto book format"
 quarto render website --to html
 
 echo "Building weekly slides from website/lectures"
+echo "Building weekly slides from website/lectures"
 for week in website/lectures/week*/; do
-    weekname=$(basename "$week")  # e.g., week01
+    weekname=$(basename "$week")
     echo "Rendering slides for $weekname..."
 
-    # Render the slide in-place
-    quarto render "$week/index.qmd" --to revealjs
+    # Render slide as its own project
+    (cd "$week" && quarto render)
 
-    # Move the generated HTML file to slides folder
-    mv "$week/index.html" "slides/${weekname}.html"
+    # Optionally copy/rename result
+    if [ -f "_build/html/slides/$weekname/index.html" ]; then
+        cp "_build/html/slides/$weekname/index.html" "slides/${weekname}.html"
+    else
+        echo "❌ Slide not found for $weekname"
+    fi
 done
 
 echo "Removing left-over slide files"
