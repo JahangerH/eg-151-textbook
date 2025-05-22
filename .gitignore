@@ -1,0 +1,15 @@
+_build
+*.fdb_latexmk
+.ipynb_checkpoints
+.DS_Store
+_book
+_slides
+_html
+*.tex
+.Rhistory
+*.aux
+*.log
+*.toc
+site_libs
+book/index_files/mediabag/pictures/Flowchart_structured_programming.pdf
+~*.pptx
