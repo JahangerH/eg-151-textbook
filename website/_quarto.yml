@@ -44,7 +44,7 @@ book:
         - lectures/week07/index.qmd
         - lectures/week08/index.qmd
         - lectures/week09/index.qmd
-        - lectures/week010/index.qmd
+        - lectures/week10/index.qmd
 
     - part: lab_intro/intro.qmd 
       chapters: 
