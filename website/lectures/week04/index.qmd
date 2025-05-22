@@ -1,1204 +1,1119 @@
 ---
-title: Introduction to Programming with C
+title: Introduction to Programming and Program Development
 author: 
   name: Ben Clifford
   affiliation: Welsh Centre for Printing and Coatings
 copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
-date: 10/22/2024
+date: 10/15/2024
 ---
 ::: {.notes}
-[Presentation version](/slides/lecture05.html) of these [notes](#sec-week04-intro).
+[Presentation version](/slides/lecture04.html) of these [notes](#sec-week03-intro).
 :::
 
-![](pictures/week04_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+![](pictures/week03_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
 
-## Introduction{.unnumbered #sec-week04-intro}
-C is a high-level structured programming language which is often used for writing microcontroller applications. This weeks lecture will cover good coding practices, C language operators and how they can be grouped as well as flow control structures.
+## Introduction {#sec-week03-intro .unnumbered}
+
+When developing an application to run on a microcontroller or other embedded system, there are five key steps which should be followed:
+
+::: {.incremental}
+1. Clearly define the requirements of the system, planning the number of inputs and outputs required, speed, storage etc. to identify suitable hardware candidates.
+2. Plan/design the software using flowcharts and pseudocode to describe the program and identify functions, or blocks of code, and how they link to other blocks.
+3. Translate the flowchart into the required programming language.
+4. Once the program is at a level where its functionality can start to be tested, testing and debugging is performed to look for errors or unexpected behaviour in software called bugs.
+5. When the final software is commissioned, it is important to document the code so as a developer can come back to it at later date or pass the task to another team member.
+:::
 
 ## Lecture Topics{.unnumbered}
-
-In this chapter we will be looking at how to produce clear well commented programs; data transfer, arithmetic, logic and relational operators; and flow control structures including `if`, `switch-case`, `for` and `while`.
 
 :::: {.columns}
 
 ::: {.column width="25%"}
-![](pictures/week04_contents_image.png){img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module." width=100%}
+![](pictures/week03_contents_image.png){img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module." width=100%}
 :::
 
 ::: {.column width="75%"}
-
-- @sec-wk4-c-language: [C-language](#sec-wk4-c-language)
-  - @sec-wk4-code-formatting: [Code formatting](#sec-wk4-code-formatting)
-  - @sec-wk4-comments: [Comments](#sec-wk4-comments)
-  - @sec-wk4-pre-processor-directives: [Pre-processor directives](#sec-wk4-pre-processor-directives)
-  - @sec-wk4-statements: [Statements](#sec-wk4-statements)
-  - @sec-wk4-variables: [Variables](#sec-wk4-variables)
-  - @sec-wk4-operators: [Operators](#sec-wk4-operators)
-- @sec-wk4-flow-control: [Flow control](#sec-wk4-flow-control)
-  - @sec-wk4-if: [If statement](#sec-wk4-if)
-  - @sec-wk4-switch: [Switch statement](#sec-wk4-switch)
-  - @sec-wk4-while: [While statement](#sec-wk4-while)
-  - @sec-wk4-for: [For statement](#sec-wk4-for)
-
+- @sec-week03-useful-terminology: [Useful Terminology](#sec-week03-useful-terminology)
+- @sec-week03-programming-languages: [Programming Languages](programming-languages)
+- @sec-week03-flowcharts: [Flowcharts](#sec-week03-flowcharts)
+- @sec-example-programs: [Example Programs](#sec-example-programs)
+- @sec-week03-modular-programming:  [Modular Programming](#sec-week03-modular-programming)
 :::
 
 ::::
-
-## C-language{#sec-wk4-c-language}
-
-Code Formatting, comments, pre-processor directives, statements and operators
-
----
-
-### Code formatting{#sec-wk4-code-formatting}
-
-::: {.incremental}
-1. Write comments that explain what the program does.
-2. Use descriptive names for variables and functions.
-3. Use tabs to indent nested code blocks.
-4. Give each class/function one purpose.
-5. Delete unnecessary/redundant code.
-6. Readability is more important than cleverness.
-7. Adopt and maintain a consistent coding style.
-8. Write good comments.
-9. Refactor, refactor, refactor.
-10. Take regular backups and implement version control.
-:::
-
----
-
-```c
-/*
- * This is a demonstration program for EG-151 microcontrollers that shows a tidy well commented program.
- * This program asks a user to input two numbers and uses the function findmax to determine which is the largest.
- *
- * Author: Ben Clifford
- * Date: 12/10/2019
- */
-
-// include library files
-#include <stdio.h> //Required for scanf and printf
-
-// main function
-int main(void) {
-	// Variable Declarations
-	int num1, num2, maxnum;
-	// Function Declarations
-	int findmax(int, int);
-
-	printf("Enter the first number: ");
-	scanf("%u", &num1);
-	printf("Enter the second number: ");
-	scanf("%u", &num2);
-
-	/* invoke the function findmax passing numl and num2
-	 * as arguments and storing the result in the variable maxnum
-	 */
-	maxnum = findmax(num1, num2);
-	printf("The maximum number is %u", maxnum);
-}
-
-// findmax Function Definition
-int findmax(int x, int y) {
-	int maximum_number;
-	if (x >= y) {
-		maximum_number = x;
-	}
-	else {
-		maximum_number = y;
-	}
-	return maximum_number;
-}
-
-```
-
-::: {.fragment}
-[Execute this code using **onlinegdb.com**](https://onlinegdb.com/22mzCDQrU)
-:::
-
----
-
-### C language comments{#sec-wk4-comments}
-
-::: {.incremental}
-
-* Comments are added to code in order to make the program easier to read and understand at a later time or by another reader.
-* When the compiler is reading the file, the comments are ignored.
-* Comments must follow a set of rules and a particular format.
-  * In the 'C' language comments are surrounded by `/* comment */` and can span multiple lines 
-  * ... or start with `//` if they are on a single line.
-
-:::
-
----
-
-#### Examples of comments
-
-::: {.fragment}
-Single line comment $\rightarrow$ typically found after a statement
-:::
-
-::: {.fragment}
-
-```c
-A = 10; // This line sets variable A to 10
-```
-:::
-
-::: {.fragment}
-Multi line comment $\rightarrow$ typically used at the start of a program or to detail a block of code or a function
-:::
-
-::: {.fragment}
-
-```c
-/* 
- * This comment 
- * spans multiple lines 
- */
-```
-
-:::
-
----
-
-### Pre-processor directives{#sec-wk4-pre-processor-directives}
-
-::: {.incremental}
-* The pre-processor is **part of the compilation process** and runs *before* the code is compiled.
-* The pre-processor looks for lines of **code beginning with a `#`** and evaluates them before compilation.
-* There are also a number of **predefined *macros*** which can be called and these are surrounded by "`__`" characters.
-* The most commonly used pre-processor directives, and also the ones we will be using, are `#include` and `#define`.
-:::
-
-::: {.notes}
-
-Some pre-processor directives
-
-```c
-#include
-#define
-#undef
-#if
-#elif
-#endif
-#ifdef
-#ifndef
-#error
-__FILE__
-__LINE__
-__DATE__
-__TIME__
-__TIMESTAMP__
-# macro operator
-## macro operator
-```
-
-:::
-
----
-
-#### The `#include` directive
-
-The **`#include` directive** is used to include **header files** which contain declarations of existing and frequently used functions that can be substituted into your program.
-
-::: {.notes}
-
-Header files may contain custom function definitions, common functions, secondary data type definitions, etc.
-
-:::
-
-::: {.fragment}
-
-```c
-/* 
-  This variant is used for system header files. 
-  The pre-processor searches for a file named in a 
-  standard list of system directories
-*/
-#include <header_file.h>
-```
-
-:::
-
-::: {.fragment}
-
-```c
-/* 
-   This variant is used for header files of your own program. 
-   It searches for the file name first in the current directory, 
-   then in the same directories used for system header files. 
-*/
-#include “my_library.h”
-```
-
-:::
-
----
-
-#### The `#define` directive
-
-::: {.fragment}
-
-The **`#define` directive** is used to **define a macro** – when the macro name appears in code it will be replaced with the definition stated.
-
-:::
-
-::: {.fragment}
-
-Example 1: define a value for a symbol
-
-```c
-#define pi 3.1415
-```
-
-:::
-
-::: {.notes}
-
-In this example the programmer is stating that the letters `pi` represent the number 3.1415. Now, in the program they can write
-
-```c
-A = pi * r * r;
-```
-and after pre-processing the compiler will see
-```c
-A = 3.1414 * r * r;
-```
-
-:::
-
-::: {.fragment}
-
-Example 2: define a block of reusable code
-
-```c
-#define cube(x) (x) * (x) * (x)
-```
-
-:::
-
-::: {.notes}
-
-If the programmer writes:
-```c
-v = cube(2) // = 8
-```
-
-The compiler sees:
-```
-v = (2) * (2) * (2)  // = 8
-```
-
-:::
-
----
-
-### Statements in C{#sec-wk4-statements}
-
-::: {.incremental}
-- C functions are made up of **statements**, each of which is **terminated with a semicolon `;`**.
-- **A statement is made up of at least one *operator* and some *operands***.
-- *Operands* can be variables or data.
-:::
-
-:::: {.notes}
-
-::: {.callout-note} 
-Missing the semicolon is one of the most common causes of compilation errors in C programming.
-:::
-
-::::
-
----
-
-#### C functions
-
-@fig-week04-function-bd is a schematic diagram of the C function. You can think of it as something that takes some inputs (arguments) and returns some output.
-
-::: {#fig-week04-function-bd} 
-![](pictures/function_bd.png){fig-alt="A schematic diagram of a function in C."}
-
-A schematic diagram of a function in C
-:::
-
----
-
-#### C code for a function
-
-A simple function is presented below.
-```c
-/* 
- * This function is called a_function. 
- * It takes no aguments (inputs).
- * It returns no output.  
- */
-void a_function(void)
-{
-    statement1;
-    statement2;
-}
-```
-
----
-
-### Variables in C{#sec-wk4-variables}
-
-The term *variable* is used for a name which describes a memory address. These names follow the same naming convention as used for functions[^variable_names].
-
-[^variable_names]: Similarly to a function these variable names need to be declared before their use indicating their data type. More on this can be found in the self-directed study material for on [Canvas for this week](https://canvas.swansea.ac.uk/courses/52902/pages/week-4-history-of-the-c-language-functions-and-data-types).
-
-::: {.fragment}
-
-For example, a variable named `num1` describes a particular memory address at which the first number is found and a second variable `num2` describes a second memory address while a third variable, `total`, is a third memory address.
-
-:::
-
-::: {.fragment}
-
-In a function we may then have the following statements:
-
-:::
-
-::: {.fragment}
-
-```c
-num1 = 10;
-num2 = 20;
-total = num1 + num2; // 30!
-`````
-
-:::
-
-::: {.notes}
-
-Each of the statements in the example above tells the computer system to **assign/store a value into the memory address** described by the variable. This is called *assignment*.
-
-Assignment statements use the **equals (`=`) sign** to assign the value on the right of `=` to the variable on the left of `=`[^assignment]
-
-[^assignment]: Please do not confuse `=` in C with equality in mathematics. After assignment, the value in the variable can change. In mathematics $a = b$ means that $a$ is always equal to $b$. If we change the value of $b$,
-the value of $a$ changes too. In C, `a = b` *copies* the current value of `b` into the storage assigned to `a`. If we change the value of `b` later, `a` will not change.  To confuse matters still further, there is another use
-of the equals symbol: `==` means *is equal to* and is used in decision statements such as *is `num1` equal to `num2`*?
-
-:::
-
----
-
-### Operators in C{#sec-wk4-operators}
-
-::: {.fragment}
-
-Each statement or instruction is made up of operators and operands, where the *operator* represents an action and the *operands* represents the data.
-
-:::
-
-
-::: {.fragment}
-In C, the operators can be split into four categories based on the type of actions that they perform[^similar_in_assembler].
-
-[^similar_in_assembler]: We will see similar categories of operators when we come to look at assembly language. For example, for *data transfer* we have the register instructions `LDI` (load register immediate), `LDS` (load register from store), and `STS` (store register to store).)
-
-:::
-
----
-
-They are:
-
-::: {.incremental}
-1. [Data transfer operators](#sec-wk4-data-transfer-ops)
-2. [Arithmetic operators](#sec-wk4-arithmetic-ops)
-3. [Logical operators](#sec-wk4-logical-ops)
-   - [Bitwise logical operators](#sec-wk4-bitwise-ops)
-   - [Relational operators](#sec-wk4-relational-ops)
-6. [Program control operators](#sec-wk4-program-ctrl-ops)
-:::
-
-::: {.fragment}
-We will consider each of these in the following sections.
-:::
-
----
-
-#### **Data transfer** operators in C{#sec-wk4-data-transfer-ops}
-
-In the C language, the data transfer operations are mostly covered by assignment without ever having to deal directly with the registers.
-
-::: {.fragment}
-For example:
-
-```{.c code-line-numbers="|1|2|3|4"}
-a = 10;
-b = 20;
-sum = a + b;
-PTFD = sum; // output total to PORT F
-```
-
-:::
-
-::: {.notes}
-
-This is because C ia high-level language and the compiler takes care of the details.
-
-:::
-
----
-
-#### **Arithmetic** operators in C {#sec-wk4-arithmetic_ops}
-
-The order of arithmetic operations follow the [BODMAS (BIDMAS)](https://en.wikipedia.org/wiki/Order_of_operations#Mnemonics) rules[^bodmas_rules].
-
-::: {.fragment}
-
-| **Operator**  | **Used for**   |
-|---------------|----------------|
-| `+`           | Addition       |
-| `-`           | Subtraction    |
-| `*`           | Multiplication |
-| `/`           | Division       |
-| `%`           | Modulus        |
-| `++`          | Increment      |
-| `--`          | Decrement      |
-
-:::
-
-
-[^bodmas_rules]: BODMAS is a *mnemonic* which stands for **B**ackets, **O**perations, **D**ivision/**M**ultiplication, **A**ddition/**S**ubtraction. It describes the order of calculation in an expression that involves operators. Brackets, which are considered first, are used to disambiguate expressions that would otherwise produce wrong results. For example `a + b/c` is intrepreted as $a + (b/c)$ not $(a + b)/c$.
-
----
-
-##### Examples
-
-Assume `a`, `b`, `c` and `r = 2` are defined as variable of type integer (`int`)[^integer_type].
-
-::: {.fragment}
-```c
-a = r * 5 + 6 / 3;    // -> a = 12;
-```
-[^integer_type]: An integer type means the value is a whole number (not a fractional number) that can be positive, negative, or zero.
-:::
-
-::: {.fragment}
-
-Brackets can be used to improve readability[^rounding]
-```c
-b = (3.14 * r * r);   // -> b = 12 not 12.56!   
-```
-[^rounding]: The execution of expression `3.14 * r * r` would most likely result in a decimal (*floating point*) number. This would be truncated to an integer before it is assigned to `b`. This is a common cause of mathematical error in programming.
-
-:::
-
-::: {.fragment}
-
-There are also special operators like *increment* and *decrement*
-```{.c code-line-numbers="|1|2"}
-c = c++;  // -> c = c + 1
-d = d--;  // -> d = d - 1;
-```
-
-:::
-
----
-
-Assume `d` to `h` are defined as integer variables (`int`) and `i` as a floating point number (`float`):
-
-::: {.fragment}
-
-```{.c code-line-numbers="|1|2|3|4|5|6"}
-d = 5 / 3;    // -> d = 1:  gives the whole part of the fraction
-e = 5 % 3;    // -> e = 2: gives thremainder of the fraction
-f = 6 % 3;    // -> f = 0: gives 0 as there is no remainder
-g = 5.5 / 2;  // -> g = 2: float is converted to int
-h = 5.5 % 2;  // -> invalid – will not compile
-i = 5.5 / 2;  // -> i = 1.75	- evaluates correctly if i is defined as a float 
-```
-
-:::
-
-::: {.notes}
-
-The same rules apply to multiplication operation.
-
-:::
-
----
-
-#### **Logical** operators in C{#sec-wk4-logical-ops}
-
-Logical operators are used in expressions which return *true* (`1`) or *false* (`0`).
-
-::: {.fragment}
-| **Operator** | **Meaning**   |
-|--------------|---------------|
-| `&&`         | Logical *and* |
-| `||`       | Logical *or*  |
-| `!` .        | Logical *not* |
-:::
-
----
-
-##### Example of the *and* operator (`&&`)
-```{.c code-line-numbers="|8"}
-/* 
- * If the voltage is greater than 10 and the
- * current is less than 20 the condition is true
- * and the value of the expression will be 1, 
- * otherwise it is false and the value of the 
- * expression will be 0.
- */
-if ((voltage > 10) && (current < 20)) {...}
-```
-
----
-
-##### Example of the *or* operator (`||`)
-```{.c code-line-numbers="|8"}
-/*
- *  If the voltage is greater than 10 or the
- *  current is greater than 20 the condition is
- *  true and the value of the expression will be
- *  1, otherwise it is false and the expression 
- *  will be 0.
- */
-if((voltage > 10) || (current > 20)) {...}
-```
-
----
-
-##### Example of the *not* operator (`!`)
-```{.c code-line-numbers="|5|6"}
-/* 
- *  The unary operator (!) is usually used to
- *  turn true into false and vice versa.
- */
-c = 0;	// -> c = 0 which is "false"
-d = !c; // -> d = 1 which is "true".
-```
-
----
-
-##### **Bitwise logical** operators in C{#sec-wk4-bitwise-ops}
-
-In addition to the logical operators designed to evaluate multiple conditions there are **bitwise logical operators** which operate on the binary digits (bits) of their operands.
-
-::: {.fragment}
-| **Operator** | **Used for** |
-|--------------|--------------|
-| `&`          | bitwise AND  |
-| `|`          | bitwise OR   |
-| `^`          | bitwise XOR  |
-| `~`          | bitwise NOT  |
-| `>>`         | shift right  |
-| `<<`         | shift left   |
-:::
-
----
-
-###### Example of the bitwise and operator
-
-::: {.fragment}
-```c
-b = 0xA3 & 0xD5; // -> b = 0x81
-```
-:::
-
-::: {.fragment}
-$$
-\begin{array}{lrr}
-   & 1010 & 0011 \\
-\& & 1101 & 0101 \\\hline
-   & 1000 & 0001
-\end{array}
-$$
-:::
-
----
-
-###### Example of the bitwise or operator
-
-::: {.fragment}
-```c
-c = 0xA3 | 0xD5; // -> b = 0xF7
-```
-:::
-
-::: {.fragment}
-$$
-\begin{array}{lrr}
-   & 1010 & 0011 \\
-|  & 1101 & 0101 \\\hline
-   & 1111 & 0111
-\end{array}
-$$
-
-:::
-
----
-
-###### Example of the bitwise not operator
-
-::: {.fragment}
-```c
-c = ~0xA3; // -> c = 0x5C
-```
-:::
-
-
-::: {.fragment}
-
-$$
-\begin{array}{lrr}
-\sim & 1010 & 0011 \\\hline
-     & 0101 & 1100
-\end{array}
-$$
-
-:::
-
----
-
-###### Bitwise operators used for I/O ports
-
-::: {.notes}
-The use of these operators are important when working with microcontrollers, in particular in the case of I/O, as they can be used to mask bits of a port. This is useful in C as we have limited data transfer options, i.e. we have to read/write to an entire port (memory location) rather than an individual bit.
-:::
-
-
-```{.c code-line-numbers="|1|2|3"}
-PTAPE = 0x0F;       // bit pattern: 0000 1111
-PTAD = 0xF0;        // bit pattern: 1111 0000
-PTAD = PTAD | 0x0C;	// bit pattern: 1111 1100
-```
-
-::: {.fragment}
-
-Since XORing any bit with a 1 forces it to return the opposite value, it can be used to toggle the state of a port:
-:::
-
-::: {.fragment}
-```{.c code-line-numbers="|"}
-portA = portA ^ 0xFF; // e.g. 0101 0110 -> 1010 1001
-```
-:::
-
----
-
-##### **Relational** operators in C {#sec-wk4-relational-ops}
-
-The final group of operators are the **relational operators** which are used to test a relationship between two variables or a variable and data. 
-
-::: {.fragment}
-| **Relational operator** | **Meaning**                 |
-|-------------------------|-----------------------------|
-| `==`                    | is equal to                 |
-| `!=`                    | is *not* equal to           |
-| `<`                     | is less than                |
-| `<=`                    | is less than or equal to    |
-| `>`                     | is greater than |
-| `>=`                    | is greater than or equal to |
-
-:::
-
-::: {.notes}
-Example: "is x equal to 2?" would be written as `x == 2`[^equality].
-
-[^equality]: **Important**: don’t confuse the double equals sign (`==`) with `=`. The latter is used for assignment operations. **That is `(x = 2)` is different from `(x == 2)`**.
-
-Relational operators are most often used in the *expressions* used in the *conditions* of the flow control structures discussed in @sec-wk4-flow-control.
-:::
-
----
-
-#### **Program control** operators in C{#sec-wk4-program-ctrl-ops}
-
-These are discussed in @sec-wk4-flow-control.
 
 ::: {.center}
-## Flow control {background-image="pictures/week04_prog_lang_wallpaper.jpg" #sec-wk4-flow-control}
-Flow control statements `if`, `for`, `while`, and `switch`
+## Useful Terminology{background-image="pictures/prog_wallpaper.png" fig-alt="decorative image used for slide background" #sec-week03-useful-terminology}
 :::
 
 ::: {.notes}
-![](pictures/week04_prog_lang_wallpaper.jpg){fig-alt="Decorative section background - showing code."}
+![](pictures/prog_wallpaper.png)
 :::
 
 ---
 
-### Flow control structures in C{#sec-wk4-flow-control-ops}
-
-@fig-wk4-flow-control-structures illustrates the flow control structures that are provided in the C language. We will illustrate the most commonly used[^rarely_used] in the following sections.
-
-::: {#fig-wk4-flow-control-structures}
-![](pictures/stuctures.png){fig-alt="An organogram showing a classification of the flow control strucures provided by the C language."}
-
-Classification of the flow control strucures provided by the C language.
-:::
-
-[^rarely_used]: Most of the unconditional branching statements such as `goto` (for an unconditional branch to a label) and `continue` (to ignore a condition without breaking out of a loop) are rarely used in modern programs. The `break` statement is often used in *switch statements* and occasionally for breaking out of a loop when some exit condition is met.
+### Hello, World!
 
 ::: {.notes}
-
-### Flow control structures to be considered
-
-1. [The *if* statement](#sec-wk4-if)
-   - [The *if-else* statement](#sec-wk4-if-else)
-   - [The *if-elseif-else* statement ](#sec-wk4-if-elseif-else)
-3. [The *switch* statement](#sec-wk4-switch)
-4. [The *while* statement](#sec-wk4-while)
-   - [The *do-while* statement](#sec-wk4-do-while)
-5. [The *for* statement](#sec-wk4-for)
-   - [Nested *for* statements](#sec-wk4-nested-for)
-
+@lst-week03-hello-world is a reproduction of "Hello, world!" written in C.
 :::
 
----
+::: {#lst-week03-hello-world}
 
-### The *if* statement in C{#sec-wk4-if}
-
-::: {.fragment}
-The ***if* statement** allows branching within code and can be used to check if a particular condition has been met.
-:::
-
----
-
-#### Flow chart of the if statement{.unnumbered}
-::: {#fig-wk4-if-statement}
-![](pictures/if.png){fig-alt="A flow chart illustrating the structure of the if-statement." width="50%"}
-
-A flow chart illustrating the structure of the *if* statement
-:::
-
----
-
-The equivalent of the *if* statement illustrated in the @fig-wk4-if-statement is:
-
-::: {.fragment}
-```{.c code-line-numbers="|1|2-4|3|5"}
-Statement_1;
-if (expression != 0) { // in C anything that is not 0 is true
-    Statement_2;
-}
-Statement_3;
-```
-:::
-
-::: {.notes}
-- At line 3, if the condition has been met, the sequence of statements in the following block (here just line 4) is executed.
-- If the condition is not met at line 3, then `Statement_2` (line 4) is not executed, and the program will branch over to the next statement outside of the flow control statement: here `Statement_3` (line 5).
-:::
-
----
-
-#### The *if-else* statement {#sec-wk4-if-else}
-
-The ***if*-else statement** allows one set of statements to be executed if the condition 
-is met and an alternative set of statements ito be executed if the condition hasn’t been met.
-
----
-
-#### Flow chart of the if-else statement{.unnumbered} 
-::: {#fig-wk4-if-else-statement}
-![](pictures/if-else.png){fig-alt="A flow chart illustrating the structure of the if-else statement." width="75%"}
-
-A flow chart illustrating the structure of the *if-else* statement
-:::
-
----
-
-The equivalent of the *if-else* statement illustrated in the @fig-wk4-if-else-statement is:
-
-::: {.fragment}
-```{.c code-line-numbers="|1|2-4|3|5-7|6|8"}
-Statement_1;
-if (expression != 0) { // in C anything that is not 0 is true
-    Statement_2;
-}
-else {                 // expression is false == 0
-    Statement_3;
-}
-Statement_4;
-```
-:::
-
----
-
-#### The *if-elseif-else* statement {#sec-wk4-if-elseif-else}
-
-The third example of the *if* statement is the ***if-elseif-else* statement** which 
-allows multiple conditions to be tested and blocks of statements to be executed for each decision.
-
----
-
-#### Flow chart of the if-elseif-else statement{.unnumbered} 
-
-::: {#fig-wk4-if-elseif-else-statement}
-![](pictures/if-elseif-else.png){fig-alt="A flow chart illustrating the structure of the if-elseif-else statement." width="75%"}
-
-A flow chart illustrating the structure of the *if-elseif-else* statement
-:::
-
----
-
-The equivalent of the *if-elseif-else* statement illustrated in the @fig-wk4-if-elseif-else-statement is:
-
-::: {.fragment}
-```{.c code-line-numbers="|1|2-4|3|5-7|6|8-10|9|11"}
-Statement_1;
-if (expression1) {      // expression1 is true
-    Statement_2;
-}
-elseif (expression2) {  // expression2 is true
-    Statement_3;
-}
-else {                  // neither expression1 nor expression2 is true
-    Statement_4;
-}
-Statement_5;
-```
-:::
-
----
-
-### The *switch* statement in C {#sec-wk4-switch}
-
-::: {.incremental}
-- The *switch* statement allows selection between several possible defined options. 
-- The **test condition** is referred to as the *expression* and the choices are referred to as the *cases*[^cases].
-- Each switch expression will have a **default choice** for when no choices match the expression.
-- The switch statement represents an easier and more readable way of managing multiple if statements[^switch]
-:::
-
-[^cases]: Each case must be a *constant expression*: i.e. a number or a character.
-[^switch]: i.e. avoids `if` – `elseif` – `elseif` – `elseif` – `elseif` – … – `else`
-
----
-
-#### Flow chart of the switch statement{.unnumbered}
-
-::: {#fig-wk4-switch-statement}
-![](pictures/switch.png){fig-alt="A flow chart illustrating the structure of the switch statement." width="75%"}
-
-A flow chart illustrating the structure of the *switch* statement
-:::
-
----
-
-The equivalent of the *switch* statement illustrated in the @fig-wk4-switch-statement is:
-
-::: {.fragment}
-```{.c code-line-numbers="|1|2-16|2|3-4|6-7|9-10|14-15|17"}
-Statement;
-switch (expression1) { // branch according to the value of the expression
-    case case_1 :
-        code_block_1;
-        break; // break is needed to avoid drop through to next case
-    case case_2 :
-        code_block_2;
-        break; // break is needed to avoid drop through to next case
-    case case_3 :
-        code_block_3;
-        break; // break is needed to avoid drop through to default case
-    // you can have any number of case statements
-    
-    default : // optional
-        default_code_block;
-}
-Statement_2;
-```
-:::
-
----
-
-#### Example program with a switch statement{.unnumbered}
-
-```{.c code-line-numbers="|1|2|3-24|8|9|10"}
-char student_grade = 'B';
-printf("Your grade was %c: ",student_grade);
-switch (student_grade)
-{
-   case 'A':
-     printf ("excellent!\n");
-     break; // prevents fall-through to default
-   case 'B' :
-     printf("very good!\n");
-     break;
-   case 'C' :
-     printf("good!\n");
-     break;
-   case 'D' :
-     printf("satisfactory!\n");
-     break;
-   case 'E' :
-     printf("needs work!\n");
-     break;
-   case 'F' : 
-     printf("sorry you failed!\n");
-     break;
-   default: 
-     printf("Error! The grade %c is invalid\n",student_grade);
-}
-```
-
-::: {.notes}
-
-If the `break` was not present, the program would drop down to the next case which is not usually what you want. Instead, you usually break out to the case statement as soon as a valid match is made.
-
-You can play with this program here: [grader](https://onlinegdb.com/16BcOgMJD). See what happens when you remove `break`.
-:::
-
----
-
-### The *while* statement in C {#sec-wk4-while}
-
-::: {.fragment}
-In order to write a function that loops, i.e. execution of a sequence of statements until 
-a particular condition is met, a *while* statement can be used.
-:::
-
-::: {.fragment}
-The while statement allows for a block of statements to be repeatedly executed as long as 
-a *condition* is true. 
-:::
-
----
-
-#### Flow chart of the while statement
-
-::: {#fig-wk4-while-statement}
-![](pictures/while.png){fig-alt="A flow chart illustrating the structure of the while statement." width="50%"}
-:alt: A flow chart illustrating the structure of the while statement
-
-A flow chart illustrating the structure of the *while* statement
-:::
-
----
-
-The equivalent of the *while* statement illustrated in the @fig-wk4-while-statement is:
-
-::: {.fragment}
-```{.c code-line-numbers="|1|2|1|2|1|4"}
-Statement;
-while (expression) {
-    Statement2;
-}
-// end of while-loop
-Statement3;
-```
-:::
-
-::: {.notes}
-The `statements` at line 2 are executed again and again until `condition` is false. Clearly, if the loop
-is to end, one of the `statements` needs to change the condition from `true` to `false`.
-:::
-
----
-
-
-
-#### The *do-while* statement {#sec-wk4-do-while}
-
-The *do-while* statement is almost identical to the while statement however the condition is 
-checked after the statements have run.
-
----
-
-#### Flow chart of the do-while statement{.unnumbered}
-
-::: {#fig-wk4-do-while-statement}
-![](pictures/do-while.png){fig-alt="A flow chart illustrating the structure of the do-while statement." width="50%"}
-
-A flow chart illustrating the structure of the *do-while* statement
-:::
-
----
-
-The equivalent of the *do-while* statement illustrated in the @fig-wk4-do-while-statement is:
-
-::: {.fragment}
-```{.c code-line-numbers="|1|2|4|2|4|2|4|5"}
-Statement;
-do {
-    Statement2;
-}
-while (expression);
-// end of do-while loop
-Statement3;
-```
-:::
-
-::: {.notes}
-The `statements` at line 2 are executed and then if `condition` is true, they are executed again.
-
-This means that even if `condition` is `false`, the `statements`
-are executed one time. 
-
-When `condition` is false, the loop ends. 
-:::
-
-::: {.notes}
-
-::: {.callout-warning}
-Be careful: it is very easy to get stuck in an infinite *while* loop if your test `condition` is always `true`.
-
-For either loop to terminate, one of the `statements` 
-needs to change the `condition` from `true` to `false`.
-:::
-
-:::
-
----
-
-### The *for* statement in C {#sec-wk4-for}
-
-Another way of writing a while statement is to use a ***for* loop**.
-
-The term *loop* is used for the execution of a sequence of statements until a particular condition is met.
-
----
-
-#### Flow chart of the for statement
-
-::: {#fig-wk4-for-statement}
-![](pictures/for.png){fig-alt="A flow chart illustrating the structure of the for statement." width="50%"}
-
-A flow chart illustrating the structure of the *for* statement
-:::
-
----
-
-The equivalent of the *for* statement illustrated in @fig-wk4-for-statement is:
-
-::: {.fragment}
-```{.c code-line-numbers="|1|2|1|2|1|2|1|4"}
-for (initialize counter; counter < final value; increment counter) {
-    statements;
-}
-statement;
-```
-:::
-
-::: {.notes}
-::: {.callout-note}
-The initialization and increment expressions in the *for-loop* are implicit in the *for* statement, but have to be drawn explicitly in the equivalent flow-chart.
-:::
-:::
----
-
-#### Example for loop{.unnumbered}
-
-Here is an actual *for* loop which solves the problem given in 
-[Lecture 3: Example 2](https://cpjobling.github.io/eg-151-textbook/lectures/week03/#sec-week03-sum-example). 
-
-::: {.fragment}
-It better 
-illustrates how it might be written in a real program:
-
-```{.c code-line-numbers="|1|3-5|3|4|3|4|3|4|3|6"}
-int sum, x;
-/* Add the numbers from 1 to 10 and print the sum */
-for (x = 0; x < 11; x++) {
-    sum = sum + x;
-}
-printf("sum = %d", sum);
-```
-:::
-
-::: {.notes}
-The sequence performed by the for loop is:
-
-1. Line 3:&mdash;the variable `x` is *initialized* to 0;
-2. Line 4:&mdash;the statements in the *block*[^block] (line 4) are executed in sequence;
-3. Line 3:&mdash;`x` is incremented by 1 (`x++` $\rightarrow$ `x = x + 1`);
-4. Line 3:&mdash;the value of the *logical expression* `x < 11` is evaluated: if it is *true* we return to step 2.
-5. Line 3:&mdash;if `x < 11` is false (i.e. when `x == 11`) the loop ends the result is printed to the screen (line 5).
-
-:::
-
-::: {.fragment}
-To execute this program see [sum.c](https://onlinegdb.com/w3YDJCZcm).
-:::
-
-----
-
-#### Equivalence of *for* and *while*
-
-You can *always* write a *for* loop using *while*[^for-while]. 
-
-::: {.fragment}
-The previous example could be written:
 ```c
-int sum, x;
-// initialize x
-x = 0; 
-while (x < 11) 
-{
-    sum = sum + x;
-    x++; // increment x
-}
-printf("Sum = %d",sum);
-```
-:::
+/* 
+ * This line basically imports the "stdio" header file, part of
+ * the standard library. It provides input and output functionallity 
+ * to the program.
+ */
+ # include <stdio.h>
 
-::: {.fragment}
-See [sum with while](https://onlinegdb.com/ME6B9jbo8).
+ /* 
+	* Function (method) declaration. This outputs "Hello, world\n" to
+	* standard output when invoked.
+	*/
+void sayHello(void) {
+	// printf() in C outputs the specified text (with optional
+	// formatting options) when invoked.
+	printf("Hello, world\n");
+}
+
+/* 
+ * This is a "main function"/ The compiled program will run the code
+ * defined here.
+ */
+int main(void) {
+	// invoke the sayHello() function.
+	sayHello();
+	return 0; 
+ }
+```
+
+Hello World Program written in C (Code reproduced from: [en.wikipedia.org/wiki/File:C_Hello_World_Program.png](https://en.wikipedia.org/wiki/File:C_Hello_World_Program.png)). Run this programme by following this link [hello_world.c](https://onlinegdb.com/6M8mL90DS).
 :::
 
 ::: {.notes}
-It is arguable that the *for* loop is easier to read and understand.
+The first version of **Hello, World!** was published in the classic book *The C Programming Language* [@kandr].
 
-[^for-while]: Indeed most c-compilers produce equivalent code for *for* and *while*.
+Since then, it has become common to introduce each new programming language with a version of this program.
 
-[^block]: in the C language a *block* is any sequence of statements surrounded by curly brackets `{ ... }`
-:::
-
----
-
-#### Nested *for* statements {#sec-wk4-nested-for}
-
-::: {#fig-wk4-nested-for-statement}
-![](pictures/nested-for.png){fig-alt="A flow chart illustrating the structure of the nested-for statement." width="50%"}
-
-A flow chart illustrating the structure of the nested *for* statement
-:::
-
----
-
-The equivalent of the nested *for* statement illustrated in @fig-wk4-nested-for-statement is: 
-
-::: {.fragment}
-```c
-for (counter1 = 0; counter1 < 60; counter1++) {
-    for (counter2 = 0; counter2 < 60; counter2++) {
-        statements;
-    }
-}
-```
-:::
-
-::: {.fragment}
-See [nested-counter](https://onlinegdb.com/Dhku-m1As) for an executable example of this program. 
-:::
-
-::: {.notes}
-What could you use this nested for-loop for?
-:::
-
-## Summary{.unnumbered}
-
-In this section we have:
-
-::: {.incremental}
-- Covered basic concepts in coding to create clear and concise code as well as how to add comments to key lines of a program.
-- Introduced and discussed the different operators available to the C language programmer including how they are categorized.
-- Looked at the flow control statements available in the C language as well as how they are represented using flowchart diagrams and examples of the required syntax.
+Unfortunately, there is a lot of hidden complexity in this simple program, and it is not easy to run "Hello, World!" on a microcontroller!
 :::
 
 --- 
 
-### On Canvas{.unnumbered}
+### What is a program?
 
-On the canvas course page, there is a series of short videos providing a history of the C 
-language and a brief overview of programming paradigms as well as videos on functions and 
-data type with a quiz to test your knowledge.
+A program or algorithm is a **recorded sequence of instructions** that **performs a task** or set of tasks when executed **to produce a specific result**.
+
+---
+
+### What is software?
+
+Software is the term used to describe **collections of programs, libraries, and related data**.
+
+---
+
+### What is a programming language?
+
+A programming language is a **formal notation comprising a set of instructions and rules** for writing programs.
+
+---
+
+### Development of programming
+
+::: {.notes}
+The next few slides provide some historical context to the development of computer programming. For example @fig-week03-ibm704 is a photograph, taken in 1957, of an early mainframe computer based at NASA Langley Research Centre. This may have well been used in the research that led to the moon landing in 1969.
+
+In the early days of programming, programs were typed on teletypes and encoded as ASCII characters onto paper tape (@fig-week03-punch-tape). These paper tapes where used to load programs and data into mainframes like that shown in @fig-week03-ibm704`. Later, programs were stored on magnetic tape, then magnetic disks and these days are stored servers to be downloaded over networks and loaded into powerful PCs or mobile devices using flash memory and SSD drives.
+
+@fig-week03-modern-programming shows an image of a modern laptop and the programming tools and languages (in this case Python) that are used to develop programs these days.
+:::
+
+---
+
+::: {#fig-week03-ibm704}
+![](pictures/ibm704.png){fig-alt="Man and woman shown working with IBM type 704 electronic data processing machine used for making computations for aeronautical research at Langley Research Center."}
+
+IBM type 704 electronic data processing machine used for making computations for aeronautical research at NASA Langley Research Center – 21st March 1957. (Image source: [www.flickr.com/photos/nasacommons/9467782802](https://www.flickr.com/photos/nasacommons/9467782802))
+:::
+
+---
+
+::: {#fig-week03-punch-tape} 
+![](pictures/punch_tape.png){fig-alt="A picture of some punched paper tape"}
+
+Early program source code! Input into a computer with punched paper tape. Image Source: [How it was: Paper tapes and punched cards | EETimes](https://www.eetimes.com/how-it-was-paper-tapes-and-punched-cards/)
+:::
+
+---
+
+
+::: {#fig-week03-modern-programming} 
+![](pictures/modern_programming.png){fig-alt="A computer screen with a bunch of code on it."}
+
+Writing programs on a modern high resolution display screen. (Image source: [unsplash.com/photos/ieic5Tq8YMk](https://unsplash.com/photos/ieic5Tq8YMk) by Chris Reid) 
+:::
+
+::: {.center}
+## Programming Languages{#sec-week03-programming-languages background-image="pictures/prog_lang_wallpaper.jpg" fig-alt="Decorative section background - showing code"}
+:::
+
+::: {.notes}
+![](pictures/prog_lang_wallpaper.jpg){fig-alt="Decorative section background - showing code."
+:::
+
+---
+
+### Programming Language Level vs Complexity
+
+::: {.notes}
+@fig-week03-pl-complexity shows how code complexity that must be handled by the programmer is related to language level.
+:::
+
+::: {#fig-week03-pl-complexity }
+![](pictures/prog_lang_complexity.png){fig-alt="A pyramid comparing code complexity with language level."}
+
+Programming language level versus complexity
+:::
+
+::: {.notes}
+There is more code complexity at the top because the languages there are "low level" - you need to tell the computer what to do at a very granular level. Languages at the bottom of the pyramid are "high-level" because they provide a simpler way for the programmer to define complex operations without needing to be explicit about how the processor will perform the tasks. Tools are needed to convert that code into the low-level instructions that the computer needs to execute. High-level codes are converted into machine code by compilers, interpreters and web browsers.
+:::
+
+---
+
+### Programming levels
+
+::: {#fig-week03-wc-programming-languages} 
+![](pictures/wc_programming_languages.png){fig-alt="Word cloud of common programming languages."}
+
+Word cloud of common programming languages
+:::
+
+---
+
+#### High-level languages
+
+::: {.incremental}
+- High level languages are written in a form that is close to human language, enabling the programmer to just focus on the problem being solved without any knowledge of the hardware it is running on.
+- Examples include: C++, Java, Pascal, Python, Visual Basic.
+:::
+
+---
+
+#### Low-level languages
+
+::: {.incremental}
+- Low level languages are used to write programs that relate to the specific architecture and hardware of a particular type of computer and are much closer to the native language of a computer (binary).
+- Examples include:  Assembly Language, Machine Code
+:::
+
+---
+
+#### The C Programming language
+
+> C is a general-purpose computer programming language. It was created in the 1970s by Dennis Ritchie, and remains very widely used and influential. [Wikipedia - C (programming language)](https://en.wikipedia.org/wiki/C_(programming_language))
+
+::: {.incremental}
+- C might be described as a "mid-level language". It is a compiled language and it has features that allow code to be written at a fair distance from the machine instructions. At the same time it provides structures that allow the detailed manipulation of data, memory and I/O at a level that is quite close to the machine.
+- In this course, we will be using a dialect of C that has been specifically designed for the programming of Arduino devices such as the 8-bit Atmel ATmega328 which is used in the Arduino Nano.
+- C is a very influential language. It is still used widely for writing operating system kernels, command-line tools, hardware drivers, and microcontroller applications.  The syntax of C is the basis of many of the compiled and interpreted high-level languages that are in use today.
+:::
+
+::: {.center}
+## Flowcharts{#sec-week03-flowcharts fig-alt="A flowchart" background-image="pictures/Flowchart_structured_programming.svg" background-color="white"}
+:::
+
+::: {.notes}
+![](pictures/Flowchart_structured_programming.svg){fig-alt="A flowchart"} https://upload.wikimedia.org/wikipedia/commons/a/a6/
+
+A flowchart &ndash; This [Image](https://commons.wikimedia.org/wiki/File:Flowchart_structured_programming.svg) by Unknown Author is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
+:::
+
+---
+
+### What is a Flowchart?
+
+A flowchart is a **pictorial representation** of the **logic flow** through a program.
+
+::: {.fragment}
+Flowcharts are a useful tool for planning, visualizing and documenting a program without having to write any code.
+:::
+
+---
+
+Basic flowcharts are convenient because they
+
+::: {.incremental}
+- Don't require the viewer to have an in-depth knowledge of programming
+- Don't require the viewer to have knowledge of a specific programming language
+- Useful for visualizing how blocks of code interact with one another
+- Can be a useful tool in identifying flaws and bottlenecks in large and complex algorithms
+:::
+
+----
+
+### Flowcharts vs Code
+
+::: {.notes}
+Consider the simple flowchart shown in @fig-week03-flowchart-hello-world representing the printing of the text string "Hello, World!"[^string].
+
+[^string]: In most programming languages, text is stored in memory as a sequence of binary codes which each represent the individual characters as in `'H'`, `'e'`, `'l'`, `'l'`, `'o'`, `','`, `' '`, `'W'`, `'o'`, `'r'`, `'l'`, `'d'`, `'!'`. Such a sequence is usually called a *string*.
+:::
+
+
+::: {#fig-week03-flowchart-hello-world} 
+![](pictures/flowchart_hello_world.png){width="50%" fig-alt="A flowchart representing the hellow world program."}
+
+A flowchart representing the "Hello, World!" program.
+:::
+
+---
+
+<table>
+<tr>
+ <td>**Bash** (a command-line *shell* used in Unix and MacOS)
+
+```c
+echo "Hello, World!"
+```
+</td>
+<td>**BASIC** 
+
+```basic
+PRINT "Hello, World!"
+```
+</td>
+</tr>
+<tr>
+<td>**MATLAB** 
+
+```matlab
+disp('Hello, World!')
+```
+</td>
+
+<td>**Python**
+
+```python
+print("Hello, World!")
+```
+</td>
+
+</tr>
+<tr>
+
+<td>
+**C (for Arduino)**
+
+```c
+puts("Hello, World!");
+```
+</td>
+
+<td>**C++**
+
+```cpp
+std::cout << "Hello, World!" << std:endl;
+```
+
+</td>
+
+</tr>
+
+<tr>
+<td>**HTML**
+
+```html
+<p>Hello, World!</p>
+```
+
+</td>
+
+<td>**JavaScript**
+
+```javascript
+document.write('Hello, World!');
+```
+</td>
+
+</tr>
+</table>
+
+---
+
+### Flowchart building blocks
+
+:::: {.columns}
+
+::: {.column width="33%"} 
+
+#### Terminal: start/end block{.unnumbered}
+
+![](pictures/fc_terminal.png){fig-alt="Flowchart start/end block"}
+
+#### Suprocess block{.unnumbered}
+
+![](pictures/fc_subprocess.png){fig-alt="Flowchart suprocess block"}
+
+:::
+
+::: {.column width="33%"}
+
+#### Terminal: program flow{.unnumbered}
+
+![](pictures/fc_flow.png){fig-alt="Flowchart program flow" height="128"}
+
+#### Decision block
+
+![](pictures/fc_decision.png){fig-alt="Flowchart decision block"}
+
+:::
+
+::: {.column width="33%"}
+
+#### Process block{.unnumbered}
+
+![](pictures/fc_process.png){fig-alt="Flowchart process block"}
+
+#### I/O block{.unnumbered}
+
+![](pictures/fc_io.png){fig-alt="Flowchart I/O block"}
+
+:::
+
+::::
+
+---
+
+### Rules for drawing flowcharts
+
+::: {.incremental}
+- Flowcharts are usually drawn top to bottom but can be also be drawn left to right.
+- Flowcharts must begin with a "start" symbol and finish with an "end" symbol.
+- The spacing between all items should be consistent
+- The direction of flow between each block should be indicated with an arrow.
+- Connecting lines should never overlap.
+:::
+
+::: {.fragment}
+In short flow charts should look visually tidy and the program flow should be obvious to the viewer.
+:::
+
+---
+
+### Flowchart Drawing Packages
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+#### Microsoft Visio (Windows and web only)
+
+::: {#fig-week03-visio}
+![](pictures/visio.png){fig-alt="A screenshot of the Microsoft visio program being used to draw a flowchart."}
+
+A screenshot of the Microsoft Visio program being used to draw a flowchart.
+:::
+
+:::
+
+::: {.column width="50%"}
+
+#### Microsoft 365
+
+::: {#fig-week03-ms365}
+![](pictures/ms265_flowchart_symbols.png){fig-alt="Screenshot of the flowchart symbols available in Microsoft 365 - Word, PowerPoint, Excel, etc."}
+
+Screenshot of the flowchart symbols available in Microsoft 365 - Word, PowerPoint, Excel, etc
+:::
+
+::: {.notes}
+Get [Microsoft 365)](https://myuni.swansea.ac.uk/it-services/software-enquiry/office-365/) from myuni.swan.ac.uk.
+
+:::
+
+:::
+
+::::
+
+---
+
+### Other flowchart drawing tools
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+#### SmartDraw 
+
+For MacOS
+
+::: {#fig-week03-smartdraw}
+![](pictures/smartdraw.png){fig-alt="Screenshot from the smartdraw flowchart editor"}
+
+Screenshot from the smartdraw flowchart editor [www.smartdraw.com](https://www.smartdraw.com/)
+:::
+
+:::
+
+::: {.column width="50%"}
+
+#### Creately
+
+Web-based drawing tool
+
+::: {#fig-week03-creately}
+![](pictures/creately.png){fig-alt="Screenshot from the creately flowchart editor."
+
+Screenshot from the creately flowchart editor [creately.com/diagram-type/flowchart/](https://creately.com/diagram-type/flowchart/)
+:::
+
+:::
+
+::::
+
+---
+
+### Using flowcharts to capturing the most common program constructs
+
+::: {.fragment}
+From a software designer's point of view, any program function can be described using only three program constructs:
+:::
+
+::: {.incremental}
+- **Sequence**: this construct performs one task after another in a sequence. It is a group of instructions to be performed one after another in the order shown in the program. 
+- **Decision**: this construct performs a task or a sequence of tasks based on the result of a test condition.
+- **Repetition**: this construct is for a process that repeats until a condition which will stop the process is satisfied[^repetition]. Repetition is used to repeat a a sequence over and over again.
+:::
+
+::: {.notes}
+
+[^repetition]: Repetition is used a lot in microcontroller programming.
+
+:::
+
+---
+
+#### Sequence
+
+::: {.notes}
+A sequence (@fig-week03-fc-sequence) is represented as a set of process blocks (tasks) connected by program flows. The tasks are executed in the order shown by the arrows from top to bottom.
+:::
+
+
+::: {#fig-week03-fc-sequence}
+![](pictures/fc_sequence.png){fig-alt="Flowchart for a sequence of instructions computed in the order shown, one after the other." width="40%"}
+
+Flowchart for a sequence of tasks
+:::
+
+
+::: {.notes} 
+The program shown in @fig-week03-fc-sequence might be represented in *psuedocode*[^psuedocode] as
+
+```
+START;
+ Task 1;
+ Task 2;
+ Task 3;
+END;
+```
+
+[^psuedocode]: Pseudocode is a formal text which is used to represent the operation of a section of code in a way that can be understood without needing to resort to formal rules of a programming language.
+
+:::
+
+---
+
+#### Decision
+
+::: {.notes}
+A decision (@fig-week03-fc-decision) is represented as a decision block followed by flows which depend on the outcome of the decision.
+:::
+
+
+::: {#fig-week03-fc-decision} 
+![](pictures/decision.png){fig-alt="Flowchart for a decision." width="50%"}
+
+Flowchart for a decision
+:::
+
+::: {.notes}
+
+The program shown in @fig-week03-fc-decision might be represented in psuedocode as
+
+```
+START;
+ IF condition one is true
+	 DO
+			 Task 1;
+			 :
+	 END_DO
+ IF condition two is true
+	 DO
+			 Task 2;
+			 :
+	 END_DO
+END;
+```
+
+:::
+
+---
+
+#### Repetition
+
+::: {.notes}
+Repetition (@fig-week03-fc-repetition) is represented as a decision block, then a sequence of tasks and a flow that returns to the original decision. The tasks are repeated until the condition for ending the repeated sequence is met.
+:::
+
+::: {#fig-week03-fc-repetition} 
+![](pictures/repetition.png){fig-alt="Flowchart for a sequence of instructions with repetition." width="50%"}
+
+Flowchart for a sequence of tasks
+:::
+
+::: {.notes}
+
+The program shown in @fig-week03-fc-repetition might be represented in psuedocode as
+
+```
+START;
+ UNTIL condition is true
+	 Task 1;
+	 :
+	 Task n;
+ THEN
+	 Task 2;
+	 :
+END;
+```
+:::
+
+::: {.center}
+## Example Programs{background-image="pictures/laptop-technology-text-multimedia-screenshot-computer-hardware-125852-pxhere.com.jpg" #sec-example-programs}
+:::
+
+::: {.notes}
+<img src="pictures/laptop-technology-text-multimedia-screenshot-computer-hardware-125852-pxhere.com.jpg" alt="laptop, technology, text, multimedia, screenshot, computer hardware, computer program, Free Images In PxHere" width="100%"><br />
+[Image Source: Free Images In PxHere](https://c.pxhere.com/photos/b5/18/photo-125852.jpg!d)]
+:::
+
+---
+
+### Example 1: A sequence
+
+::: {.fragment}
+
+Task: *Find the sum of the numbers 1 to 10*
+
+:::
+
+::: {.fragment} 
+Program design method 1: 
+
+- Brute force method using the Sequence construct,
+- Add number 1 to sum, then add, number 2, then add number 3 ...
+- Continue the process until all numbers are added!
+:::
+
+---
+
+#### Solution to task as a sequence
+
+@fig-week03-task1-sequence shows the flow chart of this program.
+
+::: {#fig-week03-task1-sequence } 
+![](pictures/task1_sequence.png){fig-alt="Flowchart of a program to sum the first 10 numbers written as a sequence." width="50%"}
+
+Flowchart of a program to sum the first 10 numbers written as a sequence.
+:::
+
+---
+
+#### Program shown in @fig-week03-task1-sequence written in pseudo code
+
+```
+START
+	sum = 0
+	sum = sum + 1
+	sum = sum + 2
+	sum = sum + 3
+	sum = sum + 4
+	sum = sum + 5
+	sum = sum + 6
+	sum = sum + 7
+	sum = sum + 8
+	sum = sum + 9
+	sum = sum + 10
+END
+```
+
+---
+
+### Example 2: Decision and a Loop{#sec-week03-sum-example}
+
+Task: *Find the sum of numbers 1 to 10*
+
+::: {.fragment}
+
+Program design method 2: 
+
+- Use the decision and repetition constructs:
+
+:::
+
+---
+
+#### Solution to task 1 using a decision and repetition
+
+@fig-week03-task1-loop shows the solution of task 1 using a decision and repetition.
+
+::: {#fig-week03-task1-loop} 
+![](pictures/task1_loop.png){fig-alt="Flowchart of the solution to task 1 using a decision and repetition." width="50%"}
+
+Flowchart of the solution to task 1 using a decision and repetition.
+:::
+
+---
+
+#### Program shown in @fig-week03-task1-loop written in pseudo code
+
+```
+START
+	sum = 0
+	counter = 1
+	WHILE counter < 11
+	DO 
+		sum = sum + counter
+		counter = counter + 1
+	END_DO
+END
+```
+
+---
+
+### Another Example Program
+
+Consider a program that asks a user for a 'limit' value and sums the numbers up to that limit before outputting the sum?
+
+I.e. $\mathrm{sum} = 1 + 2 + 3 + \dots n$
+
+::: {.notes}
+
+The program that solves this project is illustrated by the flowchart shown in @fig-week03-example2. This program has a sequence, a decision and repetition. It also has an input where the limit ($n$) is entered and an output where the sum is displayed.
+
+:::
+
+---
+
+::: {#fig-week03-example2} 
+![](pictures/example2.png){fig-alt="A program that asks for a limit value and sums numbers up to that limit before outputting the sum." width="50%"}
+
+A program that asks for a limit value and sums numbers up to that limit before outputting the sum.
+:::
+
+---
+
+Let us tabulate the results of this program assuming that $n=4$.
+
+::: {.fragment}
+We will complete the table in class:
+
+| **`sum`** | **`counter`** | **`counter > limit`** |
+|----------:|--------------:|:----------------------|
+| $0$       | $1$           | `No`                  |
+|           | $2$           |                       |
+|           | $3$           |                       |
+|           | $4$           |                       |
+|           | $5$           |                       |
+
+:::
+
+---
+
+### How many ways can we write the same program?
+
+For our program summing the numbers up to a limit, there are three key parts.
+
+- Sum (**S**): `sum = sum + counter` 
+- Increment (**I**): `counter = counter + 1`
+- Check (**C**): Has condition been met?
+
+::: {.notes}
+These can be theoretically be combined in 8 different ways, the first six of which as shown in @tbl-week03-1. 
+
+Three implementations three are illustrated in  @fig-week03-sic (variation 6), @fig-week03-isc (variation 4), @fig-week03-cis (variation 2).
+:::
+
+---
+
+| Variation | Part 1 | Part 2 | Part 3 |
+|-----------|--------|--------|--------|
+|  1 | C | S | I |
+|  2 | C | I | S |
+|  3 | I | C | S |
+|  4 | I | S | C |
+|  5 | S | C | I |
+|  6 | S | I | C |
+
+: How many ways can a program be written? {#tbl-week03-1}
+
+---
+
+::: {#fig-week03-sic} 
+![](pictures/sic.png){fig-alt="Variation 6 - Sum - Increment - Check" width="50%"}
+
+Variation 6: Sum - Increment - Check
+:::
+
+---
+
+::: {#fig-week03-isc} 
+![](pictures/isc.png){fig-alt="Variation 4 - Increment - Sum - Check" width="50%"}
+
+Variation 4: Increment - Sum - Check
+:::
+
+---
+
+::: {#fig-week03-cis} 
+![](pictures/cis.png){fig-alt="Variation 2 - Check - Increment - Sum" width="50%"}
+
+
+Variation 2: Check - Increment - Sum
+:::
+
+---
+
+### Any more?
+
+::: {.fragment}
+
+What if we counted backawards from $n$?
+
+$$\mathrm{sum} = 1 + 2 + 3 + \cdots + \left(n - 1\right) + n$$
+
+:::
+
+::: {.fragment}
+
+$$\equiv$$
+
+:::
+
+::: {.fragment}
+
+$$\mathrm{sum} = n + \left(n-1\right) + \cdots 3 + 2 + 1$$
+
+:::
+
+---
+
+Let us tabulate the results of this program assuming that $n=4$.
+
+::: {.fragment}
+
+| **`sum`** | **`counter`** | **`counter > limit`** |
+|----------:|--------------:|:----------------------|
+| $0$       | $4$           |                  |
+|           | $3$           |                       |
+|           | $2$           |                       |
+|           | $1$           |                       |
+|           | $0$           |                       |
+
+:::
+
+::: {.fragment}
+
+A flow chart that implements this variation is given in @fig-week03-var4.
+
+:::
+
+---
+
+::: {#fig-week03-var4} 
+![](pictures/var4.png){fig-var="Another variation - Check - Decrement - Sum" width="50%"}
+
+Another variation: Check - Decrement - Sum
+:::
+
+---
+
+### Self-directed learning{#sec-flow-chart-task}
+
+
+::: {.incremental}
+
+1. See if you can write the other eight flowcharts for a program that sums the numbers 1 to n.
+2. To get you thinking from a programmer's point of view, consider the steps required to perform a task we usually take for granted, such as making a cup of tea, and what a flowchart for this might look like.
+3. After you’ve had a go at these, drop a message on the [discussion forum for this week](https://canvas.swansea.ac.uk/courses/52902/discussion_topics/468327) to let us know how you got on and which drawing package you found the best. Feel free to include any tips you find useful.
+:::
+
+::: {.center}
+## Modular Programming{#sec-week03-modular-programming background-image="pictures/modular_prog_wallpaper.png"}
+:::
+
+::: {.notes}
+![](pictures/modular_prog_wallpaper.png)
+
+This [Image](https://commons.wikimedia.org/wiki/File:Flowchart_structured_programming.svg) by Unknown Author is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
+:::
+
+---
+
+
+### What is a module?
+
+The basic approach to modularization is to consider a top-down design where the top level defines the main function, and a separate module represents each smaller function in the program (see @fig-week03-a-modular-program).
+
+::: {.fragment}
+
+::: {#fig-week03-a-modular-program} 
+![](pictures/modules.png){fig-at="A program built from modules."}
+
+A program built from modules
+:::
+
+:::
+
+::: {.notes}
+
+Each module is treated as a *black box*[^week03:black-box] which operates on its *input* and produces an *output*.
+
+As long as the input and output requirements remain the same, the module code can be changed without affecting the rest of the program.
+
+[^week03:black-box]: In science, computing, and engineering, a *black box* is a system which can be viewed in terms of its inputs and outputs (or transfer characteristics), without any knowledge of its internal workings. Its implementation is "opaque" (black). The term can be used to refer to many inner workings, such as those of a transistor, an engine, an algorithm, the human brain, or an institution or government.&mdash;[Blackbox (Wikipedia)](https://en.wikipedia.org/wiki/Black_box)
+:::
+
+---
+
+#### Example Task
+
+Write a program to perform n different tasks with a ten second delay between each task.
+
+The program we have been discussing that sums the numbers 1-10 can be used to simulate a delay.
+
+---
+
+##### Example program - Non-Modular Approach
+
+```
+DO 
+	Task 1
+END
+
+/* Delay between task 1 and task 2 */
+DO
+	number = 0
+	WHILE number < 11
+		DO
+			number = number + 1
+		END_DO
+	END_WHILE
+END
+
+DO 
+	Task 2
+END
+
+/* Delay between task 2 and task 3 */
+DO
+	number = 0
+	WHILE number < 11
+		DO
+			number = number + 1
+		END_DO
+	END_WHILE
+END
+
+DO 
+	Task 3
+END
+
+:
+```
+
+---
+
+##### Change the specification
+
+Now suppose that we want to change the delay between tasks to 20 seconds.
+
+::: {.fragment}
+Using a non-modular approach the developer/programmer now needs to change the line
+
+```
+WHILE number < 11
+```
+
+to 
+
+```
+WHILE number < 21
+```
+
+For each of the n-1 times it is used.
+:::
+
+---
+
+##### Example program - Modular Approach
+
+The code that implements the delay is made into a module which is called when needed
+
+```
+MODULE delay
+	DO
+		number = 0
+		WHILE number < 21
+			DO
+				number = number + 1
+			END_DO
+		END_WHILE
+	END
+END_MODULE
+```
+
+---
+
+The modular program becomes:
+
+```
+DO 
+	Task 1
+END
+
+/* Delay between task 1 and task 2 */
+DO
+	delay
+END
+
+DO 
+	Task 2
+END
+
+/* Delay between task 2 and task 3 */
+DO 
+	delay
+END
+
+DO 
+	Task 3
+END
+
+:
+```
+
+::: {.notes}
+
+By using a modular approach to program this task, the developer/programmer need only change one value to adjust the delay, independent of how many times the delay is called between tasks in the program.
+
+:::
+
+::: {.notes}
+
+We can take this idea further by parameterising the delay value itself. To code might now look like:
+
+```
+MODULE delay(delay)
+	DO
+		number = 0
+		WHILE number < delay
+			DO
+				number = number + 1
+			END_DO
+		END_WHILE
+	END
+END_MODULE
+```
+
+We can now have variable length delays between tasks:
+```
+DO 
+	Task 1
+END
+
+/* Ten second delay between task 1 and task 2 */
+DO
+	delay(10)
+END
+
+DO 
+	Task 2
+END
+
+/* Twenty second delay between task 2 and task 3 */
+DO 
+	delay(20)
+END
+
+DO 
+	Task 3
+END
+
+:
+```
+
+
+We will return to this idea when we look at functions in C.
+
+:::
+
+---
+
+#### Activity
+
+With the time remaining can you represent this program as a flow chart?
+
+Feel free to work individually or in small groups.
+
+---
+
+##### Solution
+
+See @fig-week03-exercise-solution in the notes online.
+
+::: {.notes}
+
+::: {#fig-week03-exercise-solution} 
+![](pictures/exercise_soln.png){fig-alt="Implementing a delay sub-program."}
+
+Implementing a delay sub-program using a modular approach
+:::
+
+:::
+
+---
+
+## Summary{.unnumbered}
+
+In this chapter we have:
+
+::: {.incremental}
+- Defined terminology relating to programming and looked at how languages can be classified as high or low based on the level of abstraction from the architecture it is to be run on. 
+- Looked at flowcharts defining the standard symbols and looking at how they are used to represent a program.
+- Looked at some example programs presented as flow charts and in pseudo code.
+- Noted that there may be more than one way to present a program to achieve the same results.
+- Introduced the use of sub-processes to allow modular programming for splitting up a program or repeating common elements.
+:::
+
+---
+
+### On Canvas
+
+::: {.fragment} 
+This week on the canvas course page, there is:
+:::
+
+::: {.incremental}
+- a [short video by Ben Clifford providing more of an introduction to programming languages and the compilation process](https://canvas.swansea.ac.uk/courses/52902/pages/introduction-to-programming-languages?module_item_id=2882148);
+- a [discussion forum](https://canvas.swansea.ac.uk/courses/52902/discussion_topics/468327) to talk about the @sec-flow-chart-task;
+- some [supplementary resources](https://canvas.swansea.ac.uk/courses/52902/pages/week-3-supplementary-resources?module_item_id=2882150); and
+- a [quiz to test your knowledge](https://canvas.swansea.ac.uk/courses/52902/assignments/407478?display=full_width).
+:::
 
 ---
 
@@ -1206,10 +1121,10 @@ data type with a quiz to test your knowledge.
 
 Please use the [Course Question Board](https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656) on Canvas or take advantage of the lecturers' office hours. 
 
+------ 
+
+### Next time
+
+* [Introduction to Programming with C](/lectures/week04)
+
 ---
-
-### Next time{.unnumbered}
-
-* [Interfacing to digital I/O with C](/lectures/week05)
-
---- 

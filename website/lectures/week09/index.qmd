@@ -1,34 +1,33 @@
 ---
-title: Addressing Modes
+title: Microcontroller Architecture – Program Operation
 author: 
   name: Ben Clifford
   affiliation: Welsh Centre for Printing and Coatings
 copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
-date: 11/26/2024
+date: 11/19/2024
 ---
 ::: {.notes}
-[Presentation version](/slides/lecture10.html) of these [notes](#sec-week09-intro).
+[Presentation version](/slides/lecture09.html) of these [notes](#sec-week08-intro).
 :::
 
-![](pictures/week09_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+![](pictures/week08_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
 
-## Introduction{.unnumbered #sec-wk9-intro}
+## Introduction{.unnumbered #sec-wk8-intro}
 
-In this week's lecture, you will learn more about assembly language and the diverse ways to access data dependent on what it is and where it is stored. 
-
-This is based around a concept known as *addressing modes*. 
-
-::: {.notes}
-There are different ways in which an operand may be specified in an instruction depending on what it is and where it is located. Some operations require no operands and the data to be operated on is implied, in other cases operands can be constants, variables, arrays and memory locations all of which are accessed differently.
+::: {.incremental}
+- In [Introduction to Microcontrollers and Microcontroller Architecture](/lectures/week02), we discussed  some of the core components of a microcontroller's architecture including the general purpose registers, status register, program counter and stack pointers. 
+- Aside from the program counter, these are registers which the programmer can directly access and manipulate. 
 :::
 
 ---
 
-### Topics discussed{.unnumbered}
+- In this section, we will look at some of the other components in the microcontroller CPU including the control unit, clock, memory address register, memory data register, instruction register and decoder. 
 
-In this section we will review a number of different addressing modes relevant to the Atmel ATMega328 Microcontroller including, inherent, immediate, direct, indirect and relative.
+::: {.fragment}
+- After introducing these components an example program will be demonstrated that is written in C language, showing the translation to assembly language using the listing file, followed by an explanation of how the program is executed through the fetch-decode-execute cycle.
+:::
 
----
+--- 
 
 ### Contents{.unnumbered}
 
@@ -36,552 +35,713 @@ In this section we will review a number of different addressing modes relevant t
 
 ::: {.column width="25%"}
 
-![](pictures/week09_contents_image.png){fig-alt="Decorative image used as a slide background."}
+![](pictures/week08_contents_image.png){fig-alt="Decorative image used as a slide background."}
 
 :::
 
 ::: {.column width="75%"}
-* @sec-wk9-sect1: [What is an addressing mode?](#sec-wk9-sect1)
-* @sec-wk9-sect2: [Addressing modes on the Atmel ATmega328](#sec-wk9-sect2)
+
+* @sec-wk8-sect1: [Architecture recap](#sec-wk8-sect1)
+* @sec-wk8-sect2: [Additional components](#sec-wk8-sect2)
+* @sec-wk8-sect3: [Fetch-Decode-Execute cycle](#sec-wk8-sect3)
+* @sec-wk8-sect4: [An Example Program](#sec-wk8-sect4)
+
 :::
 
 ::::
 
+::: {.center}
+## Architecture recap{#sec-wk8-sect1 background-image="pictures/week08_wallpaper.png"}
+:::
+
+::: {.notes}
+![](pictures/week08_wallpaper.png){fig-alt="mage of a microcontroller used as chapter headings in slide show."}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+:::
+
 ---
 
-## What is an addressing mode?{#sec-wk9-sect1}
+### Arithmetic Logic Unit (ALU)
+
+::: {.notes}
+
+The Arithmetic Logic Unit (ALU) (@fig-wk8-alu), is the part of the processor that performs arithmetic and logic operations on data from the storage area.
+
+Memory is used to store data and information but the real goal of the MCU is computation or manipulating data in a structured and purposeful way, like adding two numbers together. These operations are handled by the ALU which is the numerical and logical brain of the MCU. The Atmel ATmega328 has an 8-bit ALU which takes two 8-bit inputs, an opcode describing the operation to perform and outputs an 8-bit result along with a series of 1-bit flags which we can access through the status register.
+
+:::
+
+::: {#fig-wk8-alu} 
+![](pictures/alu.png){fig-alt="The arithmetic logic unit (ALU)." width="75%"}
+
+The arithmetic logic unit (ALU)
+:::
+
+::: {.notes}
+
+First, data are read from storage into the ALU’s data input ports. Once inside the ALU, they’re modified by means of an arithmetic or logic operation (`ADD`, `SUB`, `AND`, `OR` ...), and then they’re written back to storage via the ALU’s output port.
+
+Depending on the result of the computation, certain flags in the status register will be set or unset.
+
+To illustrate this, here is the reference manual entry for the **add without carry** operator (`ADD`)
+
+![](pictures/add_op.png){fig-alt="Add without carry operator."}
+
+:::
+
+---
+
+### The CPU Core
+
+::: {.notes}
+The CPU core of the Atmel ATmega328 microcontroller is illustrated in @fig-wk8-cpu_core.
+:::
+
+::: {#fig-wk8-cpu_core} 
+![](pictures/cpu_core.png){fig-alt="The CPU core with program counter, status and control register, general registers, and ALU highlighted."}
+
+The CPU core with program counter, status and control register, general registers, and ALU highlighted.
+:::
+
+::: {.notes}
+The CPU core of the Atmel ATmega328 microcontroller with *program counter*, *status and control register*, *32 general registers*, and *ALU* highlighted.
+
+The highlighted components are:
+
+**General Purpose Registers** – 32 8-bit wide registers which are used by the CPU to hold operands and immediate results of arithmetic and logic operations.
+
+**Program Counter** – a 14-bit wide register that stores the address of the next instruction or operand to be fetched.
+
+**Stack Pointer** – 2 8-bit wide registers that stores the address of the last item in the stack.
+
+**Status and Control Register** – an 8-bit wide register that contains information about the state of the processor based on the execution of the last instruction[^sr_control_bits].
+
+[^sr_control_bits]: The status and control register also contains bits that can change the operation of the microcontroller. For example the *global interrupt enable* bit is set if interrupts have been enabled. Interrupts will be discussed in EG-252 next year.
+
+::: {.callout-note}
+* The stack is an area in SRAM where data/information/MCU state can be temporarily pushed on and popped off - the stack pointer holds the memory address of the top of the stack.
+
+* The program counter holds the address of the next address to be executed.
+
+* The general purpose registers are located at the bottom of the data space so can be accessed directly by the ALU. Lower spec microcontrollers/CPUs may only have a single register which is referred to as an accumulator.
+:::
+
+:::
+
+::: {.center}
+## Additional components{#sec-wk8-sect2 background-image="pictures/week08_wallpaper.png"}
+:::
+
+::: {.notes}
+![](pictures/week08_wallpaper.png){fig-alt="Image of a microcontroller used as chapter headings in slide show."}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+:::
+
+---
+
+### Simplified block diagram of the microcontroller core
+
+::: {.notes}
+For this section we will used the simplified block diagram shown in @fig-wk8-simplified_bd to represent the microcontroller core. This shows the parts that we have already seen as well as the new ones, highlighted, that we will discuss in the following.
+:::
+
+::: {#fig-wk8-simplified_bd} 
+![](pictures/simple_bd.png)
+
+Simplified block diagram showing the major components of a microcontroller
+:::
+
+---
+
+### Block 1: Clock
+
+The clock generates a signal that oscillates between a high and a low state and acts like a metronome which coordinates/synchronizes the actions of the different microcontroller elements.
+
+::: {.notes}
+
+The clock signal typically takes the form of a square wave with a 50% duty cycle[^duty_cycle] and a fixed frequency see @fig-wk8-clk.
+
+:::
+
+[^duty_cycle]: The duty cycle is $\mu=T_\mathrm{on}/\left(T_\mathrm{on}+T_\mathrm{off}\right)$ and $\mu = 0.5$ (50%) if $T_\mathrm{on}=T_\mathrm{off}$. That is for half of a cycle (i.e. for $T_\mathrm{on}$s) it is in a high state and for the other half of the cycle (for $T_\mathrm{off}$s) it is in a low state. 
+
+::: {.fragment}
+
+::: {#fig-wk8-clk} 
+![](pictures/clock.png){fig-alt="A typical clock signal. The frequency is 1/T."}
+
+A typical clock signal. The frequency is $f=0.5/T_\mathrm{on}$ if $\mu = 0.5$.
+:::
+
+:::
+
+::: {.notes}
+
+In older microcontrollers the clock signal was generated by an external circuit, but modern microcontrollers typically come with an external crystal as well as an internal oscillator.
+
+At every cycle of the clock, a step of the *fetch-decode-execute* cycle is performed.
+
+The ATmega328 is shipped with an internal RC oscillator with a frequency of 8MHz and the Arduino nano board includes a 16MHz *external* crystal which is typically set to be the default clock[^execution_speed].
+
+:::
+
+[^execution_speed]: If the frequency is $x$MHz, then the microcontroller can execute $x$ million instructions a second and each instruction takes 1/x microseconds to execute. Therefore, for the ATmega328 with internal clock the execution speed is 0.125$\mu$s per instruction. For the ATmega328 on the Arduino nano it is half this.
+
+---
+
+#### Internal Clock
+
+::: {.notes}
+Internal clocks are made from RC oscillators.
+
+Limited manufacturing abilities mean that there are large differences between individual microcontrollers. These differences are typically $\pm 10\%$, but clocks can usually be tuned to $\pm 0.5\%$.
+ 
+**Advantages**
+
+- Cheaper
+- Leaves pins that are used for the external clock source, e.g. see atmel_clk_pins`, available for other functions such as I/O
+- Simplifies PCB design and routing for high frequency traces.
+:::
+
+::: {#fig-wk8-atmel-clk-pins} 
+![](pictures/atmel_clk.png){fig-alt="Pins reserved for an external clock signal on the Atmel ATmega328 microcontroller."}
+
+Pins reserved for an external clock signal on the Atmel ATmega328 microcontroller.
+:::
+
+---
+
+#### External clock
+
+::: {.notes}
+Many components inside the microcontroller will use a scaled version of the clock signal (recall the ADC) and so high clock accuracy is not needed. However, for other applications, such as communication based applications like the CAN bus, USB and Ethernet, high frequency and accurate clock signals are required. 
+
+For these applications, external ceramic resonators or crystals have a much higher accuracy when it comes to frequency as well as stability. 
+:::
+
+::: {#fig-wk8-crystal-clk} 
+![](pictures/crystal_clk.png){fig-alt="Images of the crystal oscillators used with microcontrollers."}
+
+Examples of the crystal oscillators used with microcontrollers. a) The circuit symbol for a crystal; b) A 16Mhz crystal packaged as a component; c) the external crystal provided with the ATmega328 chip on the Arduino nano board.
+:::
+
+---
+
+#### The Atmel ATmega328 clock
+
+::: {.notes}
+A block diagram of the clock circuity is given in @fig-wk8-atmel328-clk. This is a complex diagram and the details are not too important. What is important is to note is how the clock signal is distributed to all the major subsystems. This is to ensure that all the internal operations that the microcontrollers are carried out in lock-step with the clock signal and in synchronization with each other. The clock sources are shown at the bottom of the diagram and the major blocks which use the clock are at the top. The blocks in the centre of the diagram are concerned with the functions needed to monitor the status of the microcontroller. 
+:::
+
+::: {#fig-wk8-atmel328-clk} 
+![](pictures/atmel328_clk.png){fig-alt="Clock distribution of the ATmega328."}
+
+Clock distribution of the ATmega328 (Reproduced from Figure 8.1 of the Atmel ATmega328 data sheet).
+:::
+
+---
+
+The **CKSEL3..0** are special memory locations in flash memory ("fuses") that are used to set the clock sources as shown in Table 9.1 of the data sheet reproduced below.
+
+![](pictures/clksel.png){fig-alt="Reproduction of table 9.1 of the Atmel ATmega328 data sheet."}
+
+---
+
+#### Programmer's registers for clock control
+
+There are two registers accessible to the programmer with respect to the clock. These are
 
 ::: {.incremental}
-- An addressing mode is a way in which an operand is specified in an instruction and defines how the CPU finds it. 
-- There are different ways in which an operand may be specified in an instruction depending on what it is and where it is located.
-- Some operations require no operands and the data to be operated on is *implied*, in other cases operands can be constants, variables, arrays and memory locations – this is where addressing modes are used. 
+- **`OSCCAL` - Oscillation Calibration Register** used to trim the calibrated internal RC oscillator to remove process variations from the oscillator frequency.y
+- **`CLKPR` – Clock Prescale Register** whose bits define the division factor between the selected clock source and the internal system clock. These bits can be set at run-time to vary the clock frequency to suit the application requirements.
 :::
+
+---
+
+### Block 2: Control Unit
 
 ::: {.notes}
-The six addressing modes found in the AVR architecture used by the Atmel ATmega328 family of processors are summarised in @fig-wk9-addressing_modes.
-:::
-
----
-
-::: {#fig-wk9-addressing_modes}
-![](pictures/addressing_modes.png){fig-alt="The six addressing modes of an AVR processor - inherent, immediate, extended, direct, relative and indexed."}
-
-The six addressing modes of an AVR processor.
-:::
-
----
-
-
-- The memory address where data is stored is called the  *effective address* of the operand and the addressing mode refers to the way in which the operand is specified and how the CPU accesses it.
-
-::: {.notes}
-
-**Addressing modes** are an aspect of the *instruction set architecture* in most *central processing unit* (CPU) designs. The various addressing modes that are defined in a given instruction set architecture define how the *machine language instructions* in that architecture identify the *operand*(s) of each instruction. An addressing mode specifies how to calculate the effective *memory address* of an operand by using information held in *registers* and/or constants contained within a machine instruction or elsewhere.
-
-:::
-
----
-
-## Addressing modes on the Atmel ATmega328{#sec-wk9-sect2}
-
-The AVR<sup>&reg;</sup> Enhanced RISC microcontroller supports powerful and efficient addressing modes for access to the program memory (Flash) and Data memory (SRAM, Register file, I/O Memory, and Extended I/O Memory).
-
----
-
-The Atmel ATmega328 microcontroller makes use of the following addressing modes:
-
-::: {.incremental}
-- @sec-wk9-ia: [Inherent/Implied Addressing](#sec-wk9-ia)
-- @sec-wk9-rda: [Register Direct (single and two-register) Addressing](#sec-wk9-rda)
-- @sec-wk9-ioda: [I/O Direct Addressing](#sec-wk9-ioda)
-- @sec-wk9-dda: [Data Direct Addressing](#sec-wk9-dda)
-- @sec-wk9-ima: [Immediate Addressing](#sec-wk9-ima)
-- @sec-wk9-dia: [Data Indirect Addressing](#sec-wk9-dia)
-- @sec-wk9-ra: [Relative Addressing](#sec-wk9-ra)
-- Program Addressing (Not covered)
-:::
-
-::: {.notes}
-Apart from *program addressing*, we will discuss each of these addressing modes in the following.
-:::
-
----
-
-### Inherent Addressing Mode{#sec-wk9-ia}
-
-::: {.fragment}
-For instructions that use **inherent addressing**, sometimes called *implicit* or *implied* addressing,  the operands are not explicitly specified but are implied by the instruction[^inherent_addressing].
-:::
-
-[^inherent_addressing]: In inherent addressing the effective address that the operation acts on is the register itself.
-
----
-
-#### Examples of inherent addressing{.unnumbered}
-
-```{.asm #lst-wk9-inherent-addressing lst-cap="Examples of inherent addressing." code-line-numbers="|1|2|3"}
-SEN    ; Set Negative Flag in Status Register (SREG)
-CLN    ; Clear Nagative Flag in Status Register (SREG)
-NOP    ; No Operation (do nothing for one clock cycle)
-```
-
----
-
-::: {.notes}
-Since no additional clock cycles are required to fetch and move data around, this is the **simplest and fastest addressing mode**.
-
-Some of the AVR instructions that use inherent addressing are listed in @tbl-wk9-table1.
-:::
-
-| Mnemonic | Operands | Decription |
-|:---------|:--------:|:-----------|
-| `CLZ` | - | Clear *Zero Flag* in SREG |
-| `SEI` | - | Global Interrupt Enable |
-| `CLI` | - | Global Interrupt Disable |
-| `SES` | - | Set *Sign* Bit in SREG |
-| `CLS` | - | Clear *Sign* Bit in SREG |
-| `SEV` | - | Set Two's *Complement Overflow* bit in SREG |
-| `CLV` | - | Clear *Two's Complement Overflow* bit in SREG |
-| `SET` | - | Set *T* bit in SREG |
-| `CLT` | - | Clear *T* bit in SREG |
-| `SEH` | - | Set *Half Carry Flag* in SREG |
-| `CLH` | - | Clear *Half Carry Flag* in SREG |
-: AVR instructions that use inherent addressing {#tbl-wk9-table1}
-
-::: {.notes}
-
-::: {.callout-note}
-Microcontrollers that have single accumulators in place of a bank of general-purpose registers often have more instructions that use inherent addressing such as `CLRA`, `DECA`, `INCA`.
-:::
-
-:::
-
----
-
-### Register Direct Addressing{#sec-wk9-rda}
-
-::: {.fragment}
-For these operators, the operands are contained in registers in the *register file*. There are single register operators which operates on and returns the result to the destination register, known as `Rd`[^Rd].
-:::
-
-::: {.notes}
-Because the microcontroller can access the register file faster than memory, they are also fast instructions.
-:::
-
-[^Rd]: The `d` in `Rd` is a number in the range 0-31.
-[^Rr]: The `r` in `Rr` is also a number in the range 0-31.
-
----
-
-#### Single Register Addressing (`Rd`) 
-
-::: {.fragment}
-For instructions that use **single direct register addressing**, the operand is contained in the destination register Rd as illustrated in @fig-wk9-srda.
-:::
-
----
-
-::: {#fig-wk9-srda}
-![](pictures/srda.png){fig-alt="Illustrating single register direct addressing."}
-
-Illustrating single register direct addressing: `d` is the register number and `Rd` is source of the operand and the destination of the result.
-:::
-
----
-
-##### Examples{.unnumbered}
-
-```{.asm #lst-wk9-register-direct-addressing lst-cap="Examples of single register direct addressing." code-line-numbers="|1|2|3"}
-DEC R16		;Decrement R16
-INC R17		;Increment R17
-CLR R16		;Clear R16
-```
-
-::: {.notes}
-
-::: {.callout-note}
-Remember the operand represents the data so this addressing mode is accessing or acting on the data using only one of the general purpose registers but does not include any write back to SRAM/EEPROM.
-:::
-
-:::
-
----
-
-#### Two Register Addressing (`Rd`, `Rr`)
-
-::: {.fragment}
-For instructions that use **direct register addressing with two registers**, the operand is *contained* in the source and destination registers `Rr`[^Rr] and `Rd` respectively. As a result of these operations is that the data in `Rd` is overwritten. This is illustrated in @fig-wk9-rda-with-2-regs.
-:::
-
----
-
-::: {#fig-wk9-rda-with-2-regs}
-![](pictures/srda2.png){fig-alt="Illustrating direct register addressing with two registers."}
-
-Illustrating register direct addressing with two registers: d is the source of the first operand, `r` is the source of the second operand. The result overwrites the data in register `d`.
-:::
-
----
-
-##### Examples{.unnumbered}
-
-```{.asm #lst-wk9-rda-with-2-regs lst-cap="Examples of direct register addressing with two registers." code-line-numbers="|1|2|3"}
-ADD R16, R17  ;Add the contents of R16 and R17. Return sum to R17.
-CP R16, R17   ;Compare the values of R16 and R17 - sets the Z, N flags in SR
-MOV R16, R17  ;Copy contents of R16 into R17
-```
-
-::: {.notes}
-
-::: {.callout-note}
-As with the previous addressing mode, this one is accessing or acting on the data in two of the general purpose registers and although it overwrites the data in Rd is also does not include any write back to SRAM/EEPROM.
-
-Note that the result of `CP` is the sign of R16 - R17. If the difference is zero the `Z` flag is set in the status register. If the difference is a negative number, the `S` (sign) flag will be set. If the difference is positive, no flags are set. Carry and half-carry flags are also set as appropriate. The `CP` operation is typically followed by one of the branch operations `BEQ` (branch if equal to zero), `BLT` (branch if less than zero), `BGT` (branch if greater than zero), etc. The operation `CP` plus branch is typically used in the compilation of logical comparisons in C's `if`, `else if`, `while`, and `for` statements.
-:::
-
-:::
-
----
-
-### I/O Direct Addressing{#sec-wk9-ioda}
-
-::: {.fragment}
-Within the user data space there are 64 I/O registers as well as 160 Extended I/O registers. The **first 64** of these can be accessed using instructions **such as `IN` and `OUT` using I/O direct addressing mode**.  In I/O direct addressing mode the operands contain the **address A of one of the lower 64 I/O locations** and a source (`Rr`) or destination register (`Rd`). This is illustrated in @fig-wk9-io-addr. 
-:::
-
----
-
-::: {#fig-wk9-io-addr} 
-![](pictures/io_addr.png){fig-alt="Illustrating I/O direct register addressing - one of the operands comes from one of the I/O registers."}
-
-Illustrating I/O direct addressing: the source (or destination) will be from an I/O register. The destination (or source) will be one of the general purpose registers.
-:::
-
----
-
-##### Examples[^wk9:note1]
-
-```{.asm #lst-wk9-io-addr lst-cap="Examples of I/O direct addressing." code-line-numbers="|1|2"}
-IN R16, PIND	 ;Load (input) the contents of PIND into R16
-OUT PORTC, R17	 ;Store (output) the contents of R17 to PORTC
-```
-
-[^wk9:note1]: Note: in these examples, the labels  `PIND` and `PORTC` must have already been defined.
-
-::: {.notes}
-
-::: {.callout-note}
-Be aware that loading and storing data to these registers using instructions such as `LD` and `ST` must address these registers differently and does not use I/O direct addressing mode. 
-:::
-
-:::
-
----
-
-### Data Direct Addressing{#sec-wk9-dda}
-
-::: {.fragment}
-Instructions that use **direct data addressing** are **two words** (32-bits) in length, the first operand, `Rr`/`Rd` is one of the general-purpose registers and the second is 16-bit Data Address contained in the 16 LSBs of the two-word instruction. This is illustrated in @fig-wk9-dd-addr. 
-:::
-
----
-
-::: {#fig-wk9-dd-addr} 
-![](pictures/dd_addr.png){fig-alt="Illustrating data direct addressing with a general purpose register and data stored in memory."}
-
-Illustrating data direct addressing: the source (or destination) will be in memory. The destination (or source) will be one of the general purpose registers.
-:::
-
----
-
-##### Examples{.unnumbered}
-
-```{.asm #lst-wk9-dd-addr lst-cap="Examples of direct data addressing." code-line-numbers="|1|2"}
-LDS R16, 0x0100   ;Load the contents of data space address hex 0100 into R16
-STS 0x0101, R17   ;Store the contents of R17 to data space address hex 0101
-```
-
----
-
-### Immediate Addressing{#sec-wk9-ima}
-
-::: {.fragment}
-With instructions that use **immediate addressing** the actual data to be used is included within the instruction itself as a constant value[^wk9:note2]. This is illustrated in @fig-wk9-imm-addr.
-:::
-
----
-
-::: {#fig-wk9-imm-addr} 
-![](pictures/imm_addr.png){fig-alt="llustrating immediate addressing in which the operand is a number in the instruction."}
-
-Illustrating immediate addressing: the destination will be an one of the general purpose registers. The source will be a data value given in the instruction.
-:::
-
-[^wk9:note2]: the value of the second operand of an operator with immediate addressing will be hard coded into the code and cannot be changed during the running of a program.
-
----
-
-##### Examples{.unnumbered}
-
-```{.asm #lst-wk9-imm-addr lst-cap="Examples of immediate addressing." code-line-numbers="|1|2"}
-LDI R16, 0x5B   ;Load the hex value 5B into R16
-SUBI R17, 24    ;Subtract the decimal value 24 from the contents of R17
-```
-
-::: {.notes}
-
-::: {.callout-note}
-Since the instruction already contains the data, this is a fast addressing mode and only takes one clock cycle to complete.
-:::
-
-:::
-
----
-
-#### Immediate vs Data Direct Addressing{.unnumbered}
-
-::: {.fragment}
-Instructions that use immediate addressing, take one clock-cycle to complete. 
+The **control unit** coordinates all activities and sends signals through the control bus to all elements of the microcontroller, including the ALU, memory, and input/output, instructing them how to respond to the instructions from the program code it has just read and interpreted from the memory unit.
 :::
 
 ::: {.fragment}
-For example `LDI` - load immediate:
 
-![](pictures/wk9_ldi.png){fig-alt="Manual page for the LDI command."}
+The control unit is responsible for
 
-:::
-
----
-
-Instructions that use register or data direct addressing, take two clock-cycles to complete. 
-
-::: {.fragment}
-For example `LDS` - load from store needs to load the operator and decode the register address, then load data from the data space into the register.
-
-![](pictures/wk9_lds.png){fig-alt="Manual page for the LDS command."}
-:::
-
----
-
-### Data Indirect Addressing{#sec-wk9-dia}
-
-::: {.fragment}
-With instructions that use **indirect data addressing** the operand address is the contents of one of the X- Y- Z-pointer registers. This is illustrated in @fig-wk9-id-addr. 
-:::
-
----
-
-::: {#fig-wk9-id-addr} 
-![](pictures/id_addr.png){fig-alt="Illustrating indirect direct addressing in which the registers provide the address of the operand."}
-
-Illustrating indirect data addressing in which two registers provide the address in memory of the operand.
-:::
-
----
-
-##### Examples{.unnumbered}
-
-```{.asm #lst-wk9-id-addr lst-cap="Examples of indirect data addressing." code-line-numbers="|1|2|4"}
-LDS R26, 0x00
-LDS R27, 0x10 
-
-LD R18, X	   ;Load R18 with data stored at the address in the X- pointer register
-```
-
-::: {.notes}
-
-::: {.callout-note}
-This mode allows the address to be a run time computed value, whereas the direct address must be computed at compile time/assembly time/load time.
-
-This has several important use cases including setting up storage for arrays or other structures in memory.
-:::
-
-:::
-
----
-
-#### Indirect Data Addressing with Displacement
-
-::: {.fragment}
-As with indirect data addressing, the microcontroller makes use of the Y and/or Z pointers with an additional displacement to access data stored in the data space.
-:::
-
-::: {.fragment}
-This is the best way to access an array of data and is illustrated in @fig-wk9-id-addr-2. 
-:::
-
----
-
-::: {#fig-wk9-id-addr-2} 
-![](pictures/id_addr_2.png){fig-alt="Illustrating indirect direct addressing with displacement."}
-:alt: Illustrating indirect direct addressing with displacement.
-
-Illustrating indirect direct addressing with displacement.
-:::
-
----
-
-##### Examples{.unnumbered}
-
-```{.asm #lst-wk9-id-addr-2 lst-cap="Examples of indirect data addressing." code-line-numbers="|1|2|4"}
-LDS R28, 0x00
-LDS R29, 0x10 
-
-LD R18, Y + 1	   ;Load R18 with data stored at the address in the Y- pointer register with a displacement of 1
-```
-
-::: {.notes}
-
-::: {.callout-note}
-This mode allows the address to be a run time computed value, whereas the direct address must be computed at compile time/assembly time/load time.
-:::
-
-:::
-
----
-
-#### Indirect Data Addressing with Increment/Decrement
-
-::: {.fragment}
-Indirect Data Addressing mode also supports *Post-increment* and *Pre-decrement addressing*. 
 :::
 
 ::: {.incremental}
-- With *Data Indirect Addressing with Post-increment*, the X-, Y-, or the Z-pointer is incremented after the operation. 
-- The operand address is the content of the X-, Y-, or the Z-pointer before incrementing.
-- With *Data Indirect Addressing with Pre-decrement*, the X,- Y-, or the Z-pointer is decremented before the operation. 
-- The operand address is the decremented contents of the X-, Y-, or the Z-pointer.
+- Coordinating and controlling activities of the CPU;
+- Managing data flow between other components and the CPU;
+- Acknowledging and accepting the next instruction; and
+- Storing the resulting data back into a memory unit.
 :::
 
 ---
 
-##### Examples{.unnumbered}
+### Block 3: Memory Address Register (MAR)
 
-```{.asm #lst-wk9-id-addr-3 lst-cap="Examples of indirect data addressing with increment/decrement." code-line-numbers="|1|2"}
-LD R16, Z+ ;Load R16 with data stored at the current address in the Z pointer register then increment the Z register
-LD R16, -Z ;Load R16 with data stored at the current address in the Z pointer register - 1
+During operation the address in the program counter is loaded into the **Memory Address Register** and a request is sent onto the address bus to retrieve the data stored at that memory location.
+
+---
+
+### Block 4: Memory Data Register (MDR)
+
+The data at a particular memory location is loaded from the data bus into the **Memory Data Register** before being passed to the **instruction register** or being operated on.
+
+---
+
+### Block 5: Instruction Register (IR)
+
+After fetching an instruction from program memory, the microcontroller stores it in the **instruction register**.
+
+---
+
+### Block 6: Instruction Decoder (ID)
+
+::: {.incremental}
+- The **instruction decoder** decodes the instruction opcode from the **instruction register** and generates appropriate control signals to execute the instruction.
+- It contains a lookup table featuring a mapping of all binary instructions in the microcontroller's instruction set architecture.
+- Once an instruction arrives at the instruction register it is passed to the decoder. Once decoded the output is passed to the control unit to select the correct hardware for the operation or to get the next word of data from memory.
+:::
+
+::: {.notes}
+A summary of some example operations taken from section 5 of the AVR Instruction Set Manual [@avr_instruction_set] are given in @tbl-wk8-table1 in the notes.
+
+The interested reader will find full details at the manual reference quoted in the table.
+
+|  16 Bit Opcode | Operation | Usage | Syntax | Program Counter (PC) | Manual reference |
+|:---------------|:----------|:------|:-------|:---------------------|:-----------------|
+|  0001 11rd dddd rrrr | Add with carry (`ADC`) | Rd <- Rd + Rr + C[^carry_flag] | `ADD Rd, Rr` | PC <- PC + 1 | 5.1 |
+|  0000 11rd dddd rrrr | Add without carry (`ADD`) | Rd <- Rd + Rr | `ADD Rd, Rr` | PC <- PC + 1 | 5.2 |
+|  1001 0110 KKdd KKKK | Add Immedidate to Word (`ADIW`) | R[d+1]:Rd <- R[d+1]:Rd + K | `ADIW Rd+1:Rd,K` | PC <- PC + 1 | 5.3 |
+|  0010 00rd dddd rrrr | Logical AND (`AND`) | Rd <- Rd & Rr | `AND Rd, Rr` | PC <- PC + 1 | 5.4 |
+|  0111 KKKK dddd KKKK | Logical AND with Immediate (`ANDI`) | Rd <- Rd & K | `ANDI Rd, K` | PC <- PC + 1 | 5.5 |
+|  1001 010d dddd 0101 | Arithmetic Shift Right (`ASR`) | ![ASR Operation](pictures/asr.png) | `ASR Rd` | PC <- PC + 1 | 5.6  |
+|  1001 0100 1sss 1000 | Bit Clear in SREG (`BCLR`) | SREG(s) <- 0 | `BCLR s` | PC <- PC + 1 | 5.7 |
+: Some examples of instruction decoding {#tbl-wk8-table1} 
+
+[^carry_flag]: The carry flag C comes from the status register.
+:::
+
+---
+
+### Busses
+
+::: {.notes}
+Inside the microcontroller, components communicate with each other using sets of parallel connectors known as buses. The processor is connected to the main memory by three separate buses as illustrated in @fig-wk8-busses. 
+:::
+
+::: {#fig-wk8-busses} 
+![](pictures/mc_busses.png){fig-alt="The three busses in the ATmega328 microntroller."}
+
+The three busses in the ATmega328 microntroller.
+:::
+
+::: {.notes}
+The three buses are:
+
+- **Address bus**: a unidirectional bus from the processor to the memory or an I/O controller that carries the location of the data to be read from or written to. 
+- **Data bus**: a bi-directional pathway that carries data or instructions between processor components. The width of data bus is key in determining the overall computer performance. The AVR CPU data bus is 8-bits wide but the word size is 16-bits meaning the data bus has to use two cloxk cycles to fetch each byte of a word from the main memory.
+- **Control bus**: is a bi-directional pathway that carries command, timing and specific status information among components. Examples of control information include:
+  - Read/write from/to memory
+  - Read/write from/to I/O port
+  - Request access to the data bus
+  - Grant access to the data bus
+  - Sync clock
+  - Reset
+:::
+
+::: {.center}
+## Fetch-Decode-Execute cycle{#sec-wk8-sect3 background-image="pictures/week08_wallpaper.png"}
+:::
+
+::: {.notes}
+![](pictures/week08_wallpaper.png){fig-alt="Image of a microcontroller used as chapter headings in slide show."}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+:::
+
+---
+
+### Recap: Program Instructions{#sec-wk8-add-code}
+
+::: {.notes}
+The microcontroller program consists of a sequence of instructions, each consisting of an opcode (`LDI`, `ADD`, `OUT`, etc…) defining the operation to be carried out and an operand containing the data or location of the data which the instruction is to operate on.
+:::
+
+::: {.fragment}
+
+**High level language**
+
+```c
+myVariable = 121 + 103;
 ```
+
+:::
+
+::: {.fragment}
+
+![](pictures/arrow.png){fig-qlt="Arrow pointing downwards"}
+
+**Low Level Language**
+
+```asm
+LDI r16, 0b01111001
+LDI r17, 0b01100111
+ADD r16, r17
+STS 0xFF00, r16
+```
+
+:::
+
+::: {.fragment}
+
+![](pictures/arrow.png){fig-qlt="Arrow pointing downwards"}
+
+**Machine Code**
+
+```
+1110011100001001
+1110011000010111
+0000111100000001
+1001001100000000
+1111111100000000
+```
+:::
+
+---
+
+### Fetch-Decode-Execute Cycle
+
+Each instruction is carried out by a sequence of operations, known as the **fetch-decode-execute cycle** illustrated as a flow chart in @fig-wk8-fetch-decode-execute-cycle.
+
+---
+
+#### Flowchart of fetch-decode-execute cycle
+::: {#fig-wk8-fetch-decode-execute-cycle}
+![](pictures/fetch_decode_execute_cycle.png){width="50%" fig-alt="A flow chart illustrating the fetch-decode-execute cycle."}
+
+A flow chart illustrating the fetch-decode-execute cycle
+:::
 
 ::: {.notes}
 
-::: {.callout-note}
-This mode is useful for iterating through arrays of or sequentially stored linked data.
-:::
+The fetch-decode-execute cycle follows the following steps
 
 :::
 
 ---
 
-### Relative Addressing{#sec-wk9-ra}
-
-::: {.fragment}
-With relative program memory addressing the operand contains a signed 12-bit offset value which during execution is added to the program counter to change the flow of the program.
-:::
-
-::: {.fragment}
-The destination of the branch (effective address) instruction is calculated by adding the signed byte following the opcode (-2048 to +2047) to the PC content. This is illustrated in @fig-wk9-rel-addr. 
-:::
-
----
-
-::: {#fig-wk9-rel-addr} 
-![](pictures/rel_addr.png){fig-alt="Illustrating relative addressing which adjusts the program counter and is typically used for branching."}
-
-Illustrating relative addressing which adjusts the program counter and is typically used for branching.
-:::
-
----
-
-##### Examples{.unnumbered}
-
-```{.asm #lst-wk9-rel-addr lst-cap="Examples of relative addressing." code-line-numbers="|1|2"}
-RJMP Label	;Jump to the address specified by label
-RCALL Label	;relative call to an address (subroutine)
-```
+#### Fetch
+::: {.incremental}
+- **Fetch** the operator code from memory via the data bus and store it in the instruction register. 
 
 ::: {.notes}
-::: {.callout-note}
-This addressing mode is used by instructions such as RJMP to modify the flow of a program, this typically is used in conjunction with test conditions or at the end of the code to make it loop back to the start.
-:::
+This occurs by placing an address on the address bus and then reading the instruction at this address from the data bus.
 :::
 
----
-
-#### Relative Addressing Example
-
-::: {#fig-wk9-rad-example} 
-![](pictures/rad_example.png){fig-alt="Example of relative addressing."
-
-An example to illustrate relative addressing
+- The address of the instruction to be fetched is stored in the program counter which is then loaded into the **Memory Address Register** and a request is sent onto the address bus.
+- The program counter is then incremented to point to the next sequential memory address.
+- The contents of the memory location are then transferred through the data bus to the **Memory Data Register** and then into the **instruction register** before passing to the decoder.
 :::
 
 ---
 
-```{.asm #lst-using-bit-manipulation lst-cap="Assembly code for the example of relative addressing." code-line-numbers="|3|13"}
-LOOP:
-	SBIC PIND, 2
-	RJMP LED1
+#### Decode
 
-	SBIC PINC, 3
-	RJMP LED2
-
-	IN R16, PORTB
-	ANDI R16, 0b11111100
-	OUT PORTB, R16
-	RJMP LOOP
-
-LED1:
-	SBI PORTB, 0
-	RJMP LOOP
-
-LED2: 
-	SBI PORTB, 1
-	RJMP LOOP
-```
+- **Decode** the operator code within the instruction decoder and determine the nature of the operation specified (load immediately, load a byte from memory, load a word from memory). Fetch further data using the address and data busses as necessary based on the instruction decoded.
 
 ---
 
-```
-RJMP LED1 -> 1100 kkkk kkkk kkkk
-```
+#### Execute
+- **Execute** the instruction on the necessary operands.
+
+---
+
+#### Continue
+- The fetch-decode-execute is now complete and starts again for the next code memory location indicated by the program counter.
+
+---
+
+### Fetch-Decode-Execute cycle algorithm
+
+The process is illustrated as an algorithm below
 
 ::: {.fragment}
-
-is
-
+Step 1: 
 ```
-C006 = 1100 0000 0000 0110 -> RJMP +6
+MAR <- (PC)
 ```
+::: {.notes}
+The address in the program counter (PC) is transferred to the memory address register (MAR).
+:::
+:::
+
+::: {.fragment}
+Step 2:
+```
+(PC) <- (PC) + 1
+```
+::: {.notes}
+The program counter is incremented to point to the next instruction.
+:::
+:::
+
+::: {.fragment}
+Step 3: 
+```
+MDR <- (MAR)
+```
+::: {.notes}
+The contents of the location specified by the memory address register (MAR) are transferred to the memory data register (MDR).
+:::
+:::
+
+::: {.fragment}
+Step 4: 
+```
+IR <- (MDR)
+```
+::: {.notes}
+The contents of the memory data register (MDR) are loaded to the instruction register (IR) and then decoded.
+:::
+:::
+
+---
+
+::: {.center}
+## An Example Program{#sec-wk8-sect4 background-image="pictures/week08_wallpaper.png"}
+:::
+
+::: {.notes}
+[](pictures/week08_wallpaper.png){fig-alt="Image of a microcontroller used as chapter headings in slide show."}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+:::
+
+---
+
+### Recall the digital I/O program…
+
+```{.c #lst-wk8-add-code lst-cap="Digital I/O program in C"}
+#include <stdint.h>
+
+//I/O and ADC Register definitions taken from datasheet
+#define	PORTD (*(volatile uint8_t *)(0x2B))
+#define DDRD (*(volatile uint8_t *)(0x2A))
+#define PIND (*(volatile uint8_t *)(0x29))
+
+#define PORTB (*(volatile uint8_t *)(0x25))
+#define DDRB (*(volatile uint8_t *)(0x24))
+#define PINB (*(volatile uint8_t *)(0x23))
+
+int main(void)
+{
+	//Set Data Direction Registers
+	DDRD = DDRD & 0b11110011; //setup bits 2 and 3 of port D as inputs
+	DDRB = DDRB | 0b00000011; //setup bits 0 and 1 of port B as outputs
+
+	PORTB = PORTB & 0b11111100; //both pins B0 (D8) and B1 (D9) start low
+	
+	PORTD = PORTD | 0b00001100; // Enable the pull up resistor for bits 2 and 3 of port D
+	
+	for(;;)
+	{
+		if((PIND & 0b00000100) == 0)
+		{
+			PORTB = PORTB | 0b00000001; //sets port B, bit 0 to logic 1/high, switches the LED connected to D8 on
+		}
+		else if ((PIND & 0b00001000) == 0)
+		{
+			PORTB = PORTB | 0b00000010; //sets port B, bit 1 to logic 1/high, switches the LED connected to D9 on
+		}
+		else
+		{
+			PORTB = PORTB & 0b11111100; //sets bits 0-5 of port B to logic 0/low, switches off both the LED's
+		}
+	}
+	
+}
+```
+
+Code: [main.c](https://gist.github.com/cpjobling/07585093f8eafe69a4eeff1186110883)
+
+---
+
+### Listing File
+
+::: {.notes}
+This is the listing file (refer to @lst-wk8-assembly) generated by the assembler which shows each line of C code and what it has been translated to in assembly language along with the memory address the instruction will be stored at[^wk8_note].
+
+[^wk8_note]: This file is not completely accurate as the assembler used has assumed the memory space is 8-bits wide where as it is actually 16-bits wide. This means each memory address shown should be divided by 2.
+:::
+
+```{#lst-wk8-assembly lst-cap="Listing file for example program"}
+00000080 <main>:
+#define PINB (*(volatile uint8_t *)(0x23))
+
+int main(void)
+{
+	//Set Data Direction Registers
+	DDRD = DDRD & 0b11110011; //setup bits 2 and 3 of port D as inputs
+  80:	8a b1       	in	r24, 0x0a	; 10
+  82:	83 7f       	andi	r24, 0xF3	; 243
+  84:	8a b9       	out	0x0a, r24	; 10
+	DDRB = DDRB | 0b00000011; //setup bits 0 and 1 of port B as outputs
+  86:	84 b1       	in	r24, 0x04	; 4
+  88:	83 60       	ori	r24, 0x03	; 3
+  8a:	84 b9       	out	0x04, r24	; 4
+
+	PORTB = PORTB & 0b11111100; //both pins B0 (D8) and B1 (D9) start low
+  8c:	85 b1       	in	r24, 0x05	; 5
+  8e:	8c 7f       	andi	r24, 0xFC	; 252
+  90:	85 b9       	out	0x05, r24	; 5
+	
+	PORTD = PORTD | 0b00001100; // Enable the pull up resistor for bits 2 and 3 of port D
+  92:	8b b1       	in	r24, 0x0b	; 11
+  94:	8c 60       	ori	r24, 0x0C	; 12
+  96:	8b b9       	out	0x0b, r24	; 11
+	
+	for(;;)
+	{
+		if((PIND & 0b00000100) == 0)
+  98:	4a 99       	sbic	0x09, 2	; 9
+  9a:	02 c0       	rjmp	.+4      	; 0xa0 <main+0x20>
+		{
+			PORTB = PORTB | 0b00000001; //sets port B, bit 0 to logic 1/high, switches the LED connected to D8 on
+  9c:	28 9a       	sbi	0x05, 0	; 5
+  9e:	fc cf       	rjmp	.-8      	; 0x98 <main+0x18>
+		}
+		else if ((PIND & 0b00001000) == 0)
+  a0:	4b 99       	sbic	0x09, 3	; 9
+  a2:	02 c0       	rjmp	.+4      	; 0xa8 <main+0x28>
+		{
+			PORTB = PORTB | 0b00000010; //sets port B, bit 1 to logic 1/high, switches the LED connected to D9 on
+  a4:	29 9a       	sbi	0x05, 1	; 5
+  a6:	f8 cf       	rjmp	.-16     	; 0x98 <main+0x18>
+		}
+		else
+		{
+			PORTB = PORTB & 0b11111100; //sets bits 0-5 of port B to logic 0/low, switches off both the LED's
+  a8:	85 b1       	in	r24, 0x05	; 5
+  aa:	8c 7f       	andi	r24, 0xFC	; 252
+  ac:	85 b9       	out	0x05, r24	; 5
+  ae:	f4 cf       	rjmp	.-24     	; 0x98 <main+0x18>
+
+000000b0 <_exit>:
+  b0:	f8 94       	cli
+
+000000b2 <__stop_program>:
+  b2:	ff cf       	rjmp	.-2      	; 0xb2 <__stop_program>
+```
+
+---
+
+### Fetch
+
+![](pictures/fetch_example.png){fig-alt="The fetch operation as a video."}
+
+::: {.notes}
+
+**Fetch operation described**
+
+1. The PC is set to $0040.
+2. The contents of the PC is copied to the MAR and transferred via the address bus to the memory controller.
+3. The value of PC is incremented.
+4. The contents of the memory location specified by the MAR are transferred via the data bus to the MDR
+5. The contents of the MDR are placed into the IR.
 
 :::
 
 ---
 
-::: {#fig-wk9-rel-addr_3}
-![](pictures/rel_addr_3.png){fig-alt="The program counter jumps 6 memory locations forward."}
+### Decode
 
-The program counter jumps 6 memory locations forward.
+![](pictures/decode_example.png){fig-alt="The decode operation as a video."}
+
+::: {.notes}
+
+**Decode operation described**
+
+The program instruction at line 40 is b1 8a = 1011 0001 1000 1010.
+
+The most significant 5 bits 10110 correspond to the `IN` opcode [@avr_instruction_set, Section 5.61].
+
+![](pictures/in_opcode.png){fig-alt="Documentation for the IN opcode."}
+
+From the documentation the remaining bits are distributed as per the table below:
+
+| opcode | AA | ddddd | AAAA |
+|--------|----|-------|------|
+| 10110  | 00 | 11000 | 1010 |
+
+
+So
+
+AAAAAA = 00 1010 (0x0A) and ddddd = 11000 (24).
+
+Disassembling the instruction gives:
+```
+in r24, 0x0a
+```
+which in words is *read I/O register 0x0A into register 24*.
 :::
+
+---
+
+### Execute
+
+![](pictures/execute_example.png){fig-alt="The execute operation as a video."}
+
+::: {.notes}
+
+**Execute operation described**
+
+1. MAR set to I/O register $000A (DDRD) and transferred via the address bus to the memory controller.
+2. The contents of the memory location specified by the MAR are transferred via the data bus to the MDR.
+3. The contents of the MDR are copied to R24
+:::
+
+---
+
+### Assembly to Machine Code
+
+::: {.notes}
+The assembly/machine code instructions equivalent to the program given in @sec-wk8-add-code is tabulated in @tbl-wk8-table2. Refer also to [Introduction to Assembly Language](/lectures/week07/index.html#wk7-assembler).
+:::
+
+| Assembler | Machine Code | Documentation |
+|:----------|:-------------|:--------------|
+|  `ldi r16, 0b01111001` | 1110 0111 0000 1001 | ![LDI - Load immediate documentation](pictures/ldi_opcode.png) |
+|  `ldi r17, 0b01100111` | 1110 0110 0001 0111 | See cell above |
+|  `add r16, r17` | 0000 1111 0000 0001 | ![ADD - Add without carry](pictures/add_opcode.png) |
+|  `sts 0xFF00, r16` | 1001 0011 0000 0000 1111 1111 0000 0000 | ![STS - Store direct to data space](pictures/sts_opcode.png) |
+: Assembly to machine code {#tbl-wk8-table2}
+
+---
 
 ## Summary{.unnumbered}
 
-In this section have reviewed different addressing modes supported by the AVR instruction set commenting on use cases and speed (in clock cycles) of their operation.
+In this section we have:
+
+::: {.incremental}
+- Recapped the core components of the AVR CPU including the ALU, general purpose registers, program counter, stack pointer and status register as well as their function in the microcontroller.
+- Looked at the function of some of the other components within the CPU including the clock, memory address register, memory data register, instruction register and decoder.
+- Looked at an example of what happens during program execution through the fetch-decode-execute cycle.
+:::
 
 ---
 
 ### On Canvas{.unnumbered}
 
-You should review Section 3 of the AVR instructions set manual [@avr_instruction_set] on program and data addressing modes. There is a short quiz covering the content of this chapter. 
+This week on the canvas course pages, you will find a [short quiz](https://canvas.swansea.ac.uk/courses/44971/assignments/52902) to test your knowledge on these topics.
 
 
 ---
 
-### Next Time - Class Test!{.unnumbered}
+### Next time{.unnumbered}
 
-::: {.fragment}
-In preparation for the class test next week, you should review all the content covered in these lecture notes, self-directed study material and the lab classes. 
-:::
-
-::: {.fragment}
-Note that the class test is closed-book but you have will access to the reference manuals mentioned in these notes.
-:::
+* [Addressing Modes](/lectures/week09)

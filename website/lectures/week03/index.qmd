@@ -1,1090 +1,717 @@
 ---
-title: Introduction to Programming and Program Development
+title: Architecture of the Atmel ATmega 328 Microcontroller
 author: 
   name: Ben Clifford
   affiliation: Welsh Centre for Printing and Coatings
 copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
-date: 10/15/2024
+date: 10/08/2024
 ---
 ::: {.notes}
-[Presentation version](/slides/lecture04.html) of these [notes](#sec-week03-intro).
+[Presentation version](/slides/lecture03.html) of these [notes](#sec-week02).
 :::
 
-![](pictures/week03_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+![](pictures/week02_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
 
-## Introduction {#sec-week03-intro .unnumbered}
+## Introduction{#sec-week02 .unnumbered} 
 
-When developing an application to run on a microcontroller or other embedded system, there are five key steps which should be followed:
-
-::: {.incremental}
-1. Clearly define the requirements of the system, planning the number of inputs and outputs required, speed, storage etc. to identify suitable hardware candidates.
-2. Plan/design the software using flowcharts and pseudocode to describe the program and identify functions, or blocks of code, and how they link to other blocks.
-3. Translate the flowchart into the required programming language.
-4. Once the program is at a level where its functionality can start to be tested, testing and debugging is performed to look for errors or unexpected behaviour in software called bugs.
-5. When the final software is commissioned, it is important to document the code so as a developer can come back to it at later date or pass the task to another team member.
-:::
+In [Introduction to Microcontrollers and Microcontroller Architecture](/lectures/week1) we described what a microcontroller is and looked at how one can be described by considering its architecture. We finished the lecture looking at [The Atmel ATmega 328 Microcontroller](/lectures/week01/#sec-atmel-atmega328) which provides an overview of the AVR core architecture and we introduced the general purpose registers and the ALU.
 
 ## Lecture Topics{.unnumbered}
 
 :::: {.columns}
 
 ::: {.column width="25%"}
-![](pictures/week03_contents_image.png){img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module." width=100%}
+![](pictures/week02_contents_image.png){img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module." width=100%}
 :::
 
 ::: {.column width="75%"}
-- @sec-week03-useful-terminology: [Useful Terminology](#sec-week03-useful-terminology)
-- @sec-week03-programming-languages: [Programming Languages](programming-languages)
-- @sec-week03-flowcharts: [Flowcharts](#sec-week03-flowcharts)
-- @sec-example-programs: [Example Programs](#sec-example-programs)
-- @sec-week03-modular-programming:  [Modular Programming](#sec-week03-modular-programming)
+- @sec-week02-intro: [Introducing the Atmel ATmega 328 MCU](#sec-week02-intro)
+- @sec-week02-status-register: [The Status Register](#sec-week02-status-register)
+- @sec-week02-program-counter: [The Program Counter](#sec-week02-program-counter)
+- @sec-week02-stack-pointer: [The Stack Pointer](#sec-week02-stack-pointer)
+- @sec-week02-io: [Introduction to Microcontroller I/O](#sec-week02-io)
 :::
 
 ::::
 
-::: {.center}
-## Useful Terminology{background-image="pictures/prog_wallpaper.png" fig-alt="decorative image used for slide background" #sec-week03-useful-terminology}
-:::
+## Introducing the Atmel ATmega 328 MCU{#sec-week02-intro}
 
-::: {.notes}
-![](pictures/prog_wallpaper.png)
-:::
+### Architecture of the Atmel ATmega 328 MCU{.unnumbered}
 
----
+::: {#fig-week02-atmel-arch} 
+![](pictures/atmel_arch.png){fig-alt="The architecture of the Atmel ATMega328 Microcontroller"}
 
-### Hello, World!
-
-::: {.notes}
-@lst-week03-hello-world is a reproduction of "Hello, world!" written in C.
-:::
-
-::: {#lst-week03-hello-world}
-
-```c
-/* 
- * This line basically imports the "stdio" header file, part of
- * the standard library. It provides input and output functionallity 
- * to the program.
- */
- # include <stdio.h>
-
- /* 
-	* Function (method) declaration. This outputs "Hello, world\n" to
-	* standard output when invoked.
-	*/
-void sayHello(void) {
-	// printf() in C outputs the specified text (with optional
-	// formatting options) when invoked.
-	printf("Hello, world\n");
-}
-
-/* 
- * This is a "main function"/ The compiled program will run the code
- * defined here.
- */
-int main(void) {
-	// invoke the sayHello() function.
-	sayHello();
-	return 0; 
- }
-```
-
-Hello World Program written in C (Code reproduced from: [en.wikipedia.org/wiki/File:C_Hello_World_Program.png](https://en.wikipedia.org/wiki/File:C_Hello_World_Program.png)). Run this programme by following this link [hello_world.c](https://onlinegdb.com/6M8mL90DS).
-:::
-
-::: {.notes}
-The first version of **Hello, World!** was published in the classic book *The C Programming Language* [@kandr].
-
-Since then, it has become common to introduce each new programming language with a version of this program.
-
-Unfortunately, there is a lot of hidden complexity in this simple program, and it is not easy to run "Hello, World!" on a microcontroller!
-:::
-
---- 
-
-### What is a program?
-
-A program or algorithm is a **recorded sequence of instructions** that **performs a task** or set of tasks when executed **to produce a specific result**.
-
----
-
-### What is software?
-
-Software is the term used to describe **collections of programs, libraries, and related data**.
-
----
-
-### What is a programming language?
-
-A programming language is a **formal notation comprising a set of instructions and rules** for writing programs.
-
----
-
-### Development of programming
-
-::: {.notes}
-The next few slides provide some historical context to the development of computer programming. For example @fig-week03-ibm704 is a photograph, taken in 1957, of an early mainframe computer based at NASA Langley Research Centre. This may have well been used in the research that led to the moon landing in 1969.
-
-In the early days of programming, programs were typed on teletypes and encoded as ASCII characters onto paper tape (@fig-week03-punch-tape). These paper tapes where used to load programs and data into mainframes like that shown in @fig-week03-ibm704`. Later, programs were stored on magnetic tape, then magnetic disks and these days are stored servers to be downloaded over networks and loaded into powerful PCs or mobile devices using flash memory and SSD drives.
-
-@fig-week03-modern-programming shows an image of a modern laptop and the programming tools and languages (in this case Python) that are used to develop programs these days.
+The architecture of the Atmel ATMega328 Microcontroller
 :::
 
 ---
 
-::: {#fig-week03-ibm704}
-![](pictures/ibm704.png){fig-alt="Man and woman shown working with IBM type 704 electronic data processing machine used for making computations for aeronautical research at Langley Research Center."}
+Referring to @fig-week02-atmel-arch, we note that
 
-IBM type 704 electronic data processing machine used for making computations for aeronautical research at NASA Langley Research Center – 21st March 1957. (Image source: [www.flickr.com/photos/nasacommons/9467782802](https://www.flickr.com/photos/nasacommons/9467782802))
-:::
-
----
-
-::: {#fig-week03-punch-tape} 
-![](pictures/punch_tape.png){fig-alt="A picture of some punched paper tape"}
-
-Early program source code! Input into a computer with punched paper tape. Image Source: [How it was: Paper tapes and punched cards | EETimes](https://www.eetimes.com/how-it-was-paper-tapes-and-punched-cards/)
-:::
-
----
-
-
-::: {#fig-week03-modern-programming} 
-![](pictures/modern_programming.png){fig-alt="A computer screen with a bunch of code on it."}
-
-Writing programs on a modern high resolution display screen. (Image source: [unsplash.com/photos/ieic5Tq8YMk](https://unsplash.com/photos/ieic5Tq8YMk) by Chris Reid) 
+::: {.incremental}
+- This is an 8-bit CMOS microcontroller based on the AVR enhanced **RISC architecture** with 131 instructions
+- It has 2KB of Internal SRAM, 32 KB of Flash Memory and 1 KB of EEPROM
+- It has **32 General Purpose Registers**
+- It can achieve up to 20 MIPS at 20 MHz (maximum clock frequency)
+- There are **8 Analog I/O Pins** connected to 10-bit ADC
+- There are **22 Digital I/O Pins** (6 capable of PWM)
+- The AVR core uses a **Harvard memory  architecture** – with separate memories and buses for program and data.
 :::
 
 ::: {.center}
-## Programming Languages{#sec-week03-programming-languages background-image="pictures/prog_lang_wallpaper.jpg" fig-alt="Decorative section background - showing code"}
+## The Status Register{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background" #sec-week02-status-register}
 :::
 
 ::: {.notes}
-![](pictures/prog_lang_wallpaper.jpg){fig-alt="Decorative section background - showing code."
+![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
 :::
 
 ---
 
-### Programming Language Level vs Complexity
-
-::: {.notes}
-@fig-week03-pl-complexity shows how code complexity that must be handled by the programmer is related to language level.
-:::
-
-::: {#fig-week03-pl-complexity }
-![](pictures/prog_lang_complexity.png){fig-alt="A pyramid comparing code complexity with language level."}
-
-Programming language level versus complexity
-:::
-
-::: {.notes}
-There is more code complexity at the top because the languages there are "low level" - you need to tell the computer what to do at a very granular level. Languages at the bottom of the pyramid are "high-level" because they provide a simpler way for the programmer to define complex operations without needing to be explicit about how the processor will perform the tasks. Tools are needed to convert that code into the low-level instructions that the computer needs to execute. High-level codes are converted into machine code by compilers, interpreters and web browsers.
-:::
-
----
-
-### Programming levels
-
-::: {#fig-week03-wc-programming-languages} 
-![](pictures/wc_programming_languages.png){fig-alt="Word cloud of common programming languages."}
-
-Word cloud of common programming languages
-:::
-
----
-
-#### High-level languages
-
-::: {.incremental}
-- High level languages are written in a form that is close to human language, enabling the programmer to just focus on the problem being solved without any knowledge of the hardware it is running on.
-- Examples include: C++, Java, Pascal, Python, Visual Basic.
-:::
-
----
-
-#### Low-level languages
-
-::: {.incremental}
-- Low level languages are used to write programs that relate to the specific architecture and hardware of a particular type of computer and are much closer to the native language of a computer (binary).
-- Examples include:  Assembly Language, Machine Code
-:::
-
----
-
-#### The C Programming language
-
-> C is a general-purpose computer programming language. It was created in the 1970s by Dennis Ritchie, and remains very widely used and influential. [Wikipedia - C (programming language)](https://en.wikipedia.org/wiki/C_(programming_language))
-
-::: {.incremental}
-- C might be described as a "mid-level language". It is a compiled language and it has features that allow code to be written at a fair distance from the machine instructions. At the same time it provides structures that allow the detailed manipulation of data, memory and I/O at a level that is quite close to the machine.
-- In this course, we will be using a dialect of C that has been specifically designed for the programming of Arduino devices such as the 8-bit Atmel ATmega328 which is used in the Arduino Nano.
-- C is a very influential language. It is still used widely for writing operating system kernels, command-line tools, hardware drivers, and microcontroller applications.  The syntax of C is the basis of many of the compiled and interpreted high-level languages that are in use today.
-:::
-
-::: {.center}
-## Flowcharts{#sec-week03-flowcharts fig-alt="A flowchart" background-image="pictures/Flowchart_structured_programming.svg" background-color="white"}
-:::
-
-::: {.notes}
-![](pictures/Flowchart_structured_programming.svg){fig-alt="A flowchart"} https://upload.wikimedia.org/wikipedia/commons/a/a6/
-
-A flowchart &ndash; This [Image](https://commons.wikimedia.org/wiki/File:Flowchart_structured_programming.svg) by Unknown Author is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
-:::
-
----
-
-### What is a Flowchart?
-
-A flowchart is a **pictorial representation** of the **logic flow** through a program.
+### What is the status register?
 
 ::: {.fragment}
-Flowcharts are a useful tool for planning, visualizing and documenting a program without having to write any code.
+::: {#fig-week02-sreg} 
+![](pictures/sreg.png){fig-alt="SREG - The AVR Status Register"}
+
+SREG - The AVR Status Register
 :::
-
----
-
-Basic flowcharts are convenient because they
+:::
 
 ::: {.incremental}
-- Don't require the viewer to have an in-depth knowledge of programming
-- Don't require the viewer to have knowledge of a specific programming language
-- Useful for visualizing how blocks of code interact with one another
-- Can be a useful tool in identifying flaws and bottlenecks in large and complex algorithms
-:::
-
-----
-
-### Flowcharts vs Code
-
-::: {.notes}
-Consider the simple flowchart shown in @fig-week03-flowchart-hello-world representing the printing of the text string "Hello, World!"[^string].
-
-[^string]: In most programming languages, text is stored in memory as a sequence of binary codes which each represent the individual characters as in `'H'`, `'e'`, `'l'`, `'l'`, `'o'`, `','`, `' '`, `'W'`, `'o'`, `'r'`, `'l'`, `'d'`, `'!'`. Such a sequence is usually called a *string*.
+- An 8-bit register containing flags that contain information about the result of the most recently executed instruction and the current **state of the processor** (@fig-week02-sreg).
+- The status register is updated after all ALU instructions as specified by the instruction set reference.
 :::
 
 
-::: {#fig-week03-flowchart-hello-world} 
-![](pictures/flowchart_hello_world.png){width="50%" fig-alt="A flowchart representing the hellow world program."}
+---
 
-A flowchart representing the "Hello, World!" program.
+#### Example - Effect on SREG of `ADC` instruction
+
+::: {#fig-week02-sreg-setting} 
+![](pictures/AVR-instruction.png){fig-alt="Example instruction showing how the status register is affected by the `ADC` (add with carry) instruction."}
+
+Example instruction showing how the status register is affected by the `ADC` (add with carry) instruction [@avr_instruction_set p. 24]
 :::
 
 ---
 
-<table>
-<tr>
- <td>**Bash** (a command-line *shell* used in Unix and MacOS)
+### Status Register Flags
 
-```c
-echo "Hello, World!"
-```
-</td>
-<td>**BASIC** 
+| Bit | Flag | Meaning |
+|---------|--------------------|---------|
+| Bit 0 | **Carry Flag (C)** | The carry flag is set when the execution of the previous arithmetic or logic instruction produced a carry out of bit-7 or required a borrow. |
+| Bit 1 | **Zero Flag (Z)** | The zero flag is set when the result of the previous arithmetic or logic instruction resulted in a zero |
+| Bit 2 | **Negative Flag (N)** | The negative flag is set when the result of the previous arithmetic or logic instruction is negative |
+| Bit 3 | **Two’s Complement Overflow Flag (V)** | The Two’s Complement Overflow Flag V supports two’s complement arithmetic. +ve + +ve = -ve  or  -ve + -ve = +ve |
+| Bit 4 | **Sign Bit (S)** | The S-bit is always an exclusive or between the Negative Flag and the Two’s Complement Overflow Flag. |
+| Bit 5 | **Half Carry Flag (H)** | The half carry flag is set when the execution of the previous arithmetic or logic instruction produced a carry out of bit-3 or required a borrow from bit-4.|
+| Bit 6 | **Bit Copy Storage (T)** | A bit from a register in the Register File can be copied into T by the BST instruction, and a bit in T can be copied into a bit in a register in the Register File by the BLD instruction. |
+| Bit 7 | **Global Interrupt Enable (I)** | The Global Interrupt Enable bit is set to enable interrupts. The individual interrupt enable control is then performed in separate control registers. |
 
-```basic
-PRINT "Hello, World!"
-```
-</td>
-</tr>
-<tr>
-<td>**MATLAB** 
-
-```matlab
-disp('Hello, World!')
-```
-</td>
-
-<td>**Python**
-
-```python
-print("Hello, World!")
-```
-</td>
-
-</tr>
-<tr>
-
-<td>
-**C (for Arduino)**
-
-```c
-puts("Hello, World!");
-```
-</td>
-
-<td>**C++**
-
-```cpp
-std::cout << "Hello, World!" << std:endl;
-```
-
-</td>
-
-</tr>
-
-<tr>
-<td>**HTML**
-
-```html
-<p>Hello, World!</p>
-```
-
-</td>
-
-<td>**JavaScript**
-
-```javascript
-document.write('Hello, World!');
-```
-</td>
-
-</tr>
-</table>
+: Status Register Flags {tbl-colwidths="[10,30,60]" #tbl-status-register-flags} 
 
 ---
 
-### Flowchart building blocks
+### Status Register Example
+
+::: {#fig-example-of-sr-working} 
+![](pictures/sreg-example.png) {fig-alt="An example of how the status register works."}
+
+An example of how the status register works
+:::
+
+---
+
+### Status Register Demonstration {#sec-week2-sr-examples}
 
 :::: {.columns}
 
-::: {.column width="33%"} 
+::: {.column}
 
-#### Terminal: start/end block{.unnumbered}
-
-![](pictures/fc_terminal.png){fig-alt="Flowchart start/end block"}
-
-#### Suprocess block{.unnumbered}
-
-![](pictures/fc_subprocess.png){fig-alt="Flowchart suprocess block"}
-
+Code to be executed
+```asm
+LDI R16, Addend
+LDI R17, Augend
+ADD R16, R17
+```
 :::
 
-::: {.column width="33%"}
-
-#### Terminal: program flow{.unnumbered}
-
-![](pictures/fc_flow.png){fig-alt="Flowchart program flow" height="128"}
-
-#### Decision block
-
-![](pictures/fc_decision.png){fig-alt="Flowchart decision block"}
-
-:::
-
-::: {.column width="33%"}
-
-#### Process block{.unnumbered}
-
-![](pictures/fc_process.png){fig-alt="Flowchart process block"}
-
-#### I/O block{.unnumbered}
-
-![](pictures/fc_io.png){fig-alt="Flowchart I/O block"}
-
+::: {.column}
+![Status register](pictures/status-reg.png)
 :::
 
 ::::
 
----
-
-### Rules for drawing flowcharts
-
-::: {.incremental}
-- Flowcharts are usually drawn top to bottom but can be also be drawn left to right.
-- Flowcharts must begin with a "start" symbol and finish with an "end" symbol.
-- The spacing between all items should be consistent
-- The direction of flow between each block should be indicated with an arrow.
-- Connecting lines should never overlap.
-:::
-
-::: {.fragment}
-In short flow charts should look visually tidy and the program flow should be obvious to the viewer.
-:::
+Record status of SREG at line 3.
 
 ---
 
-### Flowchart Drawing Packages
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-#### Microsoft Visio (Windows and web only)
-
-::: {#fig-week03-visio}
-![](pictures/visio.png){fig-alt="A screenshot of the Microsoft visio program being used to draw a flowchart."}
-
-A screenshot of the Microsoft Visio program being used to draw a flowchart.
-:::
-
-:::
-
-::: {.column width="50%"}
-
-#### Microsoft 365
-
-::: {#fig-week03-ms365}
-![](pictures/ms265_flowchart_symbols.png){fig-alt="Screenshot of the flowchart symbols available in Microsoft 365 - Word, PowerPoint, Excel, etc."}
-
-Screenshot of the flowchart symbols available in Microsoft 365 - Word, PowerPoint, Excel, etc
-:::
-
-::: {.notes}
-Get [Microsoft 365)](https://myuni.swansea.ac.uk/it-services/software-enquiry/office-365/) from myuni.swan.ac.uk.
-
-:::
-
-:::
-
-::::
+#### Examples {.center .unnumbered }
 
 ---
 
-### Other flowchart drawing tools
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-#### SmartDraw 
-
-For MacOS
-
-::: {#fig-week03-smartdraw}
-![](pictures/smartdraw.png){fig-alt="Screenshot from the smartdraw flowchart editor"}
-
-Screenshot from the smartdraw flowchart editor [www.smartdraw.com](https://www.smartdraw.com/)
-:::
-
-:::
-
-::: {.column width="50%"}
-
-#### Creately
-
-Web-based drawing tool
-
-::: {#fig-week03-creately}
-![](pictures/creately.png){fig-alt="Screenshot from the creately flowchart editor."
-
-Screenshot from the creately flowchart editor [creately.com/diagram-type/flowchart/](https://creately.com/diagram-type/flowchart/)
-:::
-
-:::
-
-::::
+$$
+\begin{array}{lrr}
+\mathrm{Addend} & 0\,1\,1\,0\,1\,1\,1\,0 & 110_{10}\\
+\mathrm{Augend} & 1\,1\,1\,0\,0\,0\,1\,1 & 227_{10}\\
+\hline
+\mathrm{Sum} & &
+\end{array}
+$$
 
 ---
 
-### Using flowcharts to capturing the most common program constructs
-
-::: {.fragment}
-From a software designer's point of view, any program function can be described using only three program constructs:
-:::
-
-::: {.incremental}
-- **Sequence**: this construct performs one task after another in a sequence. It is a group of instructions to be performed one after another in the order shown in the program. 
-- **Decision**: this construct performs a task or a sequence of tasks based on the result of a test condition.
-- **Repetition**: this construct is for a process that repeats until a condition which will stop the process is satisfied[^repetition]. Repetition is used to repeat a a sequence over and over again.
-:::
-
-::: {.notes}
-
-[^repetition]: Repetition is used a lot in microcontroller programming.
-
-:::
+$$
+\begin{array}{lrr}
+\mathrm{Addend} & 0\,0\,1\,1\,0\,1\,1\,1 & 55_{10}\\
+\mathrm{Augend} & 0\,1\,0\,1\,0\,0\,0\,0 & 80_{10}\\
+\hline
+\mathrm{Sum} & &
+\end{array}
+$$
 
 ---
 
-#### Sequence
-
-::: {.notes}
-A sequence (@fig-week03-fc-sequence) is represented as a set of process blocks (tasks) connected by program flows. The tasks are executed in the order shown by the arrows from top to bottom.
-:::
-
-
-::: {#fig-week03-fc-sequence}
-![](pictures/fc_sequence.png){fig-alt="Flowchart for a sequence of instructions computed in the order shown, one after the other." width="40%"}
-
-Flowchart for a sequence of tasks
-:::
-
-
-::: {.notes} 
-The program shown in @fig-week03-fc-sequence might be represented in *psuedocode*[^psuedocode] as
-
-```
-START;
- Task 1;
- Task 2;
- Task 3;
-END;
-```
-
-[^psuedocode]: Pseudocode is a formal text which is used to represent the operation of a section of code in a way that can be understood without needing to resort to formal rules of a programming language.
-
-:::
-
----
-
-#### Decision
-
-::: {.notes}
-A decision (@fig-week03-fc-decision) is represented as a decision block followed by flows which depend on the outcome of the decision.
-:::
-
-
-::: {#fig-week03-fc-decision} 
-![](pictures/decision.png){fig-alt="Flowchart for a decision." width="50%"}
-
-Flowchart for a decision
-:::
-
-::: {.notes}
-
-The program shown in @fig-week03-fc-decision might be represented in psuedocode as
-
-```
-START;
- IF condition one is true
-	 DO
-			 Task 1;
-			 :
-	 END_DO
- IF condition two is true
-	 DO
-			 Task 2;
-			 :
-	 END_DO
-END;
-```
-
-:::
-
----
-
-#### Repetition
-
-::: {.notes}
-Repetition (@fig-week03-fc-repetition) is represented as a decision block, then a sequence of tasks and a flow that returns to the original decision. The tasks are repeated until the condition for ending the repeated sequence is met.
-:::
-
-::: {#fig-week03-fc-repetition} 
-![](pictures/repetition.png){fig-alt="Flowchart for a sequence of instructions with repetition." width="50%"}
-
-Flowchart for a sequence of tasks
-:::
-
-::: {.notes}
-
-The program shown in @fig-week03-fc-repetition might be represented in psuedocode as
-
-```
-START;
- UNTIL condition is true
-	 Task 1;
-	 :
-	 Task n;
- THEN
-	 Task 2;
-	 :
-END;
-```
-:::
+$$
+\begin{array}{lrr}
+\mathrm{Addend} & 1\,0\,0\,0\,0\,0\,0\,0 & 128_{10}\\
+\mathrm{Augend} & 1\,0\,0\,0\,0\,0\,0\,0 & 128_{10}\\
+\hline
+\mathrm{Sum} & &
+\end{array}
+$$
 
 ::: {.center}
-## Example Programs{background-image="pictures/laptop-technology-text-multimedia-screenshot-computer-hardware-125852-pxhere.com.jpg" #sec-example-programs}
+## The Program Counter{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background" #sec-week02-program-counter}
 :::
 
 ::: {.notes}
-<img src="pictures/laptop-technology-text-multimedia-screenshot-computer-hardware-125852-pxhere.com.jpg" alt="laptop, technology, text, multimedia, screenshot, computer hardware, computer program, Free Images In PxHere" width="100%"><br />
-[Image Source: Free Images In PxHere](https://c.pxhere.com/photos/b5/18/photo-125852.jpg!d)]
+![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
 :::
 
 ---
 
-### Example 1: A sequence
-
-::: {.fragment}
-
-Task: *Find the sum of the numbers 1 to 10*
-
-:::
-
-::: {.fragment} 
-Program design method 1: 
-
-- Brute force method using the Sequence construct,
-- Add number 1 to sum, then add, number 2, then add number 3 ...
-- Continue the process until all numbers are added!
-:::
-
----
-
-#### Solution to task as a sequence
-
-@fig-week03-task1-sequence shows the flow chart of this program.
-
-::: {#fig-week03-task1-sequence } 
-![](pictures/task1_sequence.png){fig-alt="Flowchart of a program to sum the first 10 numbers written as a sequence." width="50%"}
-
-Flowchart of a program to sum the first 10 numbers written as a sequence.
-:::
-
----
-
-#### Program shown in @fig-week03-task1-sequence written in pseudo code
-
-```
-START
-	sum = 0
-	sum = sum + 1
-	sum = sum + 2
-	sum = sum + 3
-	sum = sum + 4
-	sum = sum + 5
-	sum = sum + 6
-	sum = sum + 7
-	sum = sum + 8
-	sum = sum + 9
-	sum = sum + 10
-END
-```
-
----
-
-### Example 2: Decision and a Loop{#sec-week03-sum-example}
-
-Task: *Find the sum of numbers 1 to 10*
-
-::: {.fragment}
-
-Program design method 2: 
-
-- Use the decision and repetition constructs:
-
-:::
-
----
-
-#### Solution to task 1 using a decision and repetition
-
-@fig-week03-task1-loop shows the solution of task 1 using a decision and repetition.
-
-::: {#fig-week03-task1-loop} 
-![](pictures/task1_loop.png){fig-alt="Flowchart of the solution to task 1 using a decision and repetition." width="50%"}
-
-Flowchart of the solution to task 1 using a decision and repetition.
-:::
-
----
-
-#### Program shown in @fig-week03-task1-loop written in pseudo code
-
-```
-START
-	sum = 0
-	counter = 1
-	WHILE counter < 11
-	DO 
-		sum = sum + counter
-		counter = counter + 1
-	END_DO
-END
-```
-
----
-
-### Another Example Program
-
-Consider a program that asks a user for a 'limit' value and sums the numbers up to that limit before outputting the sum?
-
-I.e. $\mathrm{sum} = 1 + 2 + 3 + \dots n$
-
-::: {.notes}
-
-The program that solves this project is illustrated by the flowchart shown in @fig-week03-example2. This program has a sequence, a decision and repetition. It also has an input where the limit ($n$) is entered and an output where the sum is displayed.
-
-:::
-
----
-
-::: {#fig-week03-example2} 
-![](pictures/example2.png){fig-alt="A program that asks for a limit value and sums numbers up to that limit before outputting the sum." width="50%"}
-
-A program that asks for a limit value and sums numbers up to that limit before outputting the sum.
-:::
-
----
-
-Let us tabulate the results of this program assuming that $n=4$.
-
-::: {.fragment}
-We will complete the table in class:
-
-| **`sum`** | **`counter`** | **`counter > limit`** |
-|----------:|--------------:|:----------------------|
-| $0$       | $1$           | `No`                  |
-|           | $2$           |                       |
-|           | $3$           |                       |
-|           | $4$           |                       |
-|           | $5$           |                       |
-
-:::
-
----
-
-### How many ways can we write the same program?
-
-For our program summing the numbers up to a limit, there are three key parts.
-
-- Sum (**S**): `sum = sum + counter` 
-- Increment (**I**): `counter = counter + 1`
-- Check (**C**): Has condition been met?
-
-::: {.notes}
-These can be theoretically be combined in 8 different ways, the first six of which as shown in @tbl-week03-1. 
-
-Three implementations three are illustrated in  @fig-week03-sic (variation 6), @fig-week03-isc (variation 4), @fig-week03-cis (variation 2).
-:::
-
----
-
-| Variation | Part 1 | Part 2 | Part 3 |
-|-----------|--------|--------|--------|
-|  1 | C | S | I |
-|  2 | C | I | S |
-|  3 | I | C | S |
-|  4 | I | S | C |
-|  5 | S | C | I |
-|  6 | S | I | C |
-
-: How many ways can a program be written? {#tbl-week03-1}
-
----
-
-::: {#fig-week03-sic} 
-![](pictures/sic.png){fig-alt="Variation 6 - Sum - Increment - Check" width="50%"}
-
-Variation 6: Sum - Increment - Check
-:::
-
----
-
-::: {#fig-week03-isc} 
-![](pictures/isc.png){fig-alt="Variation 4 - Increment - Sum - Check" width="50%"}
-
-Variation 4: Increment - Sum - Check
-:::
-
----
-
-::: {#fig-week03-cis} 
-![](pictures/cis.png){fig-alt="Variation 2 - Check - Increment - Sum" width="50%"}
-
-
-Variation 2: Check - Increment - Sum
-:::
-
----
-
-### Any more?
-
-::: {.fragment}
-
-What if we counted backawards from $n$?
-
-$$\mathrm{sum} = 1 + 2 + 3 + \cdots + \left(n - 1\right) + n$$
-
-:::
-
-::: {.fragment}
-
-$$\equiv$$
-
-:::
-
-::: {.fragment}
-
-$$\mathrm{sum} = n + \left(n-1\right) + \cdots 3 + 2 + 1$$
-
-:::
-
----
-
-Let us tabulate the results of this program assuming that $n=4$.
-
-::: {.fragment}
-
-| **`sum`** | **`counter`** | **`counter > limit`** |
-|----------:|--------------:|:----------------------|
-| $0$       | $4$           |                  |
-|           | $3$           |                       |
-|           | $2$           |                       |
-|           | $1$           |                       |
-|           | $0$           |                       |
-
-:::
-
-::: {.fragment}
-
-A flow chart that implements this variation is given in @fig-week03-var4.
-
-:::
-
----
-
-::: {#fig-week03-var4} 
-![](pictures/var4.png){fig-var="Another variation - Check - Decrement - Sum" width="50%"}
-
-Another variation: Check - Decrement - Sum
-:::
-
----
-
-### Self-directed learning{#sec-flow-chart-task}
-
+### What is The Program Counter?
 
 ::: {.incremental}
-
-1. See if you can write the other eight flowcharts for a program that sums the numbers 1 to n.
-2. To get you thinking from a programmer's point of view, consider the steps required to perform a task we usually take for granted, such as making a cup of tea, and what a flowchart for this might look like.
-3. After you’ve had a go at these, drop a message on the [discussion forum for this week](https://canvas.swansea.ac.uk/courses/52902/discussion_topics/468327) to let us know how you got on and which drawing package you found the best. Feel free to include any tips you find useful.
+* A program is a sequence of instructions written in a particular order to perform a specific task
+* The instructions of the program are stored sequentially in non-volatile memory.
+* The program counter is a register which holds the address of the next instruction to be executed
 :::
+
+---
+
+### Example of a program
+@fig-week02-a-program illustrates a simple program to add two numbers. 
+
+::: {#fig-week02-a-program} 
+![](pictures/pc_example.png){fig-alt="An example program showing three instructions located at memory locations 0 through 2."}
+
+An example program showing three instructions located at memory locations 0 through 2.
+:::
+
+::: {.notes}
+It is written in assembly code for the Atmel ATmega328 MCU. Each instruction is a programmer-friendly rendition of an 16- or 32-bit binary code that is stored at the memory locations shown.
+:::
+
+---
+
+### Organisation of program memory
+
+::: {.incremental}
+* The ATmega328 microcontroller has a 32 Kbyte flash memory which is organised into 256 pages each containing 64 Words of program.
+* The program counter is 14-bits and can access each of these memory locations `0x0000` – `0x3FFE`
+* The remaining addresses `0x3FFF` – `0x7FA5` (the boot flash section) are reserved for the bootloader
+:::
+
+---
+
+@fig-week02-prog-mem illustrates the organisation of the program memory for the ATmega328.
+
+::: {#fig-week02-prog-mem} 
+![](pictures/prog_mem.png){fig-alt="The program memory of the ATmega328 microcontroller."}
+
+The program memory of the ATmega328 microcontroller
+:::
+
+::: {.notes}
+Remember a word is 16 bits
+
+64 (words) = 128 bytes
+
+256 (pages) each of 128 bytes = 32 KB (or decimal 32768 / binary 32678)
+:::
+
+---
+
+@fig-week02-prog-counter shows how the program counter is used to access the next instruction.
+
+::: {#fig-week02-prog-counter} 
+![](pictures/prog_counter.png){fig-alt="How the program counter is used to access instructions within the available pages of program memory."}
+
+How the program counter is used to access instructions within the available pages of program memory
+:::
+
+::: {.notes}
+The Least significant six bits address the instruction words within a given page. Note: $2^6 = 64$ words which is $128$ bytes.
+
+The 8 most significant bits address the *page* in program memory in which the instruction word is to be found. Note: $2^8 = 256$ and that $256 \times 64 \times 2 = 32,768$ bytes.
+
+### The Bootloader
+In short, microcontrollers are usually programmed through a programmer (specialist piece of hardware) unless you have a piece of firmware in your microcontroller that allows installing new firmware without the need of an external programmer. This small piece of firmware is called a bootloader and can allow the program to be rewritten by the microcontroller itself e.g. via an over-the-air (OTA) updates.
+
+The bootloader also contains the reset routine (power-on-reset)
+
+During reset, all I/O Registers are set to their initial values, and the program starts execution from the Reset Vector. For the ATmega168A/168PA/328/328P family of microcontrollers, the instruction placed at the Reset Vector must be a JMP – Absolute Jump – instruction to the reset handling routine.
+:::
+
+---
+
+### Program Counter Demonstration
+
+| Instruction | Number of words |
+|:------------|:----------------|
+| `ADD`       | 1               | 
+| `LDI`       | 1               | 
+| `LDS`       | 2               | 
+| `STS`       | 2               | 
+: A selection of instructions and the number of 16-bit words they need for storage. {#tbl-counter-example} 
+
+When executing these instructions, the program counter advances by the number of words in each instruction.
+We will demonstrate this later.
+
+::: {.notes}
+Consider the instructions `LDI` (load immediate) and `LDS` (load from store).
+
+Refering to the data manual [@avr_instruction_set] we see that the LDI instruction is a one word instruction (@fig-ldi-instruction) taking the opcode and the 8-bit data value. We also see that the `LDS` instruction (@fig-lds-instruction) is a two word instruction: taking a 16 bit memory address as its operand. 
+:::
+
+---
+
+#### `LDI` instruction
+
+::: {#fig-ldi-instruction}
+![](pictures/wk2_ldi_instruction.png){fig-alt="An extract from the Atmel ATmega328 data manual for the LDI instruction."} 
+
+The `LDI` instruction: takes a four bit opcode, a 4-bit register number (0-31) and an 8-bit value. The program counter is incremented by one when this instruction is executed. [@avr_instruction_set p.92].
+:::
+
+
+---
+
+#### `LDS` instruction
+
+::: {#fig-lds-instruction}
+![](pictures/wk2_lds_instruction.png){fig-alt="An extract from the Atmel ATmega328 data manual for the LDS instruction."} 
+
+The `LDS` instruction: takes an  bit opcode, an 12-bit opcode, a 4-bit register number (0-31) and an 16-bit value which represents a data location on memory (0-65535). The program counter is incremented by two when this instruction is executed. [@avr_instruction_set p.93].
+:::
+
+::: {.notes}
+You can lookup `ADD` and `STS` (store to store) to confirm the details given in @tbl-counter-example. 
+:::
+
+---
+
+#### Example program
+
+::: {.notes}
+The assembly program shown in @lst-week2-addition illustrates the use of the registers, program counter and the `ADC` instruction. By changing the values of the data at lines 14 nd 15, you can verify the final state of the status register explored in @sec-week2-sr-examples.
+:::
+
+```{.asm lst-cap="Assembly program illustrating the use of registers, the ADC function and the status register" #lst-week2-addition code-line-numbers="|14|15|23|24|25|27|28|30|31|32|33"}
+;
+; Assembly - simple addition.asm
+;
+; Created: 11/10/2022 14:14:16
+; Author : Ben Clifford
+;
+
+		.device ATmega32
+
+    .equ    VARIABLES   = 0x0100        ;Start address in internal RAM for variables (default)
+		.equ    PROGRAMME   = 0x0000        ;Start address in Flash for programme (default)
+		.equ    STACK       = 0x08FF		;Last address in RAM to be used for the Stack (default)
+
+		.equ    num1 = 110
+		.equ    num2 = 227
+
+		.DSEG
+		.org VARIABLES
+
+		.CSEG
+		.org PROGRAMME					
+
+MAIN:		
+		LDI R16, num1
+		STS 0x0100, R16;
+
+		LDI R16, num2
+		STS 0x0101, R16;
+
+		LDS R16, 0x0100;
+		LDS R17, 0x0101;
+		ADC R16, R17
+		STS 0x0100, R16;
+```
+
 
 ::: {.center}
-## Modular Programming{#sec-week03-modular-programming background-image="pictures/modular_prog_wallpaper.png"}
+## The Stack Pointer{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background" #sec-week02-stack-pointer}
 :::
 
 ::: {.notes}
-![](pictures/modular_prog_wallpaper.png)
+![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
 
-This [Image](https://commons.wikimedia.org/wiki/File:Flowchart_structured_programming.svg) by Unknown Author is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
 :::
 
 ---
 
+### The Stack
 
-### What is a module?
-
-The basic approach to modularization is to consider a top-down design where the top level defines the main function, and a separate module represents each smaller function in the program (see @fig-week03-a-modular-program).
+In a microcontroller, the ‘stack’ is a space in memory with a fixed origin and a variable size that can be used for temporary storage purposes, such as storing local variables and saving return address for subroutine calls and interrupts.
 
 ::: {.fragment}
-
-::: {#fig-week03-a-modular-program} 
-![](pictures/modules.png){fig-at="A program built from modules."}
-
-A program built from modules
+The stack supports two types of operations:
 :::
 
+::: {.incremental}
+1. Push – a data item is placed at the location pointed to by the stack pointer
+2. Pop or Pull – a data item at the current location pointed to by the stack pointer is removed.
 :::
-
-::: {.notes}
-
-Each module is treated as a *black box*[^week03:black-box] which operates on its *input* and produces an *output*.
-
-As long as the input and output requirements remain the same, the module code can be changed without affecting the rest of the program.
-
-[^week03:black-box]: In science, computing, and engineering, a *black box* is a system which can be viewed in terms of its inputs and outputs (or transfer characteristics), without any knowledge of its internal workings. Its implementation is "opaque" (black). The term can be used to refer to many inner workings, such as those of a transistor, an engine, an algorithm, the human brain, or an institution or government.&mdash;[Blackbox (Wikipedia)](https://en.wikipedia.org/wiki/Black_box)
-:::
-
----
-
-#### Example Task
-
-Write a program to perform n different tasks with a ten second delay between each task.
-
-The program we have been discussing that sums the numbers 1-10 can be used to simulate a delay.
-
----
-
-##### Example program - Non-Modular Approach
-
-```
-DO 
-	Task 1
-END
-
-/* Delay between task 1 and task 2 */
-DO
-	number = 0
-	WHILE number < 11
-		DO
-			number = number + 1
-		END_DO
-	END_WHILE
-END
-
-DO 
-	Task 2
-END
-
-/* Delay between task 2 and task 3 */
-DO
-	number = 0
-	WHILE number < 11
-		DO
-			number = number + 1
-		END_DO
-	END_WHILE
-END
-
-DO 
-	Task 3
-END
-
-:
-```
-
----
-
-##### Change the specification
-
-Now suppose that we want to change the delay between tasks to 20 seconds.
 
 ::: {.fragment}
-Using a non-modular approach the developer/programmer now needs to change the line
-
-```
-WHILE number < 11
-```
-
-to 
-
-```
-WHILE number < 21
-```
-
-For each of the n-1 times it is used.
+The stack typically operates as a “Last In First Out” (LIFO) buffer
 :::
 
 ---
 
-##### Example program - Modular Approach
+### What is the stack pointer?
 
-The code that implements the delay is made into a module which is called when needed
+The *stack pointer register* keeps track of the top of the stack.
 
-```
-MODULE delay
-	DO
-		number = 0
-		WHILE number < 21
-			DO
-				number = number + 1
-			END_DO
-		END_WHILE
-	END
-END_MODULE
-```
+::: {.incremental}
+* A stack `PUSH` command will decrement the stack pointer.
+* A stack `POP` command will increment the stack pointer.
+:::
 
 ---
 
-The modular program becomes:
 
-```
-DO 
-	Task 1
-END
+The AVR stack pointer is implemented as two 8-bit registers in the I/O space.
 
-/* Delay between task 1 and task 2 */
-DO
-	delay
-END
+The are called `SPH` (stack pointer high byte) and `SPL` (stack pointer low byte) as illustrated in @fig-week02-sp-register.
 
-DO 
-	Task 2
-END
 
-/* Delay between task 2 and task 3 */
-DO 
-	delay
-END
+::: {#fig-week02-sp-register} 
+![](pictures/sp_register.png){fig-alt="The AVR stack pointer implemented as two bytes SPH and SPL."}
 
-DO 
-	Task 3
-END
+The AVR stack pointer implemented as two bytes SPH and SPL
+:::
 
-:
-```
+---
 
-::: {.notes}
+@fig-week02-sp-operation illustrates the operation of the stack pointer as it appears to the user of the stack.
 
-By using a modular approach to program this task, the developer/programmer need only change one value to adjust the delay, independent of how many times the delay is called between tasks in the program.
+::: {#fig-week02-sp-operation} 
+![](pictures/sp_operation.png){fig-alt="Illustration of the operation of a stack."}
 
+Illustration of the operation of a stack.
 :::
 
 ::: {.notes}
-
-We can take this idea further by parameterising the delay value itself. To code might now look like:
-
-```
-MODULE delay(delay)
-	DO
-		number = 0
-		WHILE number < delay
-			DO
-				number = number + 1
-			END_DO
-		END_WHILE
-	END
-END_MODULE
-```
-
-We can now have variable length delays between tasks:
-```
-DO 
-	Task 1
-END
-
-/* Ten second delay between task 1 and task 2 */
-DO
-	delay(10)
-END
-
-DO 
-	Task 2
-END
-
-/* Twenty second delay between task 2 and task 3 */
-DO 
-	delay(20)
-END
-
-DO 
-	Task 3
-END
-
-:
-```
-
-
-We will return to this idea when we look at functions in C.
-
+Like a box of Pringles, when you pop an item of the stack, it comes from the top. The pringle below the one you have just taken off becomes the new top. If you were to put the Pringle back, it becomes the new top. When the pringles box is empty, there is nothing on the stack and the stack pointer will be pointing at the memory address of the bottom of the stack.
 :::
 
 ---
 
-#### Activity
+### Stack Pointer Demonstration
 
-With the time remaining can you represent this program as a flow chart?
+::: {.notes}
+An example of the use of the stack is given in @lst-week2-stack. We will demonstrate this program in class.
+:::
 
-Feel free to work individually or in small groups.
+```{.asm lst-cap="Example of the use of the stack" #lst-week2-stack code-line-numbers="|21|22|23|24|25|26|27|29|30|31"}
+;
+; Assembly - Stack pointer example.asm
+;
+; Created: 11/10/2022 14:14:16
+; Author : Ben Clifford
+;
+
+		.device ATmega32
+
+    .equ    VARIABLES   = 0x0100        ;Start address in internal RAM for variables (default)
+		.equ    PROGRAMME   = 0x0000        ;Start address in Flash for programme (default)
+		.equ    STACK       = 0x08FF		;Last address in RAM to be used for the Stack (default)
+		
+
+		.DSEG
+		.org VARIABLES
+
+		.CSEG
+		.org PROGRAMME					
+
+MAIN:	
+		LDI R16, 1;
+		LDI R17, 2;
+		LDI R18, 3
+		PUSH R16
+		PUSH R17
+		PUSH R18
+
+		POP R16
+		POP R17
+		POP R18
+```
+
+::: {.center}
+## Introduction to Microcontroller I/O{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background [wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)" #sec-week02-io}
+:::
+
+::: {.notes}
+![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
+
+[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+:::
 
 ---
 
-##### Solution
+### I/O on the ATmega328
 
-See @fig-week03-exercise-solution in the notes online.
+::: {.notes}
+@fig-week02-arduino-nano illustrates the layout of the input-output (I/O) pins of the Atmel ATmega328 packaged as an Arduino Nano that you will be using in the lab and project.
+:::
+
+::: {#fig-week02-arduino-nano} 
+![](pictures/arduino_nano.png){fig-alt="Input/output pins for the Arduino nano."}
+
+
+Input/output pins for the Arduino nano
+:::
+
+---
+
+::: {.notes}
+@fig-week02-atmega325-schematic is the schematic diagram of the Atmel ATmega328 reproduced from the reference manual.
+:::
+
+::: {#fig-week02-atmega325-schematic} 
+![](pictures/atmega325_schematic.png){fig-alt="Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller."}
+
+Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller [@atmel_data p. 6]
+:::
+
+---
+
+### MCU Inputs
+
+Consider a switch which on one side is connected to a 5V power source and on the other side to a microntroller input.
+
+![](pictures/wk2_switch.png)
+
+::: {.fragment}
+What voltage is read at the I/O port when the switch is closed and when it is open?
+:::
+
+---
+
+### Pull Ups
+
+To get around this issue, microcontrollers use pull-up (or pull-down) circuitry to hold the port high (or low) (see @fig-week02-pullup).
+
+::: {#fig-week02-pullup} 
+![](pictures/pullup.png){fig-alt="Schematic of the pullup circuitry for the ATmega328."}
+
+Schematic of the pullup circuitry for the ATmega328 (from the manual [@atmel_data p. 58]
+:::
+
+---
+
+What voltage is read at the I/O port when the switch 'S1' is closed and when it is open now?
+
+::: {#fig-week2-pu-enabled}
+![](pictures/pu_enabled.png){fig-alt="Port with pull-up enabled."}
+
+Port with pull-up enabled
+:::
+
+---
+
+
+### Ports as General Digital I/O
+
+::: {#fig-week02-general-io} 
+![](pictures/general_io.png){fig-alt="The PORTC register."}
+
+The `PORTC` register
+:::
+
+::: {.notes}
+The ports are bi-directional I/O ports with optional internal pull-ups meaning they can be configured to read an input such as a switch or a sensor or to write to an output such as an LED or control an actuator. @fig-week02-general-io shows a functional description of one I/O-port pin, which we give the notation `Pxn`.
+:::
+
+---
+
+### Configuring a pin
+
+::: {#fig-week02-iomap}
+![](pictures/iomap.png){fig-alt="A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers."}
+
+A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers
+:::
+
+::: {.notes}
+Recall the 64 I/O registers early on in the user data space (see @fig-week02-iomap):
+
+* General purpose registers – `0x0000` – `0x001F`
+* Three I/O memory address locations are allocated for each port, one each for:
+    *  the *Data Registers* – `PORTx`,
+    *  the *Data Direction Register* – `DDRx`, and
+    *  the *Port Input Pins* – `PINx`
+
+Note: `x` refers to the numbering letter for the port (`B`, `C`, or `D` in our case).
+:::
+
+---
+
+### Configuring a Pin - Data Direction
+
+The `DDxn` bit in the `DDRx` Register (illustrated for `DDRB` in @fig-week02-ddrb) selects the data direction (input or output) of this pin.
+
+::: {#fig-week02-ddrb} 
+![](pictures/ddrb.png){fig-alt="DDRB - The port B data direction register."}
+
+`DDRB` - The port B data direction register.
+:::
+
+::: {.notes}
+* Writing **logic one** to `DDxn`, `PORTxn` is configured as an **output pin**.
+* Writing **logic zero** to `DDxn`, `PORTxn` is configured as an **input pin**. .
+:::
+
+---
+
+### Writing to a Pin - Output
+
+The `Pxn` bit in the `PORTx` Register (illustrated for `PORTC` in @fig-week02-portc) has two purposes dependent on the condition of the corresponding bit in the `DDRx` register. 
+
+
+::: {#fig-week02-portc}
+![](pictures/portc.png){fig-alt="PORTC - the port C data register"}
+
+`PORTC` - the port C data register
+:::
+
+::: {.notes}
+If the `DDRx` bit is configured as an output:
+
+* Writing logic one to `PORTxn` drives the pin high (on-state).
+* Writing logic zero to `PORTxn` to logic zero drives the pin low (off-state).
+:::
+
+---
+
+### Reading from a Pin - Input
+
+The port pin can be read through the **`PINxn` Register bit** (illustrated for `PINB` in @fig-week02-pinb. 
+
+::: {#fig-week02-pinb} 
+![](pictures/pinb.png){fig-alt="PINB - the port B input pins address"}
+
+`PINB` - the port B input pins address
+:::
 
 ::: {.notes}
 
-::: {#fig-week03-exercise-solution} 
-![](pictures/exercise_soln.png){fig-alt="Implementing a delay sub-program."}
+This is independent of the setting of Data Direction bit `DDxn`, however is good practice to have it set.
 
-Implementing a delay sub-program using a modular approach
+**Writing** a logic one to `PINxn` toggles the value of `PORTxn`, independent on the value of `DDRxn`.
 :::
 
+---
+
+### Configuring a Pin - Pull Up Enable
+
+Providing a port is configured as an input.
+
+* If `PORTxn` is written **logic one** when the pin is configured as an input pin, the **pull-up resistor** is activated.
+
+* To switch the **pull-up resistor** off, `PORTxn` has to be written logic zero or the pin has to be configured as an output pin.
+
+---
+
+### Basic I/O Demonstration
+
+::: {.notes}
+Code listing @lst-week2-simple-io is an example program written in assembly that illustrates simple IO. We will demonstrate this in class. Please refer to @fig-week2-basic-io-demonstration which shows what the demo looks like.
+
+::: {#fig-week2-basic-io-demonstration} 
+![](pictures/ide_for_demo.png){fig-alt="Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O."}
+
+Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O
 :::
+:::
+
+```{.asm lst-cap="Demonstration of simple I/O" #lst-week2-simple-io code-line-numbers="|"}
+
+;.EQU DDRB = 0x04
+;.EQU PORTB = 0x05
+
+;.EQU PIND = 0x09
+;.EQU DDRD = 0x0A
+;.EQU PORTD = 0x0B
+
+.CSEG
+.ORG 0x0200
+	;setup bits 2 and 3 of port D as inputs
+	IN R16, DDRD
+	ANDI R16, 0b11110011
+	OUT DDRD, R16
+
+	;setup bits 0 and 1 of port B as outputs
+	IN R16, DDRB
+	ORI R16, 0b00000011
+	OUT DDRB, R16
+
+	;both pins B0 (D8) and B1 (D9) start low
+	IN	R16, PORTB
+    ANDI R16, 0b11111100
+    OUT PORTB, R16
+
+	;Enable the pull up resistor for bits 2 and 3 of port D
+	IN	R16, PORTD
+    ORI	R16, 0b00001100
+    OUT PORTD, R16
+
+LOOP:
+	SBIC PIND, 2 ; skip RJMP if bit 2 is set (button pressed)
+	RJMP LED1
+
+	SBIC PIND, 3 ; skip RJMP if bit 3 is set (button pressed)
+	RJMP LED2
+
+	IN R16, PORTB
+	ANDI R16, 0b11111100
+	OUT PORTB, R16
+	RJMP LOOP
+
+LED1:
+	SBI PORTB, 0
+	RJMP LOOP
+
+LED2:
+	SBI PORTB, 1
+	RJMP LOOP
+
+.EXIT
+```
 
 ---
 
@@ -1092,28 +719,17 @@ Implementing a delay sub-program using a modular approach
 
 In this chapter we have:
 
-::: {.incremental}
-- Defined terminology relating to programming and looked at how languages can be classified as high or low based on the level of abstraction from the architecture it is to be run on. 
-- Looked at flowcharts defining the standard symbols and looking at how they are used to represent a program.
-- Looked at some example programs presented as flow charts and in pseudo code.
-- Noted that there may be more than one way to present a program to achieve the same results.
-- Introduced the use of sub-processes to allow modular programming for splitting up a program or repeating common elements.
-:::
+* Introduced a few more parts of the AVR core, namely, the status register, program counter and stack pointer and how these are used under normal operation
+
+* Started  to look at I/O on a microcontroller including the concept of pull up resistors as well as some of the specific registers used in the AVR core to enable the use of both input and output device
 
 ---
 
-### On Canvas
+### On Canvas{.unnumbered}
 
-::: {.fragment} 
-This week on the canvas course page, there is:
-:::
+Canvas module [Week 2: Microcontroller Architecture and I/O](https://canvas.swansea.ac.uk/courses/44971/modules/305537?wrap=1), along with these notes, there is some additional self study material on canvas on page [Week 2: Atmel ATmega328 Architecture Overview](https://canvas.swansea.ac.uk/courses/44971/pages/week-3-atmel-atmega328-architecture-overview?module_item_id=2258072). This includes a video demonstration, from my former colleague Ben Clifford, of the various topics discussed in this session. 
 
-::: {.incremental}
-- a [short video by Ben Clifford providing more of an introduction to programming languages and the compilation process](https://canvas.swansea.ac.uk/courses/52902/pages/introduction-to-programming-languages?module_item_id=2882148);
-- a [discussion forum](https://canvas.swansea.ac.uk/courses/52902/discussion_topics/468327) to talk about the @sec-flow-chart-task;
-- some [supplementary resources](https://canvas.swansea.ac.uk/courses/52902/pages/week-3-supplementary-resources?module_item_id=2882150); and
-- a [quiz to test your knowledge](https://canvas.swansea.ac.uk/courses/52902/assignments/407478?display=full_width).
-:::
+There is also a quiz on Microcontroller Architecture.
 
 ---
 
@@ -1121,10 +737,10 @@ This week on the canvas course page, there is:
 
 Please use the [Course Question Board](https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656) on Canvas or take advantage of the lecturers' office hours. 
 
------- 
+---
 
-### Next time
+### Next time{.unnumbered}
 
-* [Introduction to Programming with C](/lectures/week04)
+* [Introduction to Programming and Program Development](/lectures/week03)
 
 ---

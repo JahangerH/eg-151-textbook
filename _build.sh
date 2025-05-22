@@ -7,8 +7,8 @@ echo "Building website using Quarto book format"
 quarto render website --to html
 
 echo "Copying real lecture files into slides/"
-cp lectures/lecture*.qmd slides/
-
+#cp lectures/lecture*.qmd slides/
+cp website/lectures/week*/index.qmd slides/
 
 echo "Building slides"
 quarto render slides --to revealjs

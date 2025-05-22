@@ -1,746 +1,733 @@
 ---
-title: Architecture of the Atmel ATmega 328 Microcontroller
+title: Introduction to Data Representation
 author: 
   name: Ben Clifford
   affiliation: Welsh Centre for Printing and Coatings
 copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
-date: 10/08/2024
+date: 10/01/2024
 ---
+
+## Introduction{.unnumbered #week2:introduction}
+
 ::: {.notes}
-[Presentation version](/slides/lecture03.html) of these [notes](#sec-week02).
+[Presentation version](/slides/lecture02.html) of these [notes](#week2:introduction).
 :::
 
-![](pictures/week02_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+::: {.notes}
 
-## Introduction{#sec-week02 .unnumbered} 
+::: {.callout-note} 
+This chapter is designed to reinforce the material
+to be introduced in Week 2 of **EG-143 Digital Systems** and so it will not be delivered as part of a formal lecture in **EG-151 Microcontrollers**.
 
-In [Introduction to Microcontrollers and Microcontroller Architecture](/lectures/week1) we described what a microcontroller is and looked at how one can be described by considering its architecture. We finished the lecture looking at [The Atmel ATmega 328 Microcontroller](/lectures/week01/#sec-atmel-atmega328) which provides an overview of the AVR core architecture and we introduced the general purpose registers and the ALU.
+Instead, we have provided some self-study materials in the Canvas Pages [Introduction to Data Representation](https://canvas.swansea.ac.uk/courses/52902/pages/introduction-to-data-representation?module_item_id=2882134) and [Two's complement, BCD, Binary Fractions and A.S.C.I.I](https://canvas.swansea.ac.uk/courses/52902/pages/twos-complement-bcd-binary-fractions-and-a-dot-s-c-dot-i-i?module_item_id=2882135) as well as in [Appendix A: Other Data Representations](/appendix/appendix_a.html).
 
-## Lecture Topics{.unnumbered}
+::: {.callout-important} 
+This material is examinable in EG-151 but there will not be a formal lecture.
+You should therefore read these notes for revision for the class test, try the execises and complete the quiz [Quiz Week 1(b) - Data Representation](https://canvas.swansea.ac.uk/courses/52902/assignments/407475?display=full_width).
+:::
+
+:::
+:::
+
+## Topics Covered in this Lecture{.unnumbered #week2:toc}
 
 :::: {.columns}
-
 ::: {.column width="25%"}
-![](pictures/week02_contents_image.png){img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module." width=100%}
+![](pictures/dr_contents_image.png){img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module." width=100%}
 :::
 
 ::: {.column width="75%"}
-- @sec-week02-intro: [Introducing the Atmel ATmega 328 MCU](#sec-week02-intro)
-- @sec-week02-status-register: [The Status Register](#sec-week02-status-register)
-- @sec-week02-program-counter: [The Program Counter](#sec-week02-program-counter)
-- @sec-week02-stack-pointer: [The Stack Pointer](#sec-week02-stack-pointer)
-- @sec-week02-io: [Introduction to Microcontroller I/O](#sec-week02-io)
+- @sec-week2:intro2dr [Data Representations](#sec-week2:intro2dr)
+- @sec-week2:numbering [Numbering Systems and Base Conversion](#sec-week2:numbering)
+- @sec-week2:addition_and_subtraction [Binary Addition and Subtraction](#sec-week2:addition_and_subtraction)
+- @sec-week2:sr [Introduction to the Status Register](#sec-week2:sr)
 :::
 
 ::::
 
-## Introducing the Atmel ATmega 328 MCU{#sec-week02-intro}
-
-### Architecture of the Atmel ATmega 328 MCU{.unnumbered}
-
-::: {#fig-week02-atmel-arch} 
-![](pictures/atmel_arch.png){fig-alt="The architecture of the Atmel ATMega328 Microcontroller"}
-
-The architecture of the Atmel ATMega328 Microcontroller
+::: {.center}
+## Data Representations{#sec-week2:intro2dr}
 :::
 
 ---
 
-Referring to @fig-week02-atmel-arch, we note that
+### How is Data stored Digitally?
 
-::: {.incremental}
-- This is an 8-bit CMOS microcontroller based on the AVR enhanced **RISC architecture** with 131 instructions
-- It has 2KB of Internal SRAM, 32 KB of Flash Memory and 1 KB of EEPROM
-- It has **32 General Purpose Registers**
-- It can achieve up to 20 MIPS at 20 MHz (maximum clock frequency)
-- There are **8 Analog I/O Pins** connected to 10-bit ADC
-- There are **22 Digital I/O Pins** (6 capable of PWM)
-- The AVR core uses a **Harvard memory  architecture** – with separate memories and buses for program and data.
-:::
+Modern digital processors and microcontrollers contain millions of solid state devices known as transistors (@fig-week2-transistor).
 
-::: {.center}
-## The Status Register{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background" #sec-week02-status-register}
+::: {#fig-week2-transistor}
+![](pictures/transistor.png){fig-alt="A single transistor"}
+
+A single transistor
 :::
 
 ::: {.notes}
-![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
+With one transistor  we can control the flow of electrons creating an object with 
+two states &ndash; *on* or *off*.  This is known as a binary system.
 
-[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+We can use the output (or input if wired to ground) of this transistor
+to connect to other transistors forming: logic gates and eventually a bit of memory.
 :::
 
 ---
 
-### What is the status register?
+By arranging six of these transistors appropriately we can create a memory device that can store one bit of data (@fig-week2:1_bit_of_memory).
+
+::: {#fig-week2:1_bit_of_memory}
+
+![](pictures/memory.jpg){fig-alt="One bit of SRAM memory."
+
+One bit of SRAM memory[^note_sram] 
+:::
+
+[^note_sram]: Source of image used in @fig-week2:1_bit_of_memory: [SRAM vs DRAM : How SRAM Works? How DRAM Works? Why SRAM is faster than RAM?](https://youtu.be/r787m_IaR1I), All About Electronics - YouTube.
+
+---
+
+### Terminology
 
 ::: {.fragment}
-::: {#fig-week02-sreg} 
-![](pictures/sreg.png){fig-alt="SREG - The AVR Status Register"}
+**1 bit = 1 data unit**
 
-SREG - The AVR Status Register
-:::
-:::
-
-::: {.incremental}
-- An 8-bit register containing flags that contain information about the result of the most recently executed instruction and the current **state of the processor** (@fig-week02-sreg).
-- The status register is updated after all ALU instructions as specified by the instruction set reference.
-:::
-
-
----
-
-#### Example - Effect on SREG of `ADC` instruction
-
-::: {#fig-week02-sreg-setting} 
-![](pictures/AVR-instruction.png){fig-alt="Example instruction showing how the status register is affected by the `ADC` (add with carry) instruction."}
-
-Example instruction showing how the status register is affected by the `ADC` (add with carry) instruction [@avr_instruction_set p. 24]
-:::
-
----
-
-### Status Register Flags
-
-| Bit | Flag | Meaning |
-|---------|--------------------|---------|
-| Bit 0 | **Carry Flag (C)** | The carry flag is set when the execution of the previous arithmetic or logic instruction produced a carry out of bit-7 or required a borrow. |
-| Bit 1 | **Zero Flag (Z)** | The zero flag is set when the result of the previous arithmetic or logic instruction resulted in a zero |
-| Bit 2 | **Negative Flag (N)** | The negative flag is set when the result of the previous arithmetic or logic instruction is negative |
-| Bit 3 | **Two’s Complement Overflow Flag (V)** | The Two’s Complement Overflow Flag V supports two’s complement arithmetic. +ve + +ve = -ve  or  -ve + -ve = +ve |
-| Bit 4 | **Sign Bit (S)** | The S-bit is always an exclusive or between the Negative Flag and the Two’s Complement Overflow Flag. |
-| Bit 5 | **Half Carry Flag (H)** | The half carry flag is set when the execution of the previous arithmetic or logic instruction produced a carry out of bit-3 or required a borrow from bit-4.|
-| Bit 6 | **Bit Copy Storage (T)** | A bit from a register in the Register File can be copied into T by the BST instruction, and a bit in T can be copied into a bit in a register in the Register File by the BLD instruction. |
-| Bit 7 | **Global Interrupt Enable (I)** | The Global Interrupt Enable bit is set to enable interrupts. The individual interrupt enable control is then performed in separate control registers. |
-
-: Status Register Flags {tbl-colwidths="[10,30,60]" #tbl-status-register-flags} 
-
----
-
-### Status Register Example
-
-::: {#fig-example-of-sr-working} 
-![](pictures/sreg-example.png) {fig-alt="An example of how the status register works."}
-
-An example of how the status register works
-:::
-
----
-
-### Status Register Demonstration {#sec-week2-sr-examples}
-
-:::: {.columns}
-
-::: {.column}
-
-Code to be executed
-```asm
-LDI R16, Addend
-LDI R17, Augend
-ADD R16, R17
-```
-:::
-
-::: {.column}
-![Status register](pictures/status-reg.png)
-:::
-
-::::
-
-Record status of SREG at line 3.
-
----
-
-#### Examples {.center .unnumbered }
-
----
-
-$$
-\begin{array}{lrr}
-\mathrm{Addend} & 0\,1\,1\,0\,1\,1\,1\,0 & 110_{10}\\
-\mathrm{Augend} & 1\,1\,1\,0\,0\,0\,1\,1 & 227_{10}\\
-\hline
-\mathrm{Sum} & &
-\end{array}
-$$
-
----
-
-$$
-\begin{array}{lrr}
-\mathrm{Addend} & 0\,0\,1\,1\,0\,1\,1\,1 & 55_{10}\\
-\mathrm{Augend} & 0\,1\,0\,1\,0\,0\,0\,0 & 80_{10}\\
-\hline
-\mathrm{Sum} & &
-\end{array}
-$$
-
----
-
-$$
-\begin{array}{lrr}
-\mathrm{Addend} & 1\,0\,0\,0\,0\,0\,0\,0 & 128_{10}\\
-\mathrm{Augend} & 1\,0\,0\,0\,0\,0\,0\,0 & 128_{10}\\
-\hline
-\mathrm{Sum} & &
-\end{array}
-$$
-
-::: {.center}
-## The Program Counter{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background" #sec-week02-program-counter}
-:::
-
-::: {.notes}
-![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
-
-[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
-:::
-
----
-
-### What is The Program Counter?
-
-::: {.incremental}
-* A program is a sequence of instructions written in a particular order to perform a specific task
-* The instructions of the program are stored sequentially in non-volatile memory.
-* The program counter is a register which holds the address of the next instruction to be executed
-:::
-
----
-
-### Example of a program
-@fig-week02-a-program illustrates a simple program to add two numbers. 
-
-::: {#fig-week02-a-program} 
-![](pictures/pc_example.png){fig-alt="An example program showing three instructions located at memory locations 0 through 2."}
-
-An example program showing three instructions located at memory locations 0 through 2.
-:::
-
-::: {.notes}
-It is written in assembly code for the Atmel ATmega328 MCU. Each instruction is a programmer-friendly rendition of an 16- or 32-bit binary code that is stored at the memory locations shown.
-:::
-
----
-
-### Organisation of program memory
-
-::: {.incremental}
-* The ATmega328 microcontroller has a 32 Kbyte flash memory which is organised into 256 pages each containing 64 Words of program.
-* The program counter is 14-bits and can access each of these memory locations `0x0000` – `0x3FFE`
-* The remaining addresses `0x3FFF` – `0x7FA5` (the boot flash section) are reserved for the bootloader
-:::
-
----
-
-@fig-week02-prog-mem illustrates the organisation of the program memory for the ATmega328.
-
-::: {#fig-week02-prog-mem} 
-![](pictures/prog_mem.png){fig-alt="The program memory of the ATmega328 microcontroller."}
-
-The program memory of the ATmega328 microcontroller
-:::
-
-::: {.notes}
-Remember a word is 16 bits
-
-64 (words) = 128 bytes
-
-256 (pages) each of 128 bytes = 32 KB (or decimal 32768 / binary 32678)
-:::
-
----
-
-@fig-week02-prog-counter shows how the program counter is used to access the next instruction.
-
-::: {#fig-week02-prog-counter} 
-![](pictures/prog_counter.png){fig-alt="How the program counter is used to access instructions within the available pages of program memory."}
-
-How the program counter is used to access instructions within the available pages of program memory
-:::
-
-::: {.notes}
-The Least significant six bits address the instruction words within a given page. Note: $2^6 = 64$ words which is $128$ bytes.
-
-The 8 most significant bits address the *page* in program memory in which the instruction word is to be found. Note: $2^8 = 256$ and that $256 \times 64 \times 2 = 32,768$ bytes.
-
-### The Bootloader
-In short, microcontrollers are usually programmed through a programmer (specialist piece of hardware) unless you have a piece of firmware in your microcontroller that allows installing new firmware without the need of an external programmer. This small piece of firmware is called a bootloader and can allow the program to be rewritten by the microcontroller itself e.g. via an over-the-air (OTA) updates.
-
-The bootloader also contains the reset routine (power-on-reset)
-
-During reset, all I/O Registers are set to their initial values, and the program starts execution from the Reset Vector. For the ATmega168A/168PA/328/328P family of microcontrollers, the instruction placed at the Reset Vector must be a JMP – Absolute Jump – instruction to the reset handling routine.
-:::
-
----
-
-### Program Counter Demonstration
-
-| Instruction | Number of words |
-|:------------|:----------------|
-| `ADD`       | 1               | 
-| `LDI`       | 1               | 
-| `LDS`       | 2               | 
-| `STS`       | 2               | 
-: A selection of instructions and the number of 16-bit words they need for storage. {#tbl-counter-example} 
-
-When executing these instructions, the program counter advances by the number of words in each instruction.
-We will demonstrate this later.
-
-::: {.notes}
-Consider the instructions `LDI` (load immediate) and `LDS` (load from store).
-
-Refering to the data manual [@avr_instruction_set] we see that the LDI instruction is a one word instruction (@fig-ldi-instruction) taking the opcode and the 8-bit data value. We also see that the `LDS` instruction (@fig-lds-instruction) is a two word instruction: taking a 16 bit memory address as its operand. 
-:::
-
----
-
-#### `LDI` instruction
-
-::: {#fig-ldi-instruction}
-![](pictures/wk2_ldi_instruction.png){fig-alt="An extract from the Atmel ATmega328 data manual for the LDI instruction."} 
-
-The `LDI` instruction: takes a four bit opcode, a 4-bit register number (0-31) and an 8-bit value. The program counter is incremented by one when this instruction is executed. [@avr_instruction_set p.92].
-:::
-
-
----
-
-#### `LDS` instruction
-
-::: {#fig-lds-instruction}
-![](pictures/wk2_lds_instruction.png){fig-alt="An extract from the Atmel ATmega328 data manual for the LDS instruction."} 
-
-The `LDS` instruction: takes an  bit opcode, an 12-bit opcode, a 4-bit register number (0-31) and an 16-bit value which represents a data location on memory (0-65535). The program counter is incremented by two when this instruction is executed. [@avr_instruction_set p.93].
-:::
-
-::: {.notes}
-You can lookup `ADD` and `STS` (store to store) to confirm the details given in @tbl-counter-example. 
-:::
-
----
-
-#### Example program
-
-::: {.notes}
-The assembly program shown in @lst-week2-addition illustrates the use of the registers, program counter and the `ADC` instruction. By changing the values of the data at lines 14 nd 15, you can verify the final state of the status register explored in @sec-week2-sr-examples.
-:::
-
-```{.asm lst-cap="Assembly program illustrating the use of registers, the ADC function and the status register" #lst-week2-addition code-line-numbers="|14|15|23|24|25|27|28|30|31|32|33"}
-;
-; Assembly - simple addition.asm
-;
-; Created: 11/10/2022 14:14:16
-; Author : Ben Clifford
-;
-
-		.device ATmega32
-
-    .equ    VARIABLES   = 0x0100        ;Start address in internal RAM for variables (default)
-		.equ    PROGRAMME   = 0x0000        ;Start address in Flash for programme (default)
-		.equ    STACK       = 0x08FF		;Last address in RAM to be used for the Stack (default)
-
-		.equ    num1 = 110
-		.equ    num2 = 227
-
-		.DSEG
-		.org VARIABLES
-
-		.CSEG
-		.org PROGRAMME					
-
-MAIN:		
-		LDI R16, num1
-		STS 0x0100, R16;
-
-		LDI R16, num2
-		STS 0x0101, R16;
-
-		LDS R16, 0x0100;
-		LDS R17, 0x0101;
-		ADC R16, R17
-		STS 0x0100, R16;
-```
-
-
-::: {.center}
-## The Stack Pointer{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background" #sec-week02-stack-pointer}
-:::
-
-::: {.notes}
-![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
-
-[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
-:::
-
----
-
-### The Stack
-
-In a microcontroller, the ‘stack’ is a space in memory with a fixed origin and a variable size that can be used for temporary storage purposes, such as storing local variables and saving return address for subroutine calls and interrupts.
-
-::: {.fragment}
-The stack supports two types of operations:
-:::
-
-::: {.incremental}
-1. Push – a data item is placed at the location pointed to by the stack pointer
-2. Pop or Pull – a data item at the current location pointed to by the stack pointer is removed.
+![](pictures/bit.png)
 :::
 
 ::: {.fragment}
-The stack typically operates as a “Last In First Out” (LIFO) buffer
+**1 nybble = 4 data units (4 bits)**
+
+![](pictures/nybble.png)
 :::
-
----
-
-### What is the stack pointer?
-
-The *stack pointer register* keeps track of the top of the stack.
-
-::: {.incremental}
-* A stack `PUSH` command will decrement the stack pointer.
-* A stack `POP` command will increment the stack pointer.
-:::
-
----
-
-
-The AVR stack pointer is implemented as two 8-bit registers in the I/O space.
-
-The are called `SPH` (stack pointer high byte) and `SPL` (stack pointer low byte) as illustrated in @fig-week02-sp-register.
-
-
-::: {#fig-week02-sp-register} 
-![](pictures/sp_register.png){fig-alt="The AVR stack pointer implemented as two bytes SPH and SPL."}
-
-The AVR stack pointer implemented as two bytes SPH and SPL
-:::
-
----
-
-@fig-week02-sp-operation illustrates the operation of the stack pointer as it appears to the user of the stack.
-
-::: {#fig-week02-sp-operation} 
-![](pictures/sp_operation.png){fig-alt="Illustration of the operation of a stack."}
-
-Illustration of the operation of a stack.
-:::
-
-::: {.notes}
-Like a box of Pringles, when you pop an item of the stack, it comes from the top. The pringle below the one you have just taken off becomes the new top. If you were to put the Pringle back, it becomes the new top. When the pringles box is empty, there is nothing on the stack and the stack pointer will be pointing at the memory address of the bottom of the stack.
-:::
-
----
-
-### Stack Pointer Demonstration
-
-::: {.notes}
-An example of the use of the stack is given in @lst-week2-stack. We will demonstrate this program in class.
-:::
-
-```{.asm lst-cap="Example of the use of the stack" #lst-week2-stack code-line-numbers="|21|22|23|24|25|26|27|29|30|31"}
-;
-; Assembly - Stack pointer example.asm
-;
-; Created: 11/10/2022 14:14:16
-; Author : Ben Clifford
-;
-
-		.device ATmega32
-
-    .equ    VARIABLES   = 0x0100        ;Start address in internal RAM for variables (default)
-		.equ    PROGRAMME   = 0x0000        ;Start address in Flash for programme (default)
-		.equ    STACK       = 0x08FF		;Last address in RAM to be used for the Stack (default)
-		
-
-		.DSEG
-		.org VARIABLES
-
-		.CSEG
-		.org PROGRAMME					
-
-MAIN:	
-		LDI R16, 1;
-		LDI R17, 2;
-		LDI R18, 3
-		PUSH R16
-		PUSH R17
-		PUSH R18
-
-		POP R16
-		POP R17
-		POP R18
-```
-
-::: {.center}
-## Introduction to Microcontroller I/O{background-image="pictures/wallpaper.png" fig-alt="decorative image used for slide background [wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)" #sec-week02-io}
-:::
-
-::: {.notes}
-![](pictures/wallpaper.png){fig-alt="decorative image used for slide background"}
-
-[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
-:::
-
----
-
-### I/O on the ATmega328
-
-::: {.notes}
-@fig-week02-arduino-nano illustrates the layout of the input-output (I/O) pins of the Atmel ATmega328 packaged as an Arduino Nano that you will be using in the lab and project.
-:::
-
-::: {#fig-week02-arduino-nano} 
-![](pictures/arduino_nano.png){fig-alt="Input/output pins for the Arduino nano."}
-
-
-Input/output pins for the Arduino nano
-:::
-
----
-
-::: {.notes}
-@fig-week02-atmega325-schematic is the schematic diagram of the Atmel ATmega328 reproduced from the reference manual.
-:::
-
-::: {#fig-week02-atmega325-schematic} 
-![](pictures/atmega325_schematic.png){fig-alt="Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller."}
-
-Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller [@atmel_data p. 6]
-:::
-
----
-
-### MCU Inputs
-
-Consider a switch which on one side is connected to a 5V power source and on the other side to a microntroller input.
-
-![](pictures/wk2_switch.png)
 
 ::: {.fragment}
-What voltage is read at the I/O port when the switch is closed and when it is open?
+**1 byte = 8 data units (8 bits, 2 nybbles)**
+
+![](pictures/byte.png)
+:::
+
+::: {.fragment}
+**1 word = 16 data units (16 bits, 2 bytes, 4 nybbles)**
+
+![](pictures/word.png)
+:::
+
+::: {.center}
+## Numbering Systems and Base Conversion{#sec-week2:numbering}
 :::
 
 ---
 
-### Pull Ups
+### Decimal Number Representation
 
-To get around this issue, microcontrollers use pull-up (or pull-down) circuitry to hold the port high (or low) (see @fig-week02-pullup).
+Take the decimal number (Base 10) 4623, what does this representation mean?
 
-::: {#fig-week02-pullup} 
-![](pictures/pullup.png){fig-alt="Schematic of the pullup circuitry for the ATmega328."}
+::: {.fragment}
+$$4623$$
+:::
 
-Schematic of the pullup circuitry for the ATmega328 (from the manual [@atmel_data p. 58]
+::: {.fragment}
+$$4000 + 600 + 20 + 3$$
+:::
+
+::: {.fragment}
+$$(4\times 1000) + (6\times 100) + (2\times 10) + (3\times 1)$$
+:::
+
+::: {.fragment}
+$$\left(4\times 10^3\right) + \left(6\times 10^2\right) + \left(2\times 10^1\right) + \left(3\times 10^0\right)$$
 :::
 
 ---
 
-What voltage is read at the I/O port when the switch 'S1' is closed and when it is open now?
+We can break down any base 10 (decimal) number $N$ in the same way using the expression:
 
-::: {#fig-week2-pu-enabled}
-![](pictures/pu_enabled.png){fig-alt="Port with pull-up enabled."}
+$$N_{10} = \cdots  + \left(X\times 10^3\right) + \left(X\times 10^2\right) + \left(X\times 10^1\right) + \left(X\times 10^0\right)$$
 
-Port with pull-up enabled
+where $X$ is any *digit* in the set $\{0, 1, 2, 3, 4, 5, 6, 7, 8, 9\}$.
+
+---
+
+### What About Other Bases?
+
+We can apply the same techniques to any other base to convert the value into decimal (base 10).
+
+For programming (and digital systems more generally), the *binary* (base 2), *octal* (base 8) and *hexadecimal* (base 16) representations are commonly used[^note:dr:bases]
+
+[^note:dr:bases]: Note that octal and hexadecimal are related to binary as in each case the base is a power of 2. In the case of octal $8 = 2^3$ and hexadecimal $16 = 2^4$.
+
+---
+
+#### Binary (base 2)
+
+$$N_2 = \cdots + \left(X\times 2^5\right) + \left(X\times 2^4\right) + \left(X\times 2^3\right) + \left(X\times 2^2\right) + \left(X\times 2^1\right) + \left(X\times 2^0\right)$$
+
+where $X$ is any digit in the set $\{0, 1\}$.
+
+---
+
+##### Example 1
+
+Consider the binary representation $N_2 = 10010011$. What is the value of $N_2$ in decimal base 10?
+
+---
+
+###### Solution
+
+::: {.fragment}
+$$N_{10} = \left(1\times 2^7\right) + \left(0\times 2^6\right) + \left(0\times 2^5\right) + \left(1\times 2^4\right) + \left(0\times 2^3\right) + \left(0\times 2^2\right) + \left(1\times 2^1\right) + \left(1\times 2^0\right)$$
+:::
+
+::: {.fragment}
+$$N_{10} = \left(1\times 128\right) + \left(0\times 64\right) + \left(0\times 32\right) + \left(1\times 16\right) + \left(0\times 8\right) + \left(0\times 4\right) + \left(1\times 2\right) + \left(1\times 1\right)$$
+:::
+
+::: {.fragment}
+$$N_{10} = 128 + 16 + 2 + 1$$
+:::
+
+::: {.fragment}
+$$N_{10} = 147_{10}$$
 :::
 
 ---
 
+#### Octal (base 8)
 
-### Ports as General Digital I/O
+Octal:
 
-::: {#fig-week02-general-io} 
-![](pictures/general_io.png){fig-alt="The PORTC register."}
+$$N_{8} = \cdots  + \left(X\times 8^5\right) + \left(X\times 8^4\right) + \left(X\times 8^3\right) + \left(X\times 8^2\right) + \left(X\times 8^1\right) + \left(X\times 8^0\right)$$
 
-The `PORTC` register
+where $X$ is any *digit* in the set $\{0, 1, 2, 3, 4, 5, 6, 7\}$.
+
+---
+
+##### Example 2
+
+Consider the octal representation $N_8 = 712$. What is the value of $N_8$ in decimal base 10?
+
+---
+
+###### Solution
+
+::: {.fragment}
+$$N_8 = 713$$
+:::
+
+::: {.fragment}
+$$N_{10} = \left(7\times 8^2\right) + \left(1·8^1\right) + \left(2·8^0\right)$$
+:::
+
+::: {.fragment}
+$$N_{10} = (7\times 64) + (1\times 8) + (2\times 1)$$
+:::
+
+::: {.fragment}
+$$N_{10} = 448 + 8 + 2$$
+:::
+
+::: {.fragment}
+$$N_{10} = 458_{10}$$
+:::
+
+---
+
+#### Hexadecimal (base 16)
+
+$$N_{16} = \cdots  + \left(X\times 16^5\right) + \left(X\times 16^4\right) + \left(X\times 16^3\right) + \left(X\times 16^2\right) + \left(X\times 16^1\right) + \left(X\times 16^0\right)$$
+
+where $X$ is any *digit* in the set $\{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, \textrm{A}, \textrm{B}, \textrm{C}, \textrm{D}, \textrm{E}, \textrm{F}\}$[^hex_digits].
+
+[^hex_digits]: Note we have to introduce the letters A-F to represent the two-digit decinal numbers 10-15. Thus $\textrm{A}_{16} = 10_{10}$, $\textrm{B}_{16} = 11_{10}$, $\textrm{C}_{16} = 12_{10}$, $\textrm{D}_{16} = 13_{10}$, $\textrm{E}_{16} = 14_{10}$, $\textrm{F}_{16} = 15_{10}$,
+
+---
+
+##### Example 3
+
+Consider the hexadecimal representation $N_{16} = 3\textrm{C}4$. What is the value of $N_{16}$ in decimal base 10?
+
+---
+
+###### Solution
+
+::: {.fragment}
+$$N_{16} = \left(3\times 16^2\right) + \left(\textrm{C}\times 16^1\right) + \left(4\times 16^0\right)$$
+:::
+
+::: {.fragment}
+$$N_{10} = 3\times 256 + 12\times 16 + 4\times 1$$
+:::
+
+::: {.fragment}
+$$N_{10} = 768 + 192 + 4$$
+:::
+
+::: {.fragment}
+$$N_{10} = 964_{10}$$
+:::
+
+---
+
+### Decimal Number Conversion
+
+A decimal number can be converted into any other base using the **divide-by-$n$** method where $n$ represents the desired base.
+
+---
+
+::: {#fig-divide-by-n-method}
+![](pictures/division_method.png){fig-alt="Illustration of a step in the division-by-n method of decimal number conversion."}
+
+a step in the division-by-$n$ method of decimal number conversion.
+:::
+
+Step 1 (see @fig-divide-by-n-method) − Divide the decimal number by the value of the new base and get the quotient and a remainder. 
+
+::: {.fragment}
+Step 2 − Keep dividing the quotient of the previous divide by the new base and record the remainder
+:::
+
+::: {.fragment}
+Step 3 − Repeat Step 2, until the quotient becomes zero
+:::
+
+::: {.fragment}
+Step 4 -- Read the remainders from bottom (MSB) to top (LSB).
+:::
+
+---
+
+#### Example 4
+
+Convert $28_{10}$ into binary (base 2).
+
+---
+
+##### Solution
+
+::: {.fragment}
+Step 1: $28 \div 2 = 14$ remainder $0$
+:::
+
+::: {.fragment}
+Step 2: $14 \div 2 = 7$ remainder $0$
+:::
+
+::: {.fragment}
+Step 3: $7 \div 2 = 3$ remainder $1$
+:::
+
+::: {.fragment}
+Step 4: $3 \div 2 = 1$ remainder $1$
+:::
+
+::: {.fragment}
+Step 5: $1 \div 2 = 0$ remainder $1$
+:::
+
+::: {.fragment}
+Binary value: $28_{10} = 11100_{2}$.
+:::
+
+---
+
+##### Confirmation
+
+\begin{align}
+11000_2 &= \left(1\times 2^4\right) + \left(1\times 2^3\right) + \left(1\times 2^2\right) + \left(0\times 2^1\right) + \left(0\times 2^0\right)\\
+&= \left(1\times 16\right) + \left(1\times 8\right) + \left(1\times 4\right) + \left(0\times 2\right) + \left(0\times 1\right)\\
+&= 16 + 8 + 4\\
+&= 28_{10}
+\end{align}
+
+---
+
+#### Example 5
+
+Convert $28_{10}$ into octal (base 8).
+
+---
+
+##### Solution
+
+::: {.fragment}
+Step 1: $28 \div 8 = 3$ remainder $4$
+:::
+
+::: {.fragment}
+Step 2: $3 \div 8 = 0$ remainder $3$
+:::
+
+::: {.fragment}
+Octal value: $28_{10} = 34_{8}$.
+:::
+
+---
+
+##### Confirmation
+
+\begin{align}
+34_8 &= \left(3\times 8^1\right) + \left(4\times 8^0\right)\\
+&= \left(3\times 8\right) + \left(4\times 1\right) \\
+&= 24 + 4\\
+&= 28_{10}
+\end{align}
+
+---
+
+#### Example 6
+
+Convert $28_{10}$ into hexadecimal (base 16).
+
+---
+
+##### Solution
+
+::: {.fragment}
+Step 1: $28 \div 16 = 1$ remainder $12\,\left(\textrm{C}_{16}\right)$
+:::
+
+::: {.fragment}
+Step 2: $1 \div 16 = 0$ remainder $1$
+:::
+
+::: {.fragment}
+Hexadecimal value: $28_{10} = 1\textrm{C}_{16}$.
+:::
+
+---
+
+##### Confirmation
+
+\begin{align}
+1\textrm{C}_{16} &= \left(1\times 16^1\right) + \left(\textrm{C}\times 16^0\right)\\
+&= \left(1\times 16\right) + \left(12\times 1\right) \\
+&= 16 + 12\\
+&= 28_{10}
+\end{align}
+
+---
+
+### Tricks and Tips
+
+All numbers are stored in a computer in binary form. Depending on the encoding, each digit takes up 1 bit (binary), 3 bits (octal) or 4 bits (decimal and hexadecimal).
+
+If the digit needs less bits than allowed for its representation, the remaining bits the the left of the number will be set to zero.
+
+---
+
+For example:
+
+::: {.incremental}
+- $1_2$ is represented as `0b00000001`[^l2:note2] (binary, prefix `0b`, seven padding 0 bits + 1 bit for the value 1).
+- $5_8$ is `0005` (octal prefix `0` followed two 0 digits (2 bits plus 3 bits) (00 000 101).
+- $10_{10} = 8 + 2$ is `0b00010010`.
+- $\textrm{E}$ is `0x0E` (hexadecimal prefix `0x` followed by `0b0000`, and `0b1110` = `0b00001110`).
+:::
+
+[^l2:note2]: The prefix `0b` is used in C code and many other languages as the prefix for the text representation of a binary value. `0` is used for octal values and `0x` for hexadecimal values. If there is no leading zero, the number is assumed to be decimal. However a number is defined in program code, the actual value stored in memory to represent that number will be a binary number.
+
+---
+
+For octal and hexadecimal values, the equivalent binary number is easily obtained by grouping from the right.
+
+::: {.incremental}
+- For octal, the largest digit is 7 which needs three bits. So the octal representation of an 8 bit binary number will have 2 bits (0-3) + two groups of 3 bits. The maximum number allowed is `0b11 111 111` = `0377` = $255_{10}$.
+- For hexadecimal, four bits are needed to represent all values in the range 0-F. So an 8 bit value can only represent two hexadecimal digits `0x00` to `0xFF`.
 :::
 
 ::: {.notes}
-The ports are bi-directional I/O ports with optional internal pull-ups meaning they can be configured to read an input such as a switch or a sensor or to write to an output such as an LED or control an actuator. @fig-week02-general-io shows a functional description of one I/O-port pin, which we give the notation `Pxn`.
+To convert a binary number to octal or heaxdecimal, just group the binary digits and then read off the value.
 :::
 
 ---
 
-### Configuring a pin
+#### Example 7
 
-::: {#fig-week02-iomap}
-![](pictures/iomap.png){fig-alt="A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers."}
+Convert the binary number `0x000011101` to octal and hexadecimal. Give the value in decimal.
 
-A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers
+---
+
+##### Solution
+
+::: {.fragment}
+Grouping `0x000011101` by threes gives `00` + `011` + `101` = `0035` = $35_8$.
+:::
+
+::: {.fragment}
+Grouping `0x000011101` by fours gives `0001` + `1101` = `0x01D` = $1\textrm{D}_{16}$.
+:::
+
+::: {.fragment}
+Taking the octal value $62_8 = \left(0\times 8^2\right) + \left(3\times 8^1\right) + (5\times 8^0) = 0 + 24 + 5 = 29_{10}$.
+:::
+
+---
+
+#### Example 8
+
+Convert the octal number $62_8$ (`0062`) to binary and hexadecimal. Give the value in decimal.
+
+---
+
+##### Solution
+
+::: {.fragment}
+The octal digits $6_8$ and $2_8$ are the three-bit binary values  `0b110` and `0b010` respectively. So the equivalent 8-bit binary byte is obtained by combining these binary values and prepending with two zeros: `0b00 110 010` $\to$ `0b00110010`.
+:::
+
+::: {.fragment}
+Grouping the binary number `0b00110010` in blocks of 4 gives `0b 0011 0010` which gives the hexdecimal digits  $3_{16}$ and $2_{16}$ respectively. So $62_8 = 32_{16}$.
+:::
+
+::: {.fragment}
+The equivalent decimal number is $\left(3\times 16^1\right) + \left(2\times 16^0\right) = 48 + 2 = 50_{10}$.[^l2:note3]
+:::
+
+[^l2:note3]: The calculator app on both Windows and MacOS have a programmer view that makes it easy to confirm these results.
+
+---
+
+### Summary of number systems
+
+::: {.notes}
+@tbl-week2-number-values shows the equivalent binary, octal and hexadecimal values for decimal numbers 0-16. Note that we need just 1 nybble to represent a value in the range 0-154 but we need two nybbles (1 byte) for numbers greater than 15. The maximum value representable in one byte of data is $2^8 - 1 = 255$. The concept can of course be extended to words (16 bits). The maximum value that can be represented with 16 bits is $2^{16} - 1 = 65,535$. 
+:::
+
+| Decimal (Code) | Binary (Code) | Octal (Code) | Hexadecimal (Code) |
+|--------------------|-------------------|------------------|------------------------|
+| $0$ (`0`) | $0$ (`0b00000000`) | $0$ (`000`) | $0$ (`0x00`) |
+| $1$ (`1`) | $1$ (`0b00000001`) | $1$ (`001`) | $1$ (`0x01`) |
+| $2$ (`2`) | $10$ (`0b00000010`) | $2$ (`002`) | $2$ (`0x02`) |
+| $3$ (`3`) | $11$ (`0b00000011`) | $3$ (`003`) | $3$ (`0x03`) |
+| $4$ (`4`) | $100$ (`0b00000100`) | $4$ (`004`) | $4$ (`0x04`) |
+| $5$ (`5`) | $101$ (`0b00000101`) | $5$ (`005`) | $5$ (`0x05`) |
+| $6$ (`6`) | $110$ (`0b00000110`) | $6$ (`006`) | $6$ (`0x06`) |
+| $7$ (`7`) | $111$ (`0b00000111`) | $7$ (`007`) | $7$ (`0x07`) |
+| $8$ (`8`) | $1000$ (`0b00001000`) | $10$ (`010`) | $8$ (`0x08`) |
+| $9$ (`9`) | $1001$ (`0b00001001`) | $11$ (`011`) | $9$ (`0x09`) |
+| $10$ (`10`) | $1010$ (`0b00010010`) | $12$ (`012`) | $\mathrm{A}$ (`0x0A`) |
+| $11$ (`11`) | $1011$ (`0b00001011`) | $13$ (`013`) | $\mathrm{B}$ (`0x0B`) |
+| $12$ (`12`) | $1100$ (`0b00001100`) | $14$ (`014`) | $\mathrm{C}$ (`0x0C`) |
+| $13$ (`13`) | $1101$ (`0b00001101`) | $15$ (`015`) | $\mathrm{D}$ (`0x0D`) |
+| $14$ (`14`) | $1110$ (`0b00001110`) | $16$ (`016`) | $\mathrm{E}$ (`0x0E`) |
+| $15$ (`15`) | $1111$ (`0b00001111`) | $17$ (`017`) | $\mathrm{F}$ (`0x0F`) |
+| $16$ (`16`) | $10000$ (`0b0010000`) | $20$ (`020`) | $10$ (`0x10`) |
+
+: Representation of integer values in 8 bit computer systems {#tbl-week2-number-values}
+
+---
+
+### Other binary encodings
+
+Numbers are not the only type of data that can be encoded using binary values. In fact, all data that is manipulated by computers is represented by an encoding of binary numbers.
+
+---
+
+Some examples of codings that you will see are:
+
+::: {.incremental}
+- Characters which are represented as ASCII code (7 bits), extended ASCII (8 bits) or UTF (1-4 bytes) used to represent other characters (e.g. for accented characters, other alphabets and languages, math symbols, emojis) and other purposes.
+- Other numerical encodings, such as Binary Coded Decimal (BCD)
+- Machine codes, which is how computers represent exercutable programmes, are also represented in binary numbers. These are usually generated by an assembler, compiler, or interpreter from human-readable code that is stored in text files that are themselves use characters encoded in ASCII or UTF.
+:::
+
+---
+
+Additional self-directed learning materials which explore some of these extra encodings are provided on [Canvas](https://canvas.swansea.ac.uk/courses/52902/pages/introduction-to-data-representation?module_item_id=2882134). 
+
+We will dicuss some of the encodings used for machine code in later lectures.
+
+
+::: {.center}
+## Binary Addition and Subtraction{#sec-week2:addition_and_subtraction}
+
+How do computers add and subtract numbers?
+:::
+
+---
+
+### Binary Arithmetic
+
+Microcontrollers work with 0's and 1's (binary).
+
+In order to add or subtract two binary numbers there are a series of rules similar to in decimal arithmetic.
+
+---
+
+#### Rules for Binary Addition
+
+\begin{align*}
+0 + 0 &= 0\\
+0 + 1 &= 1\\
+1 + 0 &= 1\\
+1 + 1 &= 10\quad\textrm{i.e.}\, 0 + \textrm{carry}\, 1
+\end{align*}
+
+---
+
+##### Example 10
+
+Confirm using binary addition that $14_{10} + 19_{10} = 33_{10}$.
+
+---
+
+###### Solution (@fig-example-10)
+
+::: {#fig-example-10}
+![](pictures/addition1.png){fig-alt="Example of binary addition: 14 + 19 = 33"}
+
+Example 10: $14_{10} + 19_{10} = 33_{10}$
+:::
+
+---
+
+##### Example 11
+
+Confirm using binary addition that $46_{10} + 147_{10} = 193_{10}$.
+
+---
+
+###### Solution (@fig-example-11)
+
+::: {#fig-example-11}
+![](pictures/addition2.png){fig-alt="Example of binary addition: 46 + 147 = 193"}
+
+Example 11: $46_{10} + 147_{10} = 193_{10}$
+:::
+
+---
+
+#### Rules for Binary Subtraction
+
+\begin{align*}
+0 - 0 &= 0\\
+1 - 0 &= 1\\
+1 - 1 &= 0\\
+0 - 1 &= 10 - 1 +\,\textrm{borrow} = 1+ \textrm{borrow}
+\end{align*}
+
+---
+
+##### Example 12 
+
+Confirm using binary subtraction that $27_{10} - 14_{10} = 13_{10}$.
+
+---
+
+###### Solution (@fig-example-12)
+
+::: {#fig-example-12}
+![](pictures/subtraction1.png){fig-alt="Example of binary subtraction: 27 - 14 = 13"}
+
+Example of binary subtraction: $27_{10} - 14_{10} = 13_{10}$
+:::
+
+---
+
+##### Example 13
+
+Show using binary subtraction that $175_{10} - 83_{10} = 92_{10}$.
+
+---
+
+###### Solution  (@fig-example-13)
+
+::: {#fig-example-13}
+![](pictures/subtraction2.png){fig-alt="Example of binary subtraction: 175 - 83 = 92"}
+
+Example of binary subtraction: $175_{10} - 83_{10} = 92_{10}$
+:::
+
+---
+
+#### Binary Arithmetic and Flags
+
+What happens when the result is larger than 8-bits?
+
+---
+
+##### Extended Rules for Binary Addition
+
+We need to extend the rules of binary addition to introduce an overflow that is indicated by a carry flag.
+
+\begin{align*}
+0 + 0 &= 0 \\
+0 + 1 &= 1 \\
+1 + 0 &= 1 \\
+1 + 1 &= 10\quad \textrm{i.e.}\, 0 + \textrm{carry}\, 1 \\
+1 + 1 + 1 &= 11\quad \textrm{i.e.}\, 1 + \textrm{carry}\, 1
+\end{align*}
+
+---
+
+##### Example 14{#week2:example14} 
+
+Show using binary addition that $110_{10} + 227_{10} = 337_{10}$.
+
+---
+
+###### Solution (@fig-example-14)
+
+::: {#fig-example-14}
+![](pictures/addition3.png){fig-alt="Example of binary subtraction with overflow: 110 + 227 = 337"}
+
+Example of binary subtraction with overflow: $110_{10} + 227_{10} = 337_{10}$
 :::
 
 ::: {.notes}
-Recall the 64 I/O registers early on in the user data space (see @fig-week02-iomap):
+The overflow is acknowledged in the **status register** by the carry flag
+:::
 
-* General purpose registers – `0x0000` – `0x001F`
-* Three I/O memory address locations are allocated for each port, one each for:
-    *  the *Data Registers* – `PORTx`,
-    *  the *Data Direction Register* – `DDRx`, and
-    *  the *Port Input Pins* – `PINx`
+## Introduction to the Status Register{#sec-week2:sr}
 
-Note: `x` refers to the numbering letter for the port (`B`, `C`, or `D` in our case).
+The microcontroller has an 8-bit register containing a number of flags which can be set based on the condition of the microcontroller.
+
+The status register for the Atmel ATMega328/P is illustrated in @fig-week2-sr.
+
+::: {#fig-week2-sr} 
+![](pictures/status_register.png){fig-alt="The Status Register of the Atmel ATMega328/P"}
+
+The Status Register of the Atmel ATMega328/P
 :::
 
 ---
 
-### Configuring a Pin - Data Direction
+### Status register flags associated with binary addition and subtraction
 
-The `DDxn` bit in the `DDRx` Register (illustrated for `DDRB` in @fig-week02-ddrb) selects the data direction (input or output) of this pin.
-
-::: {#fig-week02-ddrb} 
-![](pictures/ddrb.png){fig-alt="DDRB - The port B data direction register."}
-
-`DDRB` - The port B data direction register.
+::: {.incremental}
+- The Half Carry Flag `H` is set (to 1) if there was a carry from bit 3; it is cleared (set to 0) otherwise.
+- The Zero Flag `Z` is set if the result is `0x00000000`; cleared otherwise.
+- The Carry Flag `C` is set if there was a carry from the most significant bit (MSB)[^note:msb] of the result; cleared otherwise.
 :::
 
-::: {.notes}
-* Writing **logic one** to `DDxn`, `PORTxn` is configured as an **output pin**.
-* Writing **logic zero** to `DDxn`, `PORTxn` is configured as an **input pin**. .
-:::
+[^note:msb]: The most significant bit is the left most bit. It corresponds to the numerical value $2^7 = 128$. For certain operations, it may also indicate a negative number.
 
----
-
-### Writing to a Pin - Output
-
-The `Pxn` bit in the `PORTx` Register (illustrated for `PORTC` in @fig-week02-portc) has two purposes dependent on the condition of the corresponding bit in the `DDRx` register. 
-
-
-::: {#fig-week02-portc}
-![](pictures/portc.png){fig-alt="PORTC - the port C data register"}
-
-`PORTC` - the port C data register
-:::
-
-::: {.notes}
-If the `DDRx` bit is configured as an output:
-
-* Writing logic one to `PORTxn` drives the pin high (on-state).
-* Writing logic zero to `PORTxn` to logic zero drives the pin low (off-state).
+::: {.fragment}
+We will look at the status register in detail in [Architecture of the Atmel ATmega 328 Microcontroller](../week02/).
 :::
 
 ---
 
-### Reading from a Pin - Input
+### Binary Arithmetic Example 14
 
-The port pin can be read through the **`PINxn` Register bit** (illustrated for `PINB` in @fig-week02-pinb. 
+@fig-week2-ex15 shows the condition of the status register after completing the addition from [Example 14](#week2:example14).
 
-::: {#fig-week02-pinb} 
-![](pictures/pinb.png){fig-alt="PINB - the port B input pins address"}
 
-`PINB` - the port B input pins address
+::: {#fig-week2-ex15} 
+![](pictures/sr_after_ex14.png){fig-alt="The condition of the status register after completing the sum 110 + 227 = 337." }
+
+The condition of the status register after completing the sum $110_{10} + 227_{10} = 337$.
 :::
 
-::: {.notes}
+## Other Data Representations
 
-This is independent of the setting of Data Direction bit `DDxn`, however is good practice to have it set.
+We have provided notes and videos that introduce other commonly used data representations in [Appendix A: Other Data Representations](/appendix/appendix_a.html). 
 
-**Writing** a logic one to `PINxn` toggles the value of `PORTxn`, independent on the value of `DDRxn`.
+::: {.callout-important} 
+This chapter and [Appendix A](/appendix/appendix_a.html) are examinable and you should study both as part of your preparation for the class test.
 :::
 
----
+### Next {.unnumbered}
 
-### Configuring a Pin - Pull Up Enable
-
-Providing a port is configured as an input.
-
-* If `PORTxn` is written **logic one** when the pin is configured as an input pin, the **pull-up resistor** is activated.
-
-* To switch the **pull-up resistor** off, `PORTxn` has to be written logic zero or the pin has to be configured as an output pin.
+In the next lecture we will look at the [Architecture of the Atmel ATmega 328 Microcontroller](/lectures/week2/).
 
 ---
 
-### Basic I/O Demonstration
-
-::: {.notes}
-Code listing @lst-week2-simple-io is an example program written in assembly that illustrates simple IO. We will demonstrate this in class. Please refer to @fig-week2-basic-io-demonstration which shows what the demo looks like.
-
-::: {#fig-week2-basic-io-demonstration} 
-![](pictures/ide_for_demo.png){fig-alt="Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O."}
-
-Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O
-:::
-:::
-
-```{.asm lst-cap="Demonstration of simple I/O" #lst-week2-simple-io code-line-numbers="|"}
-
-;.EQU DDRB = 0x04
-;.EQU PORTB = 0x05
-
-;.EQU PIND = 0x09
-;.EQU DDRD = 0x0A
-;.EQU PORTD = 0x0B
-
-.CSEG
-.ORG 0x0200
-	;setup bits 2 and 3 of port D as inputs
-	IN R16, DDRD
-	ANDI R16, 0b11110011
-	OUT DDRD, R16
-
-	;setup bits 0 and 1 of port B as outputs
-	IN R16, DDRB
-	ORI R16, 0b00000011
-	OUT DDRB, R16
-
-	;both pins B0 (D8) and B1 (D9) start low
-	IN	R16, PORTB
-    ANDI R16, 0b11111100
-    OUT PORTB, R16
-
-	;Enable the pull up resistor for bits 2 and 3 of port D
-	IN	R16, PORTD
-    ORI	R16, 0b00001100
-    OUT PORTD, R16
-
-LOOP:
-	SBIC PIND, 2 ; skip RJMP if bit 2 is set (button pressed)
-	RJMP LED1
-
-	SBIC PIND, 3 ; skip RJMP if bit 3 is set (button pressed)
-	RJMP LED2
-
-	IN R16, PORTB
-	ANDI R16, 0b11111100
-	OUT PORTB, R16
-	RJMP LOOP
-
-LED1:
-	SBI PORTB, 0
-	RJMP LOOP
-
-LED2:
-	SBI PORTB, 1
-	RJMP LOOP
-
-.EXIT
-```
-
----
-
-## Summary{.unnumbered}
-
-In this chapter we have:
-
-* Introduced a few more parts of the AVR core, namely, the status register, program counter and stack pointer and how these are used under normal operation
-
-* Started  to look at I/O on a microcontroller including the concept of pull up resistors as well as some of the specific registers used in the AVR core to enable the use of both input and output device
-
----
-
-### On Canvas{.unnumbered}
-
-Canvas module [Week 2: Microcontroller Architecture and I/O](https://canvas.swansea.ac.uk/courses/44971/modules/305537?wrap=1), along with these notes, there is some additional self study material on canvas on page [Week 2: Atmel ATmega328 Architecture Overview](https://canvas.swansea.ac.uk/courses/44971/pages/week-3-atmel-atmega328-architecture-overview?module_item_id=2258072). This includes a video demonstration, from my former colleague Ben Clifford, of the various topics discussed in this session. 
-
-There is also a quiz on Microcontroller Architecture.
-
----
-
-### Any Questions?{.unnumbered}
-
-Please use the [Course Question Board](https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656) on Canvas or take advantage of the lecturers' office hours. 
-
----
-
-### Next time{.unnumbered}
-
-* [Introduction to Programming and Program Development](/lectures/week03)
-
----

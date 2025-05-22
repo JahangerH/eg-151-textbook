@@ -1,775 +1,1204 @@
 ---
-title: Interfacing to digital I/O with C
+title: Introduction to Programming with C
 author: 
   name: Ben Clifford
   affiliation: Welsh Centre for Printing and Coatings
 copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
-date: 10/29/2024
-code-annotations: below
+date: 10/22/2024
 ---
 ::: {.notes}
-[Presentation version](/slides/lecture06.html) of these [notes](#sec-week05-intro).
+[Presentation version](/slides/lecture05.html) of these [notes](#sec-week04-intro).
 :::
 
-![](pictures/week05_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+![](pictures/week04_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
 
-## Introduction{.unnumbered #sec-week05-intro}
+## Introduction{.unnumbered #sec-week04-intro}
+C is a high-level structured programming language which is often used for writing microcontroller applications. This weeks lecture will cover good coding practices, C language operators and how they can be grouped as well as flow control structures.
 
-In this lecture we will be looking at two different approaches to reading and writing to ports on a microcontroller. 
+## Lecture Topics{.unnumbered}
 
-::: {.incremental}
-- The first approach discussed is using library files and predefined functions to control I/O ports as is conventionally done with the Arduino IDE.
-- The second approach will look at accessing I/O bits directly using bit masks to select the desired pins. 
-:::
-
-
-
-
-## Lecture topics{.unnumbered}
-
-We begin by looking at digital inputs and outputs before moving onto to show a detailed example program implemented on the Atmel ATmega328 microcontroller.
+In this chapter we will be looking at how to produce clear well commented programs; data transfer, arithmetic, logic and relational operators; and flow control structures including `if`, `switch-case`, `for` and `while`.
 
 :::: {.columns}
 
 ::: {.column width="25%"}
-![](pictures/week05_contents_image.png){img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module." width=100%}
+![](pictures/week04_contents_image.png){img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module." width=100%}
 :::
 
 ::: {.column width="75%"}
 
-- @sec-wk5-arduino-ide: [How does I/O work using the Arduino IDE](#sec-wk5-arduino-ide:)
-
-- @sec-wk5-bitmasking: [Bitmasking](#sec-wk5-bit-masking)
-
-- @sec-wk5-digital-io-example: [Digital I/O Example Program](#sec-wk5-digital-io-example)
+- @sec-wk4-c-language: [C-language](#sec-wk4-c-language)
+  - @sec-wk4-code-formatting: [Code formatting](#sec-wk4-code-formatting)
+  - @sec-wk4-comments: [Comments](#sec-wk4-comments)
+  - @sec-wk4-pre-processor-directives: [Pre-processor directives](#sec-wk4-pre-processor-directives)
+  - @sec-wk4-statements: [Statements](#sec-wk4-statements)
+  - @sec-wk4-variables: [Variables](#sec-wk4-variables)
+  - @sec-wk4-operators: [Operators](#sec-wk4-operators)
+- @sec-wk4-flow-control: [Flow control](#sec-wk4-flow-control)
+  - @sec-wk4-if: [If statement](#sec-wk4-if)
+  - @sec-wk4-switch: [Switch statement](#sec-wk4-switch)
+  - @sec-wk4-while: [While statement](#sec-wk4-while)
+  - @sec-wk4-for: [For statement](#sec-wk4-for)
 
 :::
 
 ::::
 
-::: {.center}
-## How does I/O work using the Arduino IDE {#sec-wk5-arduino-ide background-image="pictures/arduino_nano_wallpaper.jpg"}
-:::
+## C-language{#sec-wk4-c-language}
 
-::: {.notes}
+Code Formatting, comments, pre-processor directives, statements and operators
 
-![](pictures/arduino_nano_wallpaper.jpg){fig-alt="Decorative section background - showing an Arduino nano microcontroller and an LED light stripi."}
+---
 
-Image source: [This Photo](https://www.flickr.com/photos/netlcom/36486445205/) by Unknown Author is licensed under [CC BY-NC](https://creativecommons.org/licenses/by-nc/3.0/)
+### Code formatting{#sec-wk4-code-formatting}
+
+::: {.incremental}
+1. Write comments that explain what the program does.
+2. Use descriptive names for variables and functions.
+3. Use tabs to indent nested code blocks.
+4. Give each class/function one purpose.
+5. Delete unnecessary/redundant code.
+6. Readability is more important than cleverness.
+7. Adopt and maintain a consistent coding style.
+8. Write good comments.
+9. Refactor, refactor, refactor.
+10. Take regular backups and implement version control.
 :::
 
 ---
 
-### Digital Control
-Imagine a circuit with LEDs connected to `D8` and `D9` of the Atmel ATmega328 microcontroller.
+```c
+/*
+ * This is a demonstration program for EG-151 microcontrollers that shows a tidy well commented program.
+ * This program asks a user to input two numbers and uses the function findmax to determine which is the largest.
+ *
+ * Author: Ben Clifford
+ * Date: 12/10/2019
+ */
 
-::: {.fragment}
+// include library files
+#include <stdio.h> //Required for scanf and printf
 
-Both LEDs will be wired to PORTD. How can the LED at `D9` be switched on without changing the state of the LED at `D8`?
+// main function
+int main(void) {
+	// Variable Declarations
+	int num1, num2, maxnum;
+	// Function Declarations
+	int findmax(int, int);
 
-:::
+	printf("Enter the first number: ");
+	scanf("%u", &num1);
+	printf("Enter the second number: ");
+	scanf("%u", &num2);
 
-::: {.fragment}
-
-The answer is to use the *pin* functions provided by the Arduino library. These functions allow programmers to gain direct access to particular pins
-
-:::
-
----
-
-::: {.notes}
-Using the Arduino IDE, the programmer would first define the pin as an output and then use the `digitalWrite` function to write `HIGH` (integer `0x1`) or `LOW` (integer `0x0`) to the pin as required.
-:::
-
-```{.c code-line-numbers="|1-4|1|3|6-11|6|8|9|10|6"}
-void setup() {
-  // put your setup code here, to run once:
-  pinMode(9, OUTPUT);
+	/* invoke the function findmax passing numl and num2
+	 * as arguments and storing the result in the variable maxnum
+	 */
+	maxnum = findmax(num1, num2);
+	printf("The maximum number is %u", maxnum);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  digitalWrite(9, HIGH);
-  delay(1000);
-  digitalWrite(9, LOW);
-}
-```
-
-::: {.notes}
-This is because for each "sketch" the Arduino IDE automatically includes a the include file  `Arduino.h` and the library file `wiring_digital.c`[^where_to_find].
-
-[^where_to_find]: `Arduino.h` and `wiring_digital.c` are hidden away in the installation folders for the Arduino IDE. The examples versions shown here are taken from the GitHub repository [github.com/arduino/ArduinoCore-avr](https://github.com/arduino/ArduinoCore-avr).
-
-:::
-
----
-
-#### The include file Arduino.h
-
-::: {.notes}
-Amongst a number of other definitions[^arduino_h], the `Arduino.h` file contains the declarations for the commonly used digital I/O functions: `pinMode`, `digitalWrite` and `digitalRead` (@lst-arduino-h-digital). 
-:::
-
-```{.c #lst-arduino-h-digital lst-cap="Declaration of the digital I/O functions for Ardunio hardware (lines 134&ndash;136 of Ardunio.h)"}
-void pinMode(uint8_t pin, uint8_t mode);     /* 1 */
-void digitalWrite(uint8_t pin, uint8_t val); /* 2 */
-int digitalRead(uint8_t pin);                /* 3 */
-```
-:::{.incremental}
-1. `pinMode` takes two *unsigned* 8-bit integers as arguments and has return type of void (returns nothing).
-2. `digitalWrite` takes two *unsigned* 8-bit integers as arguments and has return type of void (returns nothing).
-3. `digitalRead` takes one *unsigned* 8-bit integer as an argument and returns a *signed* integer value.
-:::
-
-::: {.fragment}
-
-[^arduino_h]: To see the full contents see: [Arduino.h](https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Arduino.h) on GitHub.
-:::
-
-::: {.notes}
-
-::: {.callout-note}
-Remember the function declaration only tells the compiler about a function's name, return type, and arguments. 
-
-The actual definition of these functions lies elsewhere in the Arduino core library.
-:::
-
-:::
-
----
-
-#### The library file wiring_digital.c
-
-The [wiring_digital.c](https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring_digital.c) file contains the definitions for the `pinMode`, `digitalWrite` and `digitalRead` functions.
-
-See @lst-wk5-pinMode, @lst-wk5-digital-write and @lst-wk5-digital-read for extracts from this library file.
-
----
-
-##### `pinMode`{.unnumbered}
-
-```{.c #lst-wk5-pinMode lst-cap="Function [pinMode](https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring_digital.c#L29) (wiring_digital.c line 29)"}
-void pinMode(uint8_t pin, uint8_t mode)
-{
-	uint8_t bit = digitalPinToBitMask(pin);
-	uint8_t port = digitalPinToPort(pin);
-	volatile uint8_t *reg, *out;
-
-	if (port == NOT_A_PIN) return;
-
-	// JWS: can I let the optimizer do this?
-	reg = portModeRegister(port);
-	out = portOutputRegister(port);
-
-	if (mode == INPUT) { 
-		uint8_t oldSREG = SREG;
-                cli();
-		*reg &= ~bit;
-		*out &= ~bit;
-		SREG = oldSREG;
-	} else if (mode == INPUT_PULLUP) {
-		uint8_t oldSREG = SREG;
-                cli();
-		*reg &= ~bit;
-		*out |= bit;
-		SREG = oldSREG;
-	} else {
-		uint8_t oldSREG = SREG;
-                cli();
-		*reg |= bit;
-		SREG = oldSREG;
+// findmax Function Definition
+int findmax(int x, int y) {
+	int maximum_number;
+	if (x >= y) {
+		maximum_number = x;
 	}
-}
-```
-
----
-
-##### `digitalWrite`{.unnumbered}
-
-```{.c #lst-wk5-digital-write lst-cap="Function [digitalWrite](https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring_digital.c#L138) (wiring_digital.c line 138)"}
-void digitalWrite(uint8_t pin, uint8_t val)
-{
-	uint8_t timer = digitalPinToTimer(pin);
-	uint8_t bit = digitalPinToBitMask(pin);
-	uint8_t port = digitalPinToPort(pin);
-	volatile uint8_t *out;
-
-	if (port == NOT_A_PIN) return;
-
-	// If the pin that support PWM output, we need to turn it off
-	// before doing a digital write.
-	if (timer != NOT_ON_TIMER) turnOffPWM(timer);
-
-	out = portOutputRegister(port);
-
-	uint8_t oldSREG = SREG;
-	cli();
-
-	if (val == LOW) {
-		*out &= ~bit;
-	} else {
-		*out |= bit;
+	else {
+		maximum_number = y;
 	}
-
-	SREG = oldSREG;
+	return maximum_number;
 }
+
 ```
-
----
-
-##### `digitalRead`{.unnumbered}
-
-```{.c #lst-wk5-digital-read lst-cap="Function [digitalRead](https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring_digital.c#L165) (wiring_digital.c line 165)"}
-int digitalRead(uint8_t pin)
-{
-	uint8_t timer = digitalPinToTimer(pin);
-	uint8_t bit = digitalPinToBitMask(pin);
-	uint8_t port = digitalPinToPort(pin);
-
-	if (port == NOT_A_PIN) return LOW;
-
-	// If the pin that support PWM output, we need to turn it off
-	// before getting a digital reading.
-	if (timer != NOT_ON_TIMER) turnOffPWM(timer);
-
-	if (*portInputRegister(port) & bit) return HIGH;
-	return LOW;
-}
-```
-
----
-
-#### Advantages and disadvantages of using the Arduino IDE
 
 ::: {.fragment}
-##### Advantages
-
-::: {.incremental}
-* Code is cross processor compatible.
-* Code is easy to understand.
-* Code controls a named pin on the board and is therefore easy to wire up.
-* Changing code to use different pins is trivial.
-:::
+[Execute this code using **onlinegdb.com**](https://onlinegdb.com/22mzCDQrU)
 :::
 
 ---
 
-##### Disadvantages
+### C language comments{#sec-wk4-comments}
 
 ::: {.incremental}
-* Code is slower than accessing the ports directly.
-* You cannot perform multiple bit reads or writes in a single action.
+
+* Comments are added to code in order to make the program easier to read and understand at a later time or by another reader.
+* When the compiler is reading the file, the comments are ignored.
+* Comments must follow a set of rules and a particular format.
+  * In the 'C' language comments are surrounded by `/* comment */` and can span multiple lines 
+  * ... or start with `//` if they are on a single line.
+
 :::
+
+---
+
+#### Examples of comments
+
+::: {.fragment}
+Single line comment $\rightarrow$ typically found after a statement
+:::
+
+::: {.fragment}
+
+```c
+A = 10; // This line sets variable A to 10
+```
+:::
+
+::: {.fragment}
+Multi line comment $\rightarrow$ typically used at the start of a program or to detail a block of code or a function
+:::
+
+::: {.fragment}
+
+```c
+/* 
+ * This comment 
+ * spans multiple lines 
+ */
+```
+
+:::
+
+---
+
+### Pre-processor directives{#sec-wk4-pre-processor-directives}
+
+::: {.incremental}
+* The pre-processor is **part of the compilation process** and runs *before* the code is compiled.
+* The pre-processor looks for lines of **code beginning with a `#`** and evaluates them before compilation.
+* There are also a number of **predefined *macros*** which can be called and these are surrounded by "`__`" characters.
+* The most commonly used pre-processor directives, and also the ones we will be using, are `#include` and `#define`.
+:::
+
+::: {.notes}
+
+Some pre-processor directives
+
+```c
+#include
+#define
+#undef
+#if
+#elif
+#endif
+#ifdef
+#ifndef
+#error
+__FILE__
+__LINE__
+__DATE__
+__TIME__
+__TIMESTAMP__
+# macro operator
+## macro operator
+```
+
+:::
+
+---
+
+#### The `#include` directive
+
+The **`#include` directive** is used to include **header files** which contain declarations of existing and frequently used functions that can be substituted into your program.
+
+::: {.notes}
+
+Header files may contain custom function definitions, common functions, secondary data type definitions, etc.
+
+:::
+
+::: {.fragment}
+
+```c
+/* 
+  This variant is used for system header files. 
+  The pre-processor searches for a file named in a 
+  standard list of system directories
+*/
+#include <header_file.h>
+```
+
+:::
+
+::: {.fragment}
+
+```c
+/* 
+   This variant is used for header files of your own program. 
+   It searches for the file name first in the current directory, 
+   then in the same directories used for system header files. 
+*/
+#include “my_library.h”
+```
+
+:::
+
+---
+
+#### The `#define` directive
+
+::: {.fragment}
+
+The **`#define` directive** is used to **define a macro** – when the macro name appears in code it will be replaced with the definition stated.
+
+:::
+
+::: {.fragment}
+
+Example 1: define a value for a symbol
+
+```c
+#define pi 3.1415
+```
+
+:::
+
+::: {.notes}
+
+In this example the programmer is stating that the letters `pi` represent the number 3.1415. Now, in the program they can write
+
+```c
+A = pi * r * r;
+```
+and after pre-processing the compiler will see
+```c
+A = 3.1414 * r * r;
+```
+
+:::
+
+::: {.fragment}
+
+Example 2: define a block of reusable code
+
+```c
+#define cube(x) (x) * (x) * (x)
+```
+
+:::
+
+::: {.notes}
+
+If the programmer writes:
+```c
+v = cube(2) // = 8
+```
+
+The compiler sees:
+```
+v = (2) * (2) * (2)  // = 8
+```
+
+:::
+
+---
+
+### Statements in C{#sec-wk4-statements}
+
+::: {.incremental}
+- C functions are made up of **statements**, each of which is **terminated with a semicolon `;`**.
+- **A statement is made up of at least one *operator* and some *operands***.
+- *Operands* can be variables or data.
+:::
+
+:::: {.notes}
+
+::: {.callout-note} 
+Missing the semicolon is one of the most common causes of compilation errors in C programming.
+:::
+
+::::
+
+---
+
+#### C functions
+
+@fig-week04-function-bd is a schematic diagram of the C function. You can think of it as something that takes some inputs (arguments) and returns some output.
+
+::: {#fig-week04-function-bd} 
+![](pictures/function_bd.png){fig-alt="A schematic diagram of a function in C."}
+
+A schematic diagram of a function in C
+:::
+
+---
+
+#### C code for a function
+
+A simple function is presented below.
+```c
+/* 
+ * This function is called a_function. 
+ * It takes no aguments (inputs).
+ * It returns no output.  
+ */
+void a_function(void)
+{
+    statement1;
+    statement2;
+}
+```
+
+---
+
+### Variables in C{#sec-wk4-variables}
+
+The term *variable* is used for a name which describes a memory address. These names follow the same naming convention as used for functions[^variable_names].
+
+[^variable_names]: Similarly to a function these variable names need to be declared before their use indicating their data type. More on this can be found in the self-directed study material for on [Canvas for this week](https://canvas.swansea.ac.uk/courses/52902/pages/week-4-history-of-the-c-language-functions-and-data-types).
+
+::: {.fragment}
+
+For example, a variable named `num1` describes a particular memory address at which the first number is found and a second variable `num2` describes a second memory address while a third variable, `total`, is a third memory address.
+
+:::
+
+::: {.fragment}
+
+In a function we may then have the following statements:
+
+:::
+
+::: {.fragment}
+
+```c
+num1 = 10;
+num2 = 20;
+total = num1 + num2; // 30!
+`````
+
+:::
+
+::: {.notes}
+
+Each of the statements in the example above tells the computer system to **assign/store a value into the memory address** described by the variable. This is called *assignment*.
+
+Assignment statements use the **equals (`=`) sign** to assign the value on the right of `=` to the variable on the left of `=`[^assignment]
+
+[^assignment]: Please do not confuse `=` in C with equality in mathematics. After assignment, the value in the variable can change. In mathematics $a = b$ means that $a$ is always equal to $b$. If we change the value of $b$,
+the value of $a$ changes too. In C, `a = b` *copies* the current value of `b` into the storage assigned to `a`. If we change the value of `b` later, `a` will not change.  To confuse matters still further, there is another use
+of the equals symbol: `==` means *is equal to* and is used in decision statements such as *is `num1` equal to `num2`*?
+
+:::
+
+---
+
+### Operators in C{#sec-wk4-operators}
+
+::: {.fragment}
+
+Each statement or instruction is made up of operators and operands, where the *operator* represents an action and the *operands* represents the data.
+
+:::
+
+
+::: {.fragment}
+In C, the operators can be split into four categories based on the type of actions that they perform[^similar_in_assembler].
+
+[^similar_in_assembler]: We will see similar categories of operators when we come to look at assembly language. For example, for *data transfer* we have the register instructions `LDI` (load register immediate), `LDS` (load register from store), and `STS` (store register to store).)
+
+:::
+
+---
+
+They are:
+
+::: {.incremental}
+1. [Data transfer operators](#sec-wk4-data-transfer-ops)
+2. [Arithmetic operators](#sec-wk4-arithmetic-ops)
+3. [Logical operators](#sec-wk4-logical-ops)
+   - [Bitwise logical operators](#sec-wk4-bitwise-ops)
+   - [Relational operators](#sec-wk4-relational-ops)
+6. [Program control operators](#sec-wk4-program-ctrl-ops)
+:::
+
+::: {.fragment}
+We will consider each of these in the following sections.
+:::
+
+---
+
+#### **Data transfer** operators in C{#sec-wk4-data-transfer-ops}
+
+In the C language, the data transfer operations are mostly covered by assignment without ever having to deal directly with the registers.
+
+::: {.fragment}
+For example:
+
+```{.c code-line-numbers="|1|2|3|4"}
+a = 10;
+b = 20;
+sum = a + b;
+PTFD = sum; // output total to PORT F
+```
+
+:::
+
+::: {.notes}
+
+This is because C ia high-level language and the compiler takes care of the details.
+
+:::
+
+---
+
+#### **Arithmetic** operators in C {#sec-wk4-arithmetic_ops}
+
+The order of arithmetic operations follow the [BODMAS (BIDMAS)](https://en.wikipedia.org/wiki/Order_of_operations#Mnemonics) rules[^bodmas_rules].
+
+::: {.fragment}
+
+| **Operator**  | **Used for**   |
+|---------------|----------------|
+| `+`           | Addition       |
+| `-`           | Subtraction    |
+| `*`           | Multiplication |
+| `/`           | Division       |
+| `%`           | Modulus        |
+| `++`          | Increment      |
+| `--`          | Decrement      |
+
+:::
+
+
+[^bodmas_rules]: BODMAS is a *mnemonic* which stands for **B**ackets, **O**perations, **D**ivision/**M**ultiplication, **A**ddition/**S**ubtraction. It describes the order of calculation in an expression that involves operators. Brackets, which are considered first, are used to disambiguate expressions that would otherwise produce wrong results. For example `a + b/c` is intrepreted as $a + (b/c)$ not $(a + b)/c$.
+
+---
+
+##### Examples
+
+Assume `a`, `b`, `c` and `r = 2` are defined as variable of type integer (`int`)[^integer_type].
+
+::: {.fragment}
+```c
+a = r * 5 + 6 / 3;    // -> a = 12;
+```
+[^integer_type]: An integer type means the value is a whole number (not a fractional number) that can be positive, negative, or zero.
+:::
+
+::: {.fragment}
+
+Brackets can be used to improve readability[^rounding]
+```c
+b = (3.14 * r * r);   // -> b = 12 not 12.56!   
+```
+[^rounding]: The execution of expression `3.14 * r * r` would most likely result in a decimal (*floating point*) number. This would be truncated to an integer before it is assigned to `b`. This is a common cause of mathematical error in programming.
+
+:::
+
+::: {.fragment}
+
+There are also special operators like *increment* and *decrement*
+```{.c code-line-numbers="|1|2"}
+c = c++;  // -> c = c + 1
+d = d--;  // -> d = d - 1;
+```
+
+:::
+
+---
+
+Assume `d` to `h` are defined as integer variables (`int`) and `i` as a floating point number (`float`):
+
+::: {.fragment}
+
+```{.c code-line-numbers="|1|2|3|4|5|6"}
+d = 5 / 3;    // -> d = 1:  gives the whole part of the fraction
+e = 5 % 3;    // -> e = 2: gives thremainder of the fraction
+f = 6 % 3;    // -> f = 0: gives 0 as there is no remainder
+g = 5.5 / 2;  // -> g = 2: float is converted to int
+h = 5.5 % 2;  // -> invalid – will not compile
+i = 5.5 / 2;  // -> i = 1.75	- evaluates correctly if i is defined as a float 
+```
+
+:::
+
+::: {.notes}
+
+The same rules apply to multiplication operation.
+
+:::
+
+---
+
+#### **Logical** operators in C{#sec-wk4-logical-ops}
+
+Logical operators are used in expressions which return *true* (`1`) or *false* (`0`).
+
+::: {.fragment}
+| **Operator** | **Meaning**   |
+|--------------|---------------|
+| `&&`         | Logical *and* |
+| `||`       | Logical *or*  |
+| `!` .        | Logical *not* |
+:::
+
+---
+
+##### Example of the *and* operator (`&&`)
+```{.c code-line-numbers="|8"}
+/* 
+ * If the voltage is greater than 10 and the
+ * current is less than 20 the condition is true
+ * and the value of the expression will be 1, 
+ * otherwise it is false and the value of the 
+ * expression will be 0.
+ */
+if ((voltage > 10) && (current < 20)) {...}
+```
+
+---
+
+##### Example of the *or* operator (`||`)
+```{.c code-line-numbers="|8"}
+/*
+ *  If the voltage is greater than 10 or the
+ *  current is greater than 20 the condition is
+ *  true and the value of the expression will be
+ *  1, otherwise it is false and the expression 
+ *  will be 0.
+ */
+if((voltage > 10) || (current > 20)) {...}
+```
+
+---
+
+##### Example of the *not* operator (`!`)
+```{.c code-line-numbers="|5|6"}
+/* 
+ *  The unary operator (!) is usually used to
+ *  turn true into false and vice versa.
+ */
+c = 0;	// -> c = 0 which is "false"
+d = !c; // -> d = 1 which is "true".
+```
+
+---
+
+##### **Bitwise logical** operators in C{#sec-wk4-bitwise-ops}
+
+In addition to the logical operators designed to evaluate multiple conditions there are **bitwise logical operators** which operate on the binary digits (bits) of their operands.
+
+::: {.fragment}
+| **Operator** | **Used for** |
+|--------------|--------------|
+| `&`          | bitwise AND  |
+| `|`          | bitwise OR   |
+| `^`          | bitwise XOR  |
+| `~`          | bitwise NOT  |
+| `>>`         | shift right  |
+| `<<`         | shift left   |
+:::
+
+---
+
+###### Example of the bitwise and operator
+
+::: {.fragment}
+```c
+b = 0xA3 & 0xD5; // -> b = 0x81
+```
+:::
+
+::: {.fragment}
+$$
+\begin{array}{lrr}
+   & 1010 & 0011 \\
+\& & 1101 & 0101 \\\hline
+   & 1000 & 0001
+\end{array}
+$$
+:::
+
+---
+
+###### Example of the bitwise or operator
+
+::: {.fragment}
+```c
+c = 0xA3 | 0xD5; // -> b = 0xF7
+```
+:::
+
+::: {.fragment}
+$$
+\begin{array}{lrr}
+   & 1010 & 0011 \\
+|  & 1101 & 0101 \\\hline
+   & 1111 & 0111
+\end{array}
+$$
+
+:::
+
+---
+
+###### Example of the bitwise not operator
+
+::: {.fragment}
+```c
+c = ~0xA3; // -> c = 0x5C
+```
+:::
+
+
+::: {.fragment}
+
+$$
+\begin{array}{lrr}
+\sim & 1010 & 0011 \\\hline
+     & 0101 & 1100
+\end{array}
+$$
+
+:::
+
+---
+
+###### Bitwise operators used for I/O ports
+
+::: {.notes}
+The use of these operators are important when working with microcontrollers, in particular in the case of I/O, as they can be used to mask bits of a port. This is useful in C as we have limited data transfer options, i.e. we have to read/write to an entire port (memory location) rather than an individual bit.
+:::
+
+
+```{.c code-line-numbers="|1|2|3"}
+PTAPE = 0x0F;       // bit pattern: 0000 1111
+PTAD = 0xF0;        // bit pattern: 1111 0000
+PTAD = PTAD | 0x0C;	// bit pattern: 1111 1100
+```
+
+::: {.fragment}
+
+Since XORing any bit with a 1 forces it to return the opposite value, it can be used to toggle the state of a port:
+:::
+
+::: {.fragment}
+```{.c code-line-numbers="|"}
+portA = portA ^ 0xFF; // e.g. 0101 0110 -> 1010 1001
+```
+:::
+
+---
+
+##### **Relational** operators in C {#sec-wk4-relational-ops}
+
+The final group of operators are the **relational operators** which are used to test a relationship between two variables or a variable and data. 
+
+::: {.fragment}
+| **Relational operator** | **Meaning**                 |
+|-------------------------|-----------------------------|
+| `==`                    | is equal to                 |
+| `!=`                    | is *not* equal to           |
+| `<`                     | is less than                |
+| `<=`                    | is less than or equal to    |
+| `>`                     | is greater than |
+| `>=`                    | is greater than or equal to |
+
+:::
+
+::: {.notes}
+Example: "is x equal to 2?" would be written as `x == 2`[^equality].
+
+[^equality]: **Important**: don’t confuse the double equals sign (`==`) with `=`. The latter is used for assignment operations. **That is `(x = 2)` is different from `(x == 2)`**.
+
+Relational operators are most often used in the *expressions* used in the *conditions* of the flow control structures discussed in @sec-wk4-flow-control.
+:::
+
+---
+
+#### **Program control** operators in C{#sec-wk4-program-ctrl-ops}
+
+These are discussed in @sec-wk4-flow-control.
 
 ::: {.center}
-## Bitmasking{#sec-wk5-bitmasking background-image="pictures/arduino_nano_wallpaper.jpg"}
+## Flow control {background-image="pictures/week04_prog_lang_wallpaper.jpg" #sec-wk4-flow-control}
+Flow control statements `if`, `for`, `while`, and `switch`
 :::
 
 ::: {.notes}
-![](pictures/arduino_nano_wallpaper.jpg){fig-alt="Decorative section background - showing an Arduino nano microcontroller and an LED light strip"}
-
-Image source: [This Photo](https://www.flickr.com/photos/netlcom/36486445205/) by Unknown Author is licensed under [CC BY-NC](https://creativecommons.org/licenses/by-nc/3.0/)
+![](pictures/week04_prog_lang_wallpaper.jpg){fig-alt="Decorative section background - showing code."}
 :::
 
 ---
 
-### Logical Bitwise Operators
+### Flow control structures in C{#sec-wk4-flow-control-ops}
+
+@fig-wk4-flow-control-structures illustrates the flow control structures that are provided in the C language. We will illustrate the most commonly used[^rarely_used] in the following sections.
+
+::: {#fig-wk4-flow-control-structures}
+![](pictures/stuctures.png){fig-alt="An organogram showing a classification of the flow control strucures provided by the C language."}
+
+Classification of the flow control strucures provided by the C language.
+:::
+
+[^rarely_used]: Most of the unconditional branching statements such as `goto` (for an unconditional branch to a label) and `continue` (to ignore a condition without breaking out of a loop) are rarely used in modern programs. The `break` statement is often used in *switch statements* and occasionally for breaking out of a loop when some exit condition is met.
 
 ::: {.notes}
-As we saw in [Bitwise logical operators in C](/lectures/week04/#sec-wk4-bitwise-ops) there is a group of operators within the C programming language which are referred to as **bitwise logical operators** (@tbl-bitwise-logic-operators).
+
+### Flow control structures to be considered
+
+1. [The *if* statement](#sec-wk4-if)
+   - [The *if-else* statement](#sec-wk4-if-else)
+   - [The *if-elseif-else* statement ](#sec-wk4-if-elseif-else)
+3. [The *switch* statement](#sec-wk4-switch)
+4. [The *while* statement](#sec-wk4-while)
+   - [The *do-while* statement](#sec-wk4-do-while)
+5. [The *for* statement](#sec-wk4-for)
+   - [Nested *for* statements](#sec-wk4-nested-for)
+
 :::
+
+---
+
+### The *if* statement in C{#sec-wk4-if}
 
 ::: {.fragment}
-| Logical Operation | Operator |
-|:------------------|----------|
-| AND | `&` |
-| OR | `|` |
-| XOR | `^` |
-| NOT | `~` |
-| Shift right | `>>` |
-| Shift left | `<<` |
-: The bitwise logic operators {#tbl-bitwise-logic-operators} 
-:::
-
-::: {.notes}
-These are important when working with inputs and outputs as they can be used to apply masks to ports (registers) to work with only specific bits[^io_bits].
-
-[^io_bits]: In the case of I/O specific bits refers to individual I/O pins.
+The ***if* statement** allows branching within code and can be used to check if a particular condition has been met.
 :::
 
 ---
 
-### Truth tables for the bitwise logical operators.
+#### Flow chart of the if statement{.unnumbered}
+::: {#fig-wk4-if-statement}
+![](pictures/if.png){fig-alt="A flow chart illustrating the structure of the if-statement." width="50%"}
 
-The truth tables for bitwise logical operators are given for AND (`&`) in @tbl-truth-table-AND, OR (`|`) in @tbl-truth-table-OR, XOR (`^`) in @tbl-truth-table-XOR, and NOT (`~`) in @tbl-truth-table-NOT.
-
----
-
-| A | B | `A & B` |
-|---|---|:-------:|
-| 0 | 0 | 0       |
-| 0 | 1 | 0       |
-| 1 | 0 | 0       |  
-| 1 | 1 | 1       |
-: Bitwise AND {#tbl-truth-table-AND}
-
----
-
-| A | B | `A | B` |
-|---|---|:-------:|
-| 0 | 0 | 0       |
-| 0 | 1 | 1       |
-| 1 | 0 | 1       | 
-| 1 | 1 | 1       |
-: Bitwise OR {#tbl-truth-table-OR}
-
----
-
-| A | B | `A ^ B` |
-|---|---|:-------:|
-| 0 | 0 | 0       |
-| 0 | 1 | 1       |
-| 1 | 0 | 1       | 
-| 1 | 1 | 0       |
-: Bitwise XOR {#tbl-truth-table-XOR}
-
----
-
-| A | `~A` |
-|---|:----:|
-| 0 | 1    |
-| 1 | 0    |
-: Bitwise XOR {#tbl-truth-table-NOT}
-
----
-
-### Masking Example
-
-Consider an example where you want to know if bits 0 and 7 are both on / high / logic 1 but you don't care about any other bits. 
-
-::: {.notes}
-Programmatically, this would be done using an *if* statement with a bitwise *and* operator:
+A flow chart illustrating the structure of the *if* statement
 :::
+
+---
+
+The equivalent of the *if* statement illustrated in the @fig-wk4-if-statement is:
 
 ::: {.fragment}
-```{.c code-line-numbers="|1|3|5"}
-input = 0b10100011;
-
-if (input & 0b10000001 == 0b10000001 ) 
-{
-	// do something;
+```{.c code-line-numbers="|1|2-4|3|5"}
+Statement_1;
+if (expression != 0) { // in C anything that is not 0 is true
+    Statement_2;
 }
+Statement_3;
+```
+:::
+
+::: {.notes}
+- At line 3, if the condition has been met, the sequence of statements in the following block (here just line 4) is executed.
+- If the condition is not met at line 3, then `Statement_2` (line 4) is not executed, and the program will branch over to the next statement outside of the flow control statement: here `Statement_3` (line 5).
+:::
+
+---
+
+#### The *if-else* statement {#sec-wk4-if-else}
+
+The ***if*-else statement** allows one set of statements to be executed if the condition 
+is met and an alternative set of statements ito be executed if the condition hasn’t been met.
+
+---
+
+#### Flow chart of the if-else statement{.unnumbered} 
+::: {#fig-wk4-if-else-statement}
+![](pictures/if-else.png){fig-alt="A flow chart illustrating the structure of the if-else statement." width="75%"}
+
+A flow chart illustrating the structure of the *if-else* statement
+:::
+
+---
+
+The equivalent of the *if-else* statement illustrated in the @fig-wk4-if-else-statement is:
+
+::: {.fragment}
+```{.c code-line-numbers="|1|2-4|3|5-7|6|8"}
+Statement_1;
+if (expression != 0) { // in C anything that is not 0 is true
+    Statement_2;
+}
+else {                 // expression is false == 0
+    Statement_3;
+}
+Statement_4;
 ```
 :::
 
 ---
 
-If bits 0 and 7 are `HIGH`
+#### The *if-elseif-else* statement {#sec-wk4-if-elseif-else}
 
-$$
-\begin{array}{lcrr}
-\mathrm{Bit\ No.}  & & 7654 & 3210 \\\hline
-\mathrm{Input}  &    & \mathbf{1}010 & 001\mathbf{1} \\
-\mathrm{Mask}   & \& & 1000 & 0001 \\\hline
-\mathrm{Result} &    & 1000 & 0001
-\end{array}
-$$
+The third example of the *if* statement is the ***if-elseif-else* statement** which 
+allows multiple conditions to be tested and blocks of statements to be executed for each decision.
 
 ---
 
-If bits 0 and 7 are `LOW`
+#### Flow chart of the if-elseif-else statement{.unnumbered} 
 
-$$
-\begin{array}{lcrr}
-\mathrm{Bit\ No.} & & 7654 & 3210 \\\hline
-\mathrm{Input}  &    & \mathbf{0}010 & 001\mathbf{0} \\
-\mathrm{Mask}   & \& & 1000 & 0001 \\\hline
-\mathrm{Result} &    & 0000 & 0000
-\end{array}
-$$
+::: {#fig-wk4-if-elseif-else-statement}
+![](pictures/if-elseif-else.png){fig-alt="A flow chart illustrating the structure of the if-elseif-else statement." width="75%"}
 
-::: {.notes}
-
-In both examples, it doesn't matter what bits 1-6 are, they don't affect the result.
-
+A flow chart illustrating the structure of the *if-elseif-else* statement
 :::
 
 ---
 
-#### Let us revisit the task
-
-Imagine a circuit with LED’s connected to D8 and D9 of the Atmel ATmega328 microcontroller.
-
-
-::: {#fig-wk5-arduino-pins-d8-d9}
-![](pictures/pins_8_and_9.png){fig-alt="Schematic of Arduino nano board identifying pins D8 and D9."}
-
-Schematic of Arduino nano board identifying pins D8 and D9[^d8_and_d9].
-:::
-
----
-
-How can the LED at `D9` be switched on without changing the state of the LED at `D8`?
-
-[^d8_and_d9]: Pins `D8` and `D9` are respectively bits 0 and 1 of Port B.
-
----
-
-##### Atmel ATmega328 I/0 Architecture Recap
-
-![](pictures/io_map.png){fig-alt="Arduino ATmega328 Memory map for I/O."}
-
-::: {.notes}
-
-Recall:
-
-Three I/O memory address locations are allocated for each port, one each for the *Data Register* – `PORTx`, *Data Direction Register* – `DDRx`, and the *Port Input Pins* – `PINx`, where `x` refers to the numbering letter for the port (`B`, `C` or `D` in our case).
-:::
-
----
-
-#### Solution with bit masking
-
-Imagine a circuit with LED’s connected to D8 and D9 of the Atmel ATmega328 microcontroller.
+The equivalent of the *if-elseif-else* statement illustrated in the @fig-wk4-if-elseif-else-statement is:
 
 ::: {.fragment}
-
-How can the LED at `D9` be switched on without changing the state of the LED at `D8`?
-
+```{.c code-line-numbers="|1|2-4|3|5-7|6|8-10|9|11"}
+Statement_1;
+if (expression1) {      // expression1 is true
+    Statement_2;
+}
+elseif (expression2) {  // expression2 is true
+    Statement_3;
+}
+else {                  // neither expression1 nor expression2 is true
+    Statement_4;
+}
+Statement_5;
+```
 :::
+
+---
+
+### The *switch* statement in C {#sec-wk4-switch}
 
 ::: {.incremental}
+- The *switch* statement allows selection between several possible defined options. 
+- The **test condition** is referred to as the *expression* and the choices are referred to as the *cases*[^cases].
+- Each switch expression will have a **default choice** for when no choices match the expression.
+- The switch statement represents an easier and more readable way of managing multiple if statements[^switch]
+:::
 
-* `D8 = PortB0`
-* `D9 = PortB1`
+[^cases]: Each case must be a *constant expression*: i.e. a number or a character.
+[^switch]: i.e. avoids `if` – `elseif` – `elseif` – `elseif` – `elseif` – … – `else`
 
+---
+
+#### Flow chart of the switch statement{.unnumbered}
+
+::: {#fig-wk4-switch-statement}
+![](pictures/switch.png){fig-alt="A flow chart illustrating the structure of the switch statement." width="75%"}
+
+A flow chart illustrating the structure of the *switch* statement
 :::
 
 ---
 
-Let us assume Port B currently reads $1010\,0001$ and we execute[^shortcut]:
-
-```c
-PORTB = PORTB | 0b00000010;
-```
-
-[^shortcut]: Idiomatic C often uses the shortcut `PORTB |= 0x00000010;` There are many such *assignment operators* in C. For example: `+=`, `-=`, `&=` etc. They all mean the same thing: `var = var op argument`. Internally, the C compiler treats both forms the same so their use is a matter of style. The full version is easier to read and understand. The shortcut is quicker to type, but arguably less easy to read and understand. 
-
-$$
-\begin{array}{lrrl}
-  & 1010 & 0001 & \mathrm{Port\ B}\\
-| & 0000 & 0010 & \mathrm{Bitmask\ for\ D9} \\ \hline
-  & 1010 & 00\mathbf{1}1 & \mathrm{D9\ is\ on}
-\end{array}
-$$
-
----
-
-To turn the LED on `D9` off, we use the logical AND.
-
-```c
-PORTB = PORTB & 0xb11111101;
-```
-
-$$
-\begin{array}{lrrl}
-  & 1010 & 0001 & \mathrm{Port\ B}\\
-\& & 1111 & 1101 & \mathrm{Bitmask\ for\ D9} \\ \hline
-  & 1010 & 00\mathbf{0}1 & \mathrm{D9\ is\ off}
-\end{array}
-$$
-
----
-
-::: {.center}
-## Digital I/O Example Program{#sec-wk5-digital-io-example background-image="pictures/breadboard_wallpaper.jpg"}
-:::
-
-::: {.notes}
-![](pictures/breadboard_wallpaper.jpg){fig-alt="Decorative background image showing the circuit discussed in the example."}
-:::
-
----
-
-### Example - breadboard
-
-::: {.notes}
-Consider the Ardunino nano circuit shown in @fig-wk5-example-circuit. The left and right push buttons are connected to the digital inputs `D3` and `D2` on the Arduino nano board. These correspond with Port D Bits 3 and 2 on the Atmega328 microcontroller. 
-:::
-
-::: {#fig-wk5-example-circuit}
-![](pictures/breadboard.jpg){fig-alt="A photograph of the example circuit which has two buttons and two LEDs."}
-
-A photograph of the example circuit which has two buttons and two LEDs. When the left button is pressed, the red LED lights up. When the right button is pressed the green LED lights up.
-:::
-
----
-
-##### Desired operation {.unnumbered}
-
-::: {.incremental}
-- When the left push button is pressed, the red LED (Port B Bit 1) is illuminated.
-- When the right push button is pressed, the green LED (Port B Bit 0) illuminated.
-- The buttons are digital inputs with pull-up resistors (so *active low*) and are connected to pins 1 and 2 of port D respectively.
-:::
+The equivalent of the *switch* statement illustrated in the @fig-wk4-switch-statement is:
 
 ::: {.fragment}
-What does the code for this look like without using the predefined Arduino functions `pinMode` and `digitalRead`?
-:::
-
----
-
-### Example Code - statement 1
-
-```c
-#include <stdint.h>
-```
-
-::: {.notes}
-
-`#include` is a **preprocessor directive** used to **include header files** which contain **definitions and declarations** of existing and frequently used functions.
-
-The **<>** variant is used for **system header files** that are included as part of the C language compiler.
-
- The *stdint.h* header file provides a set of **type definitions (typedefs)** that specify exact-width integer types, together with the defined minimum and maximum allowable values for each type, using macros. The types are tabulated in @tbl-integer-types.
-:::
-
----
-
-#### Data types defined in `<stdint.h>`.
-
-| Specifier | Signing | Bits | Bytes | Minimum Value | Maximum Value |
-|:----------|:--------|------|-------|:--------------|:--------------|
-| `int8_t`  | Signed | 8 | 1 | $-2^7$ | $2^7-1$ |
-| `uint8_t` | Unsigned | 8 | 1 | $0$ | $2^8 - 1$ |
-| `int16_t` | Signed | 16 | 2 | $-2^{16}$ | $2^{16} - 1$ |
-| `uint16_t` | Unsigned | 16 | 2 | $0$ | $2^{16} - 1$ |
-| `int32_t` | Signed | 32 | 4 | $-2^{31}$ | $2^{31} - 1$  |
-| `uint32_t` | Unsigned | 32 | 4 | $0$ | $2^{32} - 1$ |
-| `int64_t` | Signed | 64 | 8 | $-2^{63}$ | $2^{63} - 1$  |
-| `uint64_t` | Unsigned | 64 | 8 | $0$ | $2^{64} - 1$ |
-:Specific integral type limits {#tbl-integer-types}
-
-::: {.notes}
-::: {.callout-note}
-| bits | signed range | unsigned range |
-|------|--------------|----------------|
-|  8   | $-128 \rightarrow 127$ | $0 \rightarrow 255$ |
-|  16  | $-32,768 32,767$ | $0 \rightarrow 65,535$ |
-|  32  | $-2,147,483,648 \rightarrow 2,147,483,647$ | $0\rightarrow 4,294,967,295$  |
-|  64  | $-9,223,372,036,854.775,808\rightarrow 9,223,372,036,854.775,807$ | $0\rightarrow 18,446,744,073,709,551,615$ | 
-:::
-:::
-
----
-
-
-### Example code - aligning port names to the I/O memory map {#sec-wk5-align-to-io-mem-map}
-
-The I/O memory map is shown in @fig-wk5-io-mem-map. 
-
-::: {#fig-wk5-io-mem-map}
-![](pictures/io_mem_map.png){fig-alt="Memory map for the I/O ports in the Atmel ATmega328."}
-
-Memory map for the I/O ports in the Atmel ATmega328
-:::
-
----
-
-We need to map a port to the address used by the port. We use `#define` for this:
-
-::: {.incremental}
-1. Preprocessor directive: `#define`
-2. Convenient name that the processor can use in code: `PORTD`
-3. The size is an 8 bit unsigned integer: `uint8_t`
-4. Memory address of the specific register from the datasheet (reproduced here as @fig-wk5-io-mem-map): `0x2B`.
-:::
-
-::: {.fragment}
-The full command is[^volatile]:
-
-```c
-#define PORTD(*(volatile uint8_t *)(0x2B))
-```
-
-[^volatile]: In this definition we use the qualifier volatile to inform the compiler that the variable value can be changed any time without any task given by the source code. Without this qualifier, depending on the optimisation level of the compiler this may result in code that doesn’t work as it doesn’t know the value can be changed by external sources. The asterisk symbol is used to denote a pointer, for now you do not need to know what this explicitly mean but in short a pointer is a variable whose value is the address of another variable, i.e., direct address of the memory location rather than a value.
-:::
-
----
-
-The full set up which sets up the ports, data direction registers and pins is:
-
-```c
-//I/O and ADC Register definitions taken from datasheet
-#define	PORTD (*(volatile uint8_t *)(0x2B))
-#define DDRD  (*(volatile uint8_t *)(0x2A))
-#define PIND  (*(volatile uint8_t *)(0x29))
-
-#define PORTB (*(volatile uint8_t *)(0x25))
-#define DDRB  (*(volatile uint8_t *)(0x24))
-#define PINB  (*(volatile uint8_t *)(0x23))
-```
-
----
-
-### Example Code - the main function{#sec-wk5-main-c}
-
-This is the starting point for any program[^main].
-
-```{.c code-line-numbers="|1|3|4"}
-int main (void) 
-{
-    // code
-    return 0;
-}
-```
-
-::: {.notes}
-
-The return type is declared as integer meaning the function returns some integer even ‘0’ at the end of the program execution. By convention, a return of ‘0’ represents the successful execution of a program.
-:::
-
----
-
-### Example Code - Set data direction registers
-
-::: {#fig-wk5-set-dd-registers}
-![](pictures/dd.png){fig-alt="Video illustrating the setting up of the data direction registers."}
-
-Video illustrating the setting up of the data direction registers.
-:::
-
----
-
-### Example Code - Set pull-ups for inputs and initialize outputs
-
-::: {#fig-wk5-set-pull-ups}
-![](pictures/pullup.png){fig-alt="Video illustrating the setting of the port D for input and resetting port B."}
-
-Video illustrating the setting of the port D for input and resetting port B
-:::
-
----
-
-### Example Code - The infinite for loop
-
-The **infinite *for* loop** is quite a common idiom in C:
-```{.c code-line-numbers="|1|3"}
-for (;;;)
-{
-   // code that repeats forever
-}
-```
-
-Any code that is placed inside the for loop will run forever.
-
-::: {.notes}
-
-The Arduino IDE does the same thing behind the scenes - `void loop` is actually a function that is repeatedly called inside an infinite for loop[^main].
-
-[^main]: The actual code is slightly different and if you are interested you can access it here: [main.cpp](https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/main.cpp). Note that the sketch function `setup()` is called once first, then `loop()` is called each time through the infinite loop.
-
-```c
-int main(void)
-{
-  setup();
+```{.c code-line-numbers="|1|2-16|2|3-4|6-7|9-10|14-15|17"}
+Statement;
+switch (expression1) { // branch according to the value of the expression
+    case case_1 :
+        code_block_1;
+        break; // break is needed to avoid drop through to next case
+    case case_2 :
+        code_block_2;
+        break; // break is needed to avoid drop through to next case
+    case case_3 :
+        code_block_3;
+        break; // break is needed to avoid drop through to default case
+    // you can have any number of case statements
     
-  for (;;) {
-	  loop();
-  }
-        
-  return 0;
+    default : // optional
+        default_code_block;
 }
+Statement_2;
 ```
-
 :::
 
 ---
 
-### Example Code - Reading the button
+#### Example program with a switch statement{.unnumbered}
+
+```{.c code-line-numbers="|1|2|3-24|8|9|10"}
+char student_grade = 'B';
+printf("Your grade was %c: ",student_grade);
+switch (student_grade)
+{
+   case 'A':
+     printf ("excellent!\n");
+     break; // prevents fall-through to default
+   case 'B' :
+     printf("very good!\n");
+     break;
+   case 'C' :
+     printf("good!\n");
+     break;
+   case 'D' :
+     printf("satisfactory!\n");
+     break;
+   case 'E' :
+     printf("needs work!\n");
+     break;
+   case 'F' : 
+     printf("sorry you failed!\n");
+     break;
+   default: 
+     printf("Error! The grade %c is invalid\n",student_grade);
+}
+```
 
 ::: {.notes}
-This *if* statement is at the heart of the program. Each time though the loop it tests the condition of bit 2 in the `PIND` register (`D3`). The pin linked to this bit has been configured as an input with the pull-up resistor enabled and it has been wired to the left button. This means the default state is 1 (`HIGH`) and pressing the button will ground the input to 0 (`LOW`).
 
- We then use a bit mask to query bit 2 only, and if the result is zero, we turn on bit 1 of `PORTB` - which illuminates the red LED.
-:::
+If the `break` was not present, the program would drop down to the next case which is not usually what you want. Instead, you usually break out to the case statement as soon as a valid match is made.
 
-```{.c code-line-numbers="|1|3"}
-if ((PIND & 0b00000100) == 0)
-{
-    PORTB = 0b00000001; // Sets port B, bit 0 to logic 1/high which switches the LED connected to D8 on.
-}
-```
-
----
-
-::: {#fig-wk5-interogating-the-buttons} 
-![](pictures/buttons.png){fig-alt="Video showing how the state of the buttons is interogated using bit masks."}
-
-Video showing how the state of the buttons is interogated using bit masks.
-:::
-
---- 
-
-##### Exercise{.unnumbered}
-
-::: {.fragment}
-Similar code is used to test the left button on `PORTD` pin 3 to illuminate the green LED on `PORTB` pin 1. 
-
-See if you can write this code.
-:::
-
-::: {.fragment}
-**Solution**
-
-```{.c code-line-numbers="|1|3"}
-if ((PIND & 0b00001000) == 0)
-{
-    PORTB = 0b00000010; // Sets port B, bit 1 to logic 1/high which switches the LED connected to D9 on.
-}
-```
+You can play with this program here: [grader](https://onlinegdb.com/16BcOgMJD). See what happens when you remove `break`.
 :::
 
 ---
 
-### The full program
+### The *while* statement in C {#sec-wk4-while}
 
-The full program is available as a GitHub gist: [main.c](https://gist.github.com/cpjobling/07585093f8eafe69a4eeff1186110883). You will need a fully featured IDE, such as [Microchip Studio](https://www.microchip.com/en-us/tools-resources/develop/microchip-studio), to compile and upload the code to the Ardino nano board.
-
-:::{.incremental}
-
-### Simulation
-
-> Wokwi is an online Electronics simulator. You can use it to simulate Arduino, ESP32, STM32, and many other popular boards, parts and sensors.
--- [Welcome to Wokwi!](https://docs.wokwi.com/?utm_source=wokwi)
-
-My 2024-2025 EG-353 Individual Engineering Project student, Yousef Alsayegh, has created Wokwi simulations of Ben Clifford's demonstration programs. Here is the simulation of this week's simulation [Week 5: Interfacing to digital I/O with C](https://wokwi.com/projects/413182046836258817). You can run the simulation and play with the code.
-
-### Exercise
-
-Draw a flow-chart for the full program. Use subprocesses for the `init()` and `loop()` blocks.
+::: {.fragment}
+In order to write a function that loops, i.e. execution of a sequence of statements until 
+a particular condition is met, a *while* statement can be used.
 :::
 
+::: {.fragment}
+The while statement allows for a block of statements to be repeatedly executed as long as 
+a *condition* is true. 
+:::
+
+---
+
+#### Flow chart of the while statement
+
+::: {#fig-wk4-while-statement}
+![](pictures/while.png){fig-alt="A flow chart illustrating the structure of the while statement." width="50%"}
+:alt: A flow chart illustrating the structure of the while statement
+
+A flow chart illustrating the structure of the *while* statement
+:::
+
+---
+
+The equivalent of the *while* statement illustrated in the @fig-wk4-while-statement is:
+
+::: {.fragment}
+```{.c code-line-numbers="|1|2|1|2|1|4"}
+Statement;
+while (expression) {
+    Statement2;
+}
+// end of while-loop
+Statement3;
+```
+:::
+
+::: {.notes}
+The `statements` at line 2 are executed again and again until `condition` is false. Clearly, if the loop
+is to end, one of the `statements` needs to change the condition from `true` to `false`.
+:::
+
+---
+
+
+
+#### The *do-while* statement {#sec-wk4-do-while}
+
+The *do-while* statement is almost identical to the while statement however the condition is 
+checked after the statements have run.
+
+---
+
+#### Flow chart of the do-while statement{.unnumbered}
+
+::: {#fig-wk4-do-while-statement}
+![](pictures/do-while.png){fig-alt="A flow chart illustrating the structure of the do-while statement." width="50%"}
+
+A flow chart illustrating the structure of the *do-while* statement
+:::
+
+---
+
+The equivalent of the *do-while* statement illustrated in the @fig-wk4-do-while-statement is:
+
+::: {.fragment}
+```{.c code-line-numbers="|1|2|4|2|4|2|4|5"}
+Statement;
+do {
+    Statement2;
+}
+while (expression);
+// end of do-while loop
+Statement3;
+```
+:::
+
+::: {.notes}
+The `statements` at line 2 are executed and then if `condition` is true, they are executed again.
+
+This means that even if `condition` is `false`, the `statements`
+are executed one time. 
+
+When `condition` is false, the loop ends. 
+:::
+
+::: {.notes}
+
+::: {.callout-warning}
+Be careful: it is very easy to get stuck in an infinite *while* loop if your test `condition` is always `true`.
+
+For either loop to terminate, one of the `statements` 
+needs to change the `condition` from `true` to `false`.
+:::
+
+:::
+
+---
+
+### The *for* statement in C {#sec-wk4-for}
+
+Another way of writing a while statement is to use a ***for* loop**.
+
+The term *loop* is used for the execution of a sequence of statements until a particular condition is met.
+
+---
+
+#### Flow chart of the for statement
+
+::: {#fig-wk4-for-statement}
+![](pictures/for.png){fig-alt="A flow chart illustrating the structure of the for statement." width="50%"}
+
+A flow chart illustrating the structure of the *for* statement
+:::
+
+---
+
+The equivalent of the *for* statement illustrated in @fig-wk4-for-statement is:
+
+::: {.fragment}
+```{.c code-line-numbers="|1|2|1|2|1|2|1|4"}
+for (initialize counter; counter < final value; increment counter) {
+    statements;
+}
+statement;
+```
+:::
+
+::: {.notes}
+::: {.callout-note}
+The initialization and increment expressions in the *for-loop* are implicit in the *for* statement, but have to be drawn explicitly in the equivalent flow-chart.
+:::
+:::
+---
+
+#### Example for loop{.unnumbered}
+
+Here is an actual *for* loop which solves the problem given in 
+[Lecture 3: Example 2](https://cpjobling.github.io/eg-151-textbook/lectures/week03/#sec-week03-sum-example). 
+
+::: {.fragment}
+It better 
+illustrates how it might be written in a real program:
+
+```{.c code-line-numbers="|1|3-5|3|4|3|4|3|4|3|6"}
+int sum, x;
+/* Add the numbers from 1 to 10 and print the sum */
+for (x = 0; x < 11; x++) {
+    sum = sum + x;
+}
+printf("sum = %d", sum);
+```
+:::
+
+::: {.notes}
+The sequence performed by the for loop is:
+
+1. Line 3:&mdash;the variable `x` is *initialized* to 0;
+2. Line 4:&mdash;the statements in the *block*[^block] (line 4) are executed in sequence;
+3. Line 3:&mdash;`x` is incremented by 1 (`x++` $\rightarrow$ `x = x + 1`);
+4. Line 3:&mdash;the value of the *logical expression* `x < 11` is evaluated: if it is *true* we return to step 2.
+5. Line 3:&mdash;if `x < 11` is false (i.e. when `x == 11`) the loop ends the result is printed to the screen (line 5).
+
+:::
+
+::: {.fragment}
+To execute this program see [sum.c](https://onlinegdb.com/w3YDJCZcm).
+:::
+
+----
+
+#### Equivalence of *for* and *while*
+
+You can *always* write a *for* loop using *while*[^for-while]. 
+
+::: {.fragment}
+The previous example could be written:
+```c
+int sum, x;
+// initialize x
+x = 0; 
+while (x < 11) 
+{
+    sum = sum + x;
+    x++; // increment x
+}
+printf("Sum = %d",sum);
+```
+:::
+
+::: {.fragment}
+See [sum with while](https://onlinegdb.com/ME6B9jbo8).
+:::
+
+::: {.notes}
+It is arguable that the *for* loop is easier to read and understand.
+
+[^for-while]: Indeed most c-compilers produce equivalent code for *for* and *while*.
+
+[^block]: in the C language a *block* is any sequence of statements surrounded by curly brackets `{ ... }`
+:::
+
+---
+
+#### Nested *for* statements {#sec-wk4-nested-for}
+
+::: {#fig-wk4-nested-for-statement}
+![](pictures/nested-for.png){fig-alt="A flow chart illustrating the structure of the nested-for statement." width="50%"}
+
+A flow chart illustrating the structure of the nested *for* statement
+:::
+
+---
+
+The equivalent of the nested *for* statement illustrated in @fig-wk4-nested-for-statement is: 
+
+::: {.fragment}
+```c
+for (counter1 = 0; counter1 < 60; counter1++) {
+    for (counter2 = 0; counter2 < 60; counter2++) {
+        statements;
+    }
+}
+```
+:::
+
+::: {.fragment}
+See [nested-counter](https://onlinegdb.com/Dhku-m1As) for an executable example of this program. 
+:::
+
+::: {.notes}
+What could you use this nested for-loop for?
+:::
 
 ## Summary{.unnumbered}
 
 In this section we have:
 
 ::: {.incremental}
-* Begun to look at I/O operations on the Atmel Atmega 328 microcontroller including the registers and checking/setting states based on flow control statements.
-* Introduced bit masking to read/write individual bits of a register without affecting the remaining bits.
-* Looked at a detailed example program which uses the state of two pushbuttons to set whether an LED is illuminated or not.
+- Covered basic concepts in coding to create clear and concise code as well as how to add comments to key lines of a program.
+- Introduced and discussed the different operators available to the C language programmer including how they are categorized.
+- Looked at the flow control statements available in the C language as well as how they are represented using flowchart diagrams and examples of the required syntax.
 :::
 
----
+--- 
 
 ### On Canvas{.unnumbered}
 
-This week on the [canvas course page](https://canvas.swansea.ac.uk/courses/52902/pages/direct-port-manipulation-in-c), you will find the sample programs from today's lecture. 
-
-Look through these and ensure you are confident in how they work and how the masks are defined. 
-
-There is also a short quiz to test your knowledge on these topics.
+On the canvas course page, there is a series of short videos providing a history of the C 
+language and a brief overview of programming paradigms as well as videos on functions and 
+data type with a quiz to test your knowledge.
 
 ---
 
@@ -781,4 +1210,6 @@ Please use the [Course Question Board](https://canvas.swansea.ac.uk/courses/5290
 
 ### Next time{.unnumbered}
 
-* [Interfacing to Analogue I/O with C](/lectures/week06)
+* [Interfacing to digital I/O with C](/lectures/week05)
+
+--- 

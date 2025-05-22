@@ -1,6 +1,6 @@
 project:
   type: default
-  output-dir: ../../../_build/html/slides/week03
+  output-dir: ../../../_build/html/slides/week09
 
 format:
   revealjs:

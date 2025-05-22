@@ -1,949 +1,947 @@
 ---
-title: Introduction to Assembly Language
+title: Interfacing to Analogue I/O with C
 author: 
   name: Ben Clifford
   affiliation: Welsh Centre for Printing and Coatings
 copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
-date: 11/12/2024
+date: 11/05/2024
 ---
-
 ::: {.notes}
-[Presentation version](/slides/lecture08.html) of these [notes](#sec-week07-intro).
+[Presentation version](/slides/lecture07.html) of these [notes](#sec-week06-intro).
 :::
 
-![](pictures/week07_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+![](pictures/week06_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
 
-## Introduction{.unnumbered #sec-wk7-intro}
-So far in this course a number of topics have been covered including 
+## Introduction{.unnumbered #sec-wk6-intro}
+C is a high-level structured programming language which is often used for writing microcontroller applications. This lecture looks at how I/O operations are performed on analogue inputs.
 
-::: {.incremental}
-- [Introduction to Data Representation](/lectures/data_representation/),
-- [Architecture of the Atmel ATmega 328 Microcontroller](/lectures/week02),
-- [Introduction to Programming and Program Development](/lectures/week03), and 
-- [Introduction to Programming with C](/lectures/week04). 
-:::
 
----
 
-In this lecture we will study assembly language which is a low level language that provides a one-to-one mapping between mnemonic instructions and the machine code that is executed on the microcontroller. 
-
-::: {.fragment}
-This will allow you to see how complex high-level instructions and functions in C are written in assembly language and the final program that gets transferred to the microcontroller.
-:::
-
----
-
-### Topics discussed{.unnumbered}
-
-In this lecture we will present an introduction to assembly language, including program structure and syntax as well as operation classifications. 
-
-We will also revisit the **Direct Port Manipulation in C** example from [Digital I/O Example Program](/lectures/week05/#sec-wk5-digital-io-example) and translate this into assembly language looking at some of the key instructions involved.
-
----
-
-### Contents{.unnumbered}
+## Lecture topics{.unnumbered}
 
 :::: {.columns}
 
 ::: {.column width="25%"}
 
-![](pictures/week07_contents_image.png){fig-alt="Decorative image used as a slide background."}
+![](pictures/week06_contents_image.png){fig-alt="Decorative image used as a slide background."}
 
 :::
 
 ::: {.column width="75%"}
-
-* @sec-wk7-sect1: [Machine Code and Assembly Language](#sec-wk7-sect1)
-* @sec-wk7-sect2: [Introduction to Assembly Language](#sec-wk7-sect2)
-* @sec-wk7-sect3: [Interfacing with Digital I/O example](#sec-wk7-sect3)
-
+* @sec-wk6-sect1: [What are analogue signals?](#sec-wk6-sect1)
+* @sec-wk6-sect2: [ADC Architecture](#sec-wk6-sect2)
+* @sec-wk6-sect3: [The Atmel ATmega328 Analog-digital-converter](#sec-wk6-sect3)
+* @sec-wk6-sect4: [Analogue I/O Example program](#sec-wk6-sect4)
 :::
 
 ::::
 
-::: {.center}
-## Machine Code and Assembly Language{#sec-wk7-sect1 background-image="pictures/machine_code_wallpaper.jpg"}
-:::
-
-::: {.notes}
-![](pictures/machine_code_wallpaper.jpg){fig-alt="A decaorative image of machine code."}
-
-[This Photo](https://stackoverflow.com/questions/16512580/how-do-i-stop-xcode-from-showing-me-this-assembly-language-when-im-debugging-an) by Unknown Author is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
-:::
-
 ---
 
-### Machine code
+### Outline{.unnumbered}
+In this lecture we will be looking at how we can read analogue signals into a microcontroller using an analogue to digital converter (ADC). 
 
-Programs are stored on a microcontroller as a series of binary codes located within sequential memory addresses ...
-
-::: {.fragment}
-
-... this is known as **machine code**[^machine_code].
-
-[^machine_code]: Programs are stored on a microcontroller as a series of binary codes located within sequential memory addresses. These instructions are executed in order, dictated by the program counter, unless an instruction modifies the program counter and changes the program flow e.g. for a function call.
-
+::: {.incremental}
+- We begin by introducing analogue signals and the fundamental principals of an ADC.
+- We move on to look at the ADC contained on the Atmel ATmega328 microcontroller, focussing on the key registers and how to use them. 
+- We conclude with an example program for the Atmel ATmega328 microcontroller which reads the voltage from a potentiometer and turns on some LEDs based on the voltage.
 :::
 
-::: {.fragment}
-
-The program in our microntroller looks like this
-
-```
-1000101010110001 1000001101111111 1000101010111001 
-1000010010110001 1000001101100000 1000010010111001
-1000010110110001 1000110001111111 1000010110111001
-```
-
-:::
-
----
 
 ::: {.center}
-
-### So what is wrong with machine code?{background-image="pictures/machine_code.png"}
+## What are analogue signals?{#sec-wk6-sect1 background-image="pictures/waves_wallpaper.jpg"}
 :::
 
 ::: {.notes}
+![](pictures/waves_wallpaper.jpg){fig-alt="Decorative image of some analogue waveforms."}
 
-![](pictures/machine_code.png){fig-alt="A photograph showing some machine code."}
-
-A photograph showing some machine code[^source-image-1]
-
-[^source-image-1]: Image source: [www.shutterstock.com/image-vector/binary-code-digital-numbers-green-background-1724376772](https://www.shutterstock.com/image-vector/binary-code-digital-numbers-green-background-1724376772).
-
+[This image](https://paperpcb.dernulleffekt.de/doku.php?id=analog_computer:confetti703_multiplier) by Unknown Author [CC-BY-SA-NC](https://creativecommons.org/licenses/by-nc-sa/3.0/).
 :::
 
 ---
 
-Well nothing really ... if you are a computer!
+### Analogue signals
 
-::: {.fragment}
+Analogue signals are those that are both continuous in time and continuous in amplitude i.e. they are continuous signals.
 
-Otherwise ... if you're a human...[^source-image-2] 
+In the real world, most measurable parameters are actually analogue. They include such signals as temperature, humidity, light, sound, etc. 
 
-![](pictures/confused_human.png){fig-alt="Human beings looking confused."}
 
-[^source-image-2]: Image source [www.shutterstock.com/search/confused+person](https://www.shutterstock.com/search/confused+person).
+---
 
-:::
+#### An analogue sensor{.unnumbered}
+An analogue sensor for measuring light intensity is shown in @fig-wk7-analogue-sensor along with a calibration graph that would be typically supplied in the data sheet for such a sensor.
 
-::: {.fragment}
-... machine code is difficult to:
+::: {#fig-wk7-analogue-sensor}
+![](pictures/photo_sensor.png){fig-alt="photograph of a light sensor and its calibration data."}
+
+A photograph of a light sensor and its calibration data
 :::
 
 ---
 
-::: {.incremental}
-* Write,
-* Read,
-* Understand,
-* Debug,
-:::
+### Sampling and quantization
+
+Since microcontrollers can only handle 0s and 1s (digital signals) we need a way of converting analogue signals to digital signals. This is done using an **analogue-to-digital** converter or ADC.
 
 ::: {.fragment}
-
-and most importantly
-
-:::
-
-::: {.fragment}
-
-* Maintain
-
-:::
-
-::: {.fragment}
-
-Instead, instructions can be written in a mnemonic form termed **assembly language** and then translated into machine code by an **assembler**.
-
+An ADC converts a **continuous-time** and **continuous-amplitude** analogue signal to a **discrete-time and discrete-amplitude** digital signal through the process called **sampling and quantization** illustrated in @fig-wk6-sampling.
 :::
 
 ---
 
-### Assembly Language
+#### Sampling and quantization of an analogue signal{.unnumbered}
 
-::: {.fragment}
-Every CPU (or family of CPUs) has an instruction set where each operation that can be performed is represented by a certain binary combination.
-:::
+::: {#fig-wk6-sampling}
+![](pictures/Sampling.png){fig-alt="Sampling and quantization of an analogue signal."}
 
-::: {.fragment}
-The next step up in language levels is to represent each of these binary patterns with a **short mnemonic**.
-:::
-
-::: {.fragment}
-Programs written using these mnemonics are known as **assembly language programs**[^disassembly].
-:::
-
-[^disassembly]: Because each mnemonic is associated with a single machine code, it is also easy to convert machine code to assembly language. This is sometimes useful for debugging programs. It is known as **disassembly**.
-
----
-
-::: {#fig-wk7-adc-code}
-![](pictures/adc_code.png){fig-alt="An example of an assembly code instruction."}
-
-An example of an assembly code instruction `ADC` - Add with carry. Extracted from the Atmel ATmega328 reference manual.
+Sampling and quantization of an analogue signal
 :::
 
 ---
 
-### A Short history of assembly languages
+### ADC Principles
+
+An analogue signal is continuous in time and amplitude and to convert it to a digital signal it is necessary to **periodically sample the analogue signal**.  The rate at which the signal is sampled is referred to as the **sampling rate**.
 
 ::: {.fragment}
-Assembly languages were first developed in the 1950s and were referred to as **2nd generation programming languages**. 
+Each time the signal is sampled the analogue value must be represented in one of several discrete *bins* (digital values). The number of discrete bins available is called the **resolution**.
 :::
 
 ::: {.fragment}
-Assembly language is a low level language that uses mnemonic codes (symbols) to represent machine code instructions, rather than using the instructions' numeric (binary) values. 
-:::
-
-::: {.fragment}
-Essentially, assembly languages are a much more readable but directly translatable representation of machine code. 
-:::
-
-::: {.fragment}
-Assembly language is commonly called just assembly, ASM, or symbolic machine code.
+Both the sampling rate and the conversion resolution need to be sufficiently high to create an accurate digital reconstruction of the analogue signal.
 :::
 
 ---
 
-Despite the giant leap from machine code to assembly language, by the 1980s its use had largely been overtaken by higher-level languages, such as Fortran and C, and more recently Python, for many applications.
-
----
-
-### Why learn low level languages
-
-::: {.incremental}
-- High Level Language (HLL) programs are designed to be independent of a particular machine architecture. 
-- As a result, they rarely take into account any special features of the machine &ndash; features which are commonly available to assembly language programmers. 
-- Assembly language is therefore good for hardware-specific jobs such as device drivers.
-:::
-
----
-
-::: {.incremental}
-- If you understand assembly language, you’ll have an appreciation for the compiler, and you’ll know exactly what it is doing with HLL statements. 
-- Once you see how compilers translate seemingly innocuous statements into a machine code, you will begin to understand how HLL code could be optimised.
-- Good assembly language programmers make better HLL programmers because they understand the limitations of the compiler and they know what it is doing with their code.
-:::
+### ADC Sampling Rate
+The Nyquist–Shannon sampling theorem implies that to get an accurate reproduction of the original signal, the sampling rate must be higher than twice the highest frequency of the signal. Lower than this and the reproduced signal will be distorted, and data lost.
 
 ::: {.notes}
 
-As well as these points, assembly programmers will have a better understanding of
-
-- how data is represented in memory and other external devices;
-- how processors access and execute instructions and how instructions access and process data;
-- how a program accesses external devices – I/O;
-- how to write efficient code as it requires less memory and execution time.
-
-:::
-
----
-
-### Why do people use assembly language?
-
-In short:
-
-::: {.incremental}
-
-* **Speed** - assembly language programs are generally the fastest programs around (up to ten times faster that optimized HLL programs [@hyde2010][^warning].
-* **Space** - assembly language programs are often the smallest.
-* **Capability** - you can do things in assembly which are difficult or impossible in HLLs.
-* **Knowledge** - your knowledge of assembly language will help you write better programs, even when using HLLs.
-* **Reverse Engineer/modify (Hack)** pre-assembled programs.
-
-:::
-
-[^warning]: Please don't get carried away! There are few tasks for which the cost of not starting in a HLL is going to be paid back by writing complete programs in assembly code.
-
----
-
-::: {.center}
-## Introduction to Assembly Language{#sec-wk7-sect2 background-image="pictures/assembly_wallpaper.png"}
-:::
-
-::: {.notes}
-![](pictures/assembly_wallpaper.png){fig-alt="A decaorative image of assembly code."}
-
-[This Photo](https://www.flickr.com/photos/132889348@N07/20607150556) by Unknown Author is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
-:::
-
----
-
-### Assembly Language 101
-
-An assembly language program consists of a series of instructions to an assembler which will then produce the machine code program that is loaded to the microcontroller.
-
-::: {.fragment}
-
-A program is written as a sequence of statements - one statement per line:
-
-::: {.incremental}
-* Lines can be empty to separate sections of code.
-* Statements cannot span multiple lines.
+::: {.callout-note}
+This will be covered in more detail in EG-247 Digital Signal Processing in year 2
 :::
 
 :::
 
 ---
 
-Each statement contains up to four fields each separated by one or more space or tab characters as shown below:
+#### Example{.unnumbered}
+Consider the sine wave governed by the equation $x(t) = sin(t)$. The period is $2\pi$ (approx. 6.3 seconds) so the frequency is 0.16 Hz (@fig-wk6-sinewave).
 
-::: {.fragment}
-```asm
-[label:]    operator    [operand]     [;comment]
-```
+::: {#fig-wk6-sinewave} 
+![](pictures/sinewave.png){fig-alt="Analogue signal x(t) = sin(t) - a sine wave."}
+
+Analogue signal $x(t) = \sin(t)$ - a sine wave.
 :::
 
-::: {.notes}
 
-All statements must have something in the Operator field, but the label, operand and comment fields can be empty.
+---
 
+##### Sampled sine wave
+
+If we sample this at 0.5 Hz (once every 2 seconds), which is over 3 times the original frequency, we get the orange trace @fig-wk6-sampled-wave. From this it would be enough to accurately recreate the blue trace.
+
+::: {#fig-wk6-sampled-wave} 
+![](pictures/sampled_wave.png){fig-alt="Sine wave x(t) = sin(t) sampled at 0.5 Hz."}
+
+Sine wave $x(t) = \sin(t)$ sampled at 0.5 Hz.
 :::
 
 ---
 
-#### Assembly language labels
+### ADC Resolution
+As well as the sampling rate, the resolution of the converter is crucial to getting an accurate representation of the input signal. The resolution indicates the number of discrete values that can be used over the total range of analogue values.
 
-The label field is used to create a reference point in the program than can be used to identify/locate a collection of instructions.
+---
 
-::: {.fragment}
-Examples:
-```{asm}
+#### A 2-bit ADC
+As an example a 2-bit ADC has $2^2 = 4$ quantization levels (@fig-wk6-2bit).
 
+::: {#fig-wk6-2bit} 
+![](pictures/2bitadc.png){fig-alt="Illustration of the resolution of a 2 bit ADC."}
 
-SECTION1    operator
-```
-:::
-
-::: {.notes}
-
-Labels must follow a set of rules and a particular format:
-
-* All labels must be **unique** and cannot use **system reserved phrases**.
-* All labels **must start with a letter**.
-* Labels can contain **letters, numbers, and special characters** (symbols, such as `@`, `$, `_` ).
-* Labels that **don't begin at column 1** must be followed by a colon character ( `:` ).
-* Labels are written in **all capitals**.
-
+Illustration of the resolution of a 2 bit ADC
 :::
 
 ---
 
-#### Assembly Language Operators
+#### A 3-bit ADC has $2^3 = 8$ quantization levels (@fig-wk6-3bit).
 
-::: {.fragment}
-The **operator field** contains either an assembly directive or a mnemonic/instruction.
-:::
 
-::: {.fragment}
-**Assembly directives**, sometimes termed *pseudo-operations* are directives to the assembler that will not be translated to machine code but provide information critical to the program's function or is required by the assembler.
-:::
 
-::: {.notes}
+::: {#fig-wk6-3bit} 
+![](pictures/3bitadc.png){fig-alt="Illustration of the resolution of a 3 bit ADC."}
 
-Assembly directives can be used to specify the starting address in memory, generate fixed tables and data, indicate the end of a program and several others.
-
+Illustration of the resolution of a 3 bit ADC
 :::
 
 ---
 
-#### Assembly mnemonics
+#### Resolution of a 3-bit ADC
 
-A **mnemonic**  is an instruction that will be directly translated into machine code and is used to manipulate data in some way.
+To calculate the resolution of an ADC we use @eq-adc-res[^floor].
 
-::: {.fragment}
+[^floor]: Note the symbols $\lfloor \ldots \rfloor$ are called *floor*. They round a decimal number to the next lowest integer value. That is the decimal part is simply eliminated. Thus quantization is always going to choose the bin that is the closest to the truncated part of the decimal number.
 
-The list of allowed mnemonics/instructions is called the **instruction set** and is specific to a particular microcontroller architecture.
-
-:::
-
----
-
-However in general, the mnemonics can be classified into one of six groups:
-
-::: {.incremental}
-
-- **Data Transfer**: `IN`, `LD`, `LDI`, `LDS`, `MOV`, `OUT`, `ST`, `STS`;
-- **Arithmetic**: `ADD`, `ADC`, `ADIW`, `SUB`, `SUBI`, `SBC`, `INC`, `DEC`, `MUL`, `MULS`, `FMUL`;
-- **Logical**: `AND`, `ANDI`, `EOR`, `OR`, `ORI`;
-- **Program flow**: `BREQ`, `BRGE`, `BRNE`, `BRLO`, `BRMI`, `BRPL`, `CALL`, `JMP`, `RET`, `RJMP`;
-- **Bit and Bit Test**: `LSL`, `LSR`, `ROL`, `ROR`, `ASR`, `SBI`, `CBI`, `BSET`, `BCLR`;
-- **MCU Control**: `BREAK`, `NOP`, `SLEEP`, `WDR`.
-
-:::
-
-::: {.notes}
-
-For this module we have been working  with an Atmel ATmega328 microcontroller which is based on the  AVR® enhanced (AVRe+) architecture.
-
-:::
+$$
+\mathrm{Digital\ Output} = \left\lfloor\frac{\left(2^N-1\right)\times\mathrm{Analogue\ Input\ Voltage}}{\mathrm{Reference\ Voltage}}\right\rfloor
+$$ {#eq-adc-res}
 
 ---
 
-#### Assembler Directives
+The graph in @fig-wk6-resolution shows the values (*bins*) that are available for a three bit ADC.
 
-The **operator field** contains either an **assembly directive** or a **mnemonic/instruction**.
+:::{#fig-wk6-resolution} 
+![](pictures/3bitresolution.png){fig-alt="The resolution of a 3 bit ADC."}
 
-::: {.frament}
-Assembly directives, sometimes termed pseudo-operations are **directives to the assembler** that will not be translated to machine code but provide information critical to the program's function that is **required by the assembler**.
-:::
-
----
-
-Some common directives include;
-
-::: {.incremental}
-- `.CSEG` / `.DSEG` / `.ESEG`
-- `.ORG` / `.EXIT`
-- `.EQU` / `.SET` / `.DEF` / `INCLUDE`
-- `.DB` / `.DW `/ `.BYTE`
-:::
-
-::: {.fragment}
-Directives are specific to a particular microcontroller family (different to the instruction set). A list of supported directives for the AVR based microcontrollers can be found [here](https://onlinedocs.microchip.com/pr/GUID-0B644D8F-67E7-49E6-82C9-1B2B9ABE6A0D-en-US-1/index.html?GUID-BA59618D-4850-490B-B176-0BCC3D9438A1).
-:::
-
----
-
-#### Assembly Language Operands
-
-::: {.incremental}
-- The operand field follows the operator and contains the **address or data** to be used by the instruction.
-- A name (‘label’) can be used to represent the address of the data or a symbol to represent a data constant.
-- The **field can be empty** if the instructions given by the operator do not need an address or data.
-  - As an example the operator `NOP` (no-operation) requires no operand.
-- **Some operators allow for multiple operands** and in these cases the operands are separated by commas (`,`).
-:::
-
----
-
-##### Examples 1
-
-```{.asm code-line-numbers="|1|2|3|4|5"}
-LDI     R16, 0b01010101
-ADD     R16, R17
-LDS     R2, 0xFF00
-NOP
-MOV     R16, R17
-```
-
-::: {.notes}
-- Line 1: Load Register `R16` with binary value `0b01010101`
-- Line 2: Add the contents of register `R16` to the contents of register `R17`
-- Line 3: Load Register `R2` with contents of data memory with address `0xFF00`
-- Line 4: No operation - do nothing for one clock cycle
-- Line 5: Move the contents of register `R16` to register `R17`
-::: 
-
----
-
-#### Assembly Language Comments
-
-::: {.fragment}
-As with the C language, the comment field is there to allow the programmer to include any comments which may make the program easier to understand at a later time or by another reader.
-:::
-
-::: {.fragment}
-When the **assembler is reading** the line of text, the **comment field is ignored**.
-:::
-
----
-
-::: {.fragment}
-Comments also follow a set of rules and a particular format dependent on the assembler being used[^comments_in_asm]:
-:::
-
-::: {.incremental}
-- If an **entire line** is a comment, it must start with a **semicolon** or an **asterisk symbol** in the first column.
-- If **not starting in the first column**, the comment must start with a **semicolon**.
-- The comment must be separated from the operator or operand field by at least one space. 
-:::
-
-[^comments_in_asm]: As assembly codes are generally less readable than higher level languages, like the C language, it is good practice to be very liberal with comments in assembly code programs.
-
----
-
-##### Examples 2
-
-```{.asm code-line-numbers="|1|2|4|5"}
-;This comment line starts with a semicolon
-*This comment line starts with an asterisk
-
-operator ;This comment follows an operator
-operator
-```
-
----
-
-#### Assembler{#sec-wk7-assembler}
-
-::: {.notes}
-It is important to be aware of the assembler and the structure assembly language programs follow.
-
-The assembler takes the sequence of mnemonics (instructions) written in assembly language and translates them into machine code using the process illustrated in @fig-wk7-assembly.
-:::
-
-::: {#fig-wk7-assembly}
-![](pictures/assembler.png){fig-alt="The assembly process."}
-
-The assembly process
-:::
-
----
-
-The assembler processes the assembly language file and generates an object file and listing file(s)
-
-::: {.incremental}
-- An object file is essentially a one-to-one mapping of mnemonics against the binary (sometimes hexadecimal) instruction set.
-- The listing file shows each line of the assembly language input along with the memory addresses resolved by the assembler, resulting machine code or data and other diagnostic information.
-:::
-
-::: {.fragment}
-The linker combines multiple object files as well as any library files and generates an executable which can be loaded onto the microcontroller (this file is often a `*.hex` file).
+The resolution of a 3 bit ADC
 :::
 
 ---
 
 ::: {.center}
-## Interfacing with Digital I/O example.{#sec-wk7-sect3 background-image="pictures/week07_breadboard_wallpaper.jpg"}
-:::
-
-::: {.notes}
-![](pictures/week07_breadboard_wallpaper.jpg){fig-alt="Decorative background image showing the circuit discussed in the example."}
+### Examples{.unnumbered}
 :::
 
 ---
 
-### Example
+#### Example 1{.unnumbered}
+Let's say that we have a **10-bit ADC** and the reference voltage is **5V**.
 
-::: {.notes}
-Recall the example from [Digital I/O Example Program](/lectures/week05/#sec-wk5-digital-io-example) reproduced again here as @fig-wk7-example-circuit. The left and right push buttons connected to the digital inputs `D3` and `D2` respectively corresponding with Port D Bits 3 and 2 on the Atmega328 microcontroller. 
+::: {.fragment}
+If our input is **2.2V** the the digital output will be:
 
-When the left push button is pressed the red LED (Port B Bit 1) is illuminated and the green LED (Port B Bit 0) illuminated when the right push button is pressed.
+\begin{align}
+\mathrm{Digital\ Ouput} &= \left\lfloor \frac{1023 \times 2.2}{5}\right\rfloor \\
+&= \lfloor 450.12 \rfloor = 450_{10}\\
+&= 10\ 1100\ 0010_2
+\end{align}
+
+
 :::
 
-::: {#fig-wk7-example-circuit} 
-![](pictures/week07_breadboard.jpg){fig-alt="A photograph of the example circuit which has two buttons and two LEDs."}
+::: {.notes}
 
-A photograph of the example circuit which has two buttons and two LEDs discussed in [Digital I/O Example Program](/lectures/week05/#sec-wk5-digital-io-example). 
+Notice in the first example when the resolution is 10-bit the answer consists of 10 bits not 12 or 16.
+
 :::
 
 ---
 
-#### C-Language Code
+#### Example 2{.unnumbered}
 
-::: {.notes}
-Let us start with the C-language program we wrote for this (@lst-wk7-example-c-program).
+Let's say that we have a **6-bit ADC** and the reference voltage is **3.3**.
+
+::: {.fragment}
+If our input is **1V** the the digital output will be:
+
+\begin{align}
+\mathrm{Digital\ Ouput} &= \left\lfloor \frac{63 \times 1}{3.3}\right\rfloor \\
+&= \lfloor 19.09 \rfloor = 19_{10}\\
+&= 01\ 0011_2
+\end{align}
+
 :::
 
-```{#lst-wk7-example-c-program .c lst-cap="Example Program [main.c](https://gist.github.com/cpjobling/07585093f8eafe69a4eeff1186110883)"}
-#include <stdint.h>
+---
 
+::: {.center}
+#### Illustrating the sampling theorem
+:::
+
+---
+
+##### Violation of the sampling theorem
+
+::: {.notes}
+Consider the signal with frequency $F_c = 1$Hz, sampling frequency of $F_s = 1$Hz, and resolution = 3 bits. The sampled signal is illustrated in @fig-wk6-violation. The Nyquist-Shannon sampling theorem has clearly been violated and the original signal cannot be reconstructed from the sampled signal.
+:::
+
+::: {#fig-wk6-violation} 
+![](pictures/violation.png){fig-alt="Illustration of the violation of the sampling thereom - signal cannot be reconstructed from sampled signal."}
+
+Violation of the sampling thereom: signal cannot be reconstructed from sampled signal
+:::
+
+---
+
+##### Sampling at twice the signal frequency 
+
+::: {.notes}
+Consider the signal with frequency $F_c = 1$Hz, sampling frequency of $F_s = 2$Hz (the so-called Nyquist frequency), and resolution = 3 bits. The sampled signal is illustrated in @fig-wk6-nyquist. The reconstructed signal is on the border of acceptable. In practice, we need to sample at a higher frequency than $F_s = 2F_c$.
+:::
+
+::: {#fig-wk6-nyquist} 
+![](pictures/nyquist.png){fig-alt="Illustration of a signal sampled at the Nyquist frequency. Signal is just about reconstructable from the sampled data."}
+
+Signal sampled at the Nyquist frequency and 3-bit resolution. Signal is just about reconstructable from the sampled data.
+:::
+
+---
+
+::: {.center}
+#### Illustrating sampling and quantization
+:::
+
+##### Sampling at five times the signal frequency 
+
+::: {.notes}
+Consider the signal with frequency $F_c = 1$Hz, sampling frequency of $F_s = 5$Hz, and resolution = 3 bits. The sampled signal is illustrated in @fig-wk6-5fs. The reconstructed signal (in the bottom trace) is starting to look like a sine wave.
+:::
+
+::: {#fig-wk6-5fs} 
+![](pictures/5fs.png){fig-alt="Illustration of a signal sampled at the 5 x Nyquist frequency."}
+
+Signal sampled at the $Fs = 5 F_c$ and 3-bit resolution.
+:::
+
+---
+
+##### Sampling at ten times the signal frequency 
+
+::: {.notes}
+Consider the signal with frequency $F_c = 1$Hz, sampling frequency of $F_s = 10$Hz, and resolution = 3 bits. The sampled signal is illustrated in @fig-wk6-10fs. The reconstructed signal now starting to look like a sine wave. In general, the faster the sampling frequency compared to the frequency of the analogue signal, the better the approximation.
+:::
+
+::: {#fig-wk6-10fs} 
+![](pictures/10fs.png){fig-alt="Illustration of a signal sampled at the 5 x Nyquist frequency."}
+
+Signal sampled at the $Fs = 10 F_c$ and 3-bit resolution.
+:::
+
+
+## ADC Architecture{#sec-wk6-sect2} 
+
+::: {#fig-wk6-atmel-adc}
+![](pictures/adc_arch.png){fig-alt="The architecture of the ADC system in the Atmel ATmega328 Processor."}
+
+The architecture of the ADC system in the Atmel ATmega328 Processor (source [ATmega48A-PA-88A-PA-168A-PA-328-P-DS-DS40002061B](https://ww1.microchip.com/downloads/en/DeviceDoc/ATmega48A-PA-88A-PA-168A-PA-328-P-DS-DS40002061A.pdf), Page 247)
+:::
+
+---
+
+### ADC Components
+
+The architecture of the Atmel ATmega328 is shown in @fig-wk6-atmel-adc. It contains the following major components:
+
+::: {.incremental}
+* Multiplexer[^mux]
+* Voltage Reference
+* Digital to Analogue Converter (DAC)
+* Sample and Hold Circuit
+* Control and Result Registers
+:::
+
+::: {.notes}
+The most important components are described in more detail in the following sections.
+:::
+
+[^mux]: The multiplexer allows multiple inputs to share one set of ADC hardware.
+
+---
+
+### Architectures
+
+There are several achitectures for ADCs summarized as:
+
+::: {.incremental}
+* Sigma-Delta ($\Sigma-\Delta$)
+* Successive Approximation Register (SAR)
+* Pipelined
+* Flash
+:::
+
+::: {.fragment}
+Each has their own advantages and disadvantages in terms of price, conversion speed, noise and complexity as summarized in @fig-wk6-adc_archs.
+:::
+
+---
+
+#### ADC Architecture vs Resolution and Sample Rate 
+
+::: {#fig-wk6-adc_archs} 
+![](pictures/adc_archs.png){fig-alt="ADC Architecture vs Resolution and Sample Rate."}
+
+ADC Architecture vs Resolution and Sample Rate (Source [calstate.edu](https://scholarworks.calstate.edu/downloads/v979v314q))
+:::
+
+::: {.fragment}
+Most general-purpose microcontrollers contain SAR-based architecture ADCs.
+:::
+
+---
+
+### SAR based ADC Architecture
+
+::: {.notes}
+Successive-approximation-register (SAR) ADCs are the most common architecture for medium-to-high-resolution applications with sample rates under 5 megasamples per second.
+
+The SAR converter is essentially a binary search algorithm which compares the input to the ADC with the output from a digital to analogue converter (DAC) until the input matches the DAC output and the device is able to output the corresponding binary value. 
+
+While the internal circuitry of the ADC may be running at several megahertz, the ADC sample rate is a fraction of that number due to the multiple step successive-approximation algorithm needed to convert the measured input to a binary number.
+
+The SAR converter is at the heart of the ATmega328 microcontroller and is highlighted in @fig-wk6-sar.
+:::
+
+::: {#fig-wk6-sar}
+![](pictures/sar_converter.png){fig-alt="Schematic diagram of the Atmel ATMega328 ADC system with the SAR highlighted."}
+
+Schematic diagram of the Atmel ATMega328 ADC system with the SAR highlighted.
+:::
+
+---
+
+#### SAR based ADC Operation
+
+::: {.notes}
+Consider the schematic diagram shown in @fig-wk6-sar-converter.
+:::
+
+::: {#fig-wk6-sar-converter}
+![](pictures/sar.png){fig-alt="Schematic diagram used to illustrate the hardware used to achieve SAR conversion." width="200%""}
+
+Schematic diagram of the hardware used to achieve SAR conversion (image source: Analog Devices[^sar_conversion]).
+:::
+
+[^sar_conversion]: [Understanding SAR ADCs: Their Architecture and Comparison with Other ADCs](https://www.analog.com/en/technical-articles/successive-approximation-registers-sar-and-flash-adcs.html), Analog Devices.
+
+---
+
+#### SAR operation
+
+::: {.incremental}
+- The analogue input signal is held by a track/hold circuit and fed as $V_\mathrm{IN}$ into a comparator. 
+- To implement the binary search algorithm, the $N$-bit register is first set to mid-scale (that is the MSB is set to 1 and all other bits set to 0) so that the voltage at $V_\mathrm{DAC} = V_\mathrm{REF}/2$. 
+- A comparison is then performed to determine if $V_\mathrm{IN} \le  V_\mathrm{DAC}$. 
+  - If $V_\mathrm{IN} >  V_\mathrm{DAC}$, the comparator output will be logic high (or 1), and the MSB of the $N$-bit register remains at 1. 
+  - If $V_\mathrm{IN} <  V_\mathrm{DAC}$, the comparator output is a logic low (0) and the MSB of the $N$-register is cleared to logic 0.
+- The SAR control logic then moves to the next bit along[^next_bit_along], forces that bit high, and repeats the comparison. The sequence continues all the way down to the LSB (bit 0). 
+- Once the input has been compared with the full $N$-bit register the conversion is complete and the $N$-bit digital word is sent to the ADC output register.
+:::
+
+[^next_bit_along]: The "next bit along" will be the MSB-$1^\mathrm{th}$ bit. That is, for a 12-bit ADC, MSB is bit 11, and the next bit along will be bit 10. If the previous comparison produced a 1, the binary value we are testing is now $2^{11} + 2^{10} = 2048 + 1024 = 3072$. If the comparison at the previous step was 0, the binary value we are testing is now $2^{10} = 1024$. The corresponding values of $V_\mathrm{DAC}$ will now be either $3072/4096 V_\mathrm{REF} = 0.75 V_\mathrm{REF}$ or $1024/4096 V_\mathrm{REF} = 0.25 V_\mathrm{REF}$. This process continues until all bits have been considered.
+
+---
+
+#### 4-bit SAR based ADC Example
+
+::: {#fig-wk6-sar-example}
+![](pictures/sar_operation.png){fig-alt="Example of the successive approximation method in action."}
+
+Example of the successive approximation method in action: a 4 bit ADC converting a signal for which $V_\mathrm{IN}$ is in "bin" 5.
+:::
+
+::: {.notes}
+
+Consider @fig-wk6-sar-example:
+
+1. Bit 3 is set high (compare signal is $1000_2$) 
+   * $V_\mathrm{IN} < V_\mathrm{DAC}$ so the comparator output is low (0).
+2. Bit 3 is set low and bit 2 is set high (compare signal is now $0100_2$). 
+   * $V_\mathrm{IN} > V_\mathrm{DAC}$ so the comparator output is high (1).
+3. Bit 2 remains high and now Bit 1 is set high too (compare signal is $0110_2$). 
+   * $V_\mathrm{IN} < V_\mathrm{DAC}$ so the comparator output is low (0).
+4. Bit 1 is set low and bit 0 is set high (compare signal is $0101_2$) 
+   * $V_\mathrm{IN} > V_\mathrm{DAC}$ so the comparator output is high (1).
+
+The final output of the conversion is $0101_2 = 5/16 V_\mathrm{REF} = 0.3125 V_\mathrm{REF}$.
+:::
+
+::: {.center}
+## The Atmel ATmega328 Analog-digital-converter{#sec-wk6-sect3 background-image="pictures/week6_arduino_nano_wallpaper.jpg"}
+:::
+
+::: {.notes}
+
+![](pictures/week6_arduino_nano_wallpaper.jpg){fig-alt="Decorative section background - showing an Arduino nano microcontroller and an LED light strip."}
+
+Image source: [This Photo](https://www.flickr.com/photos/netlcom/36486445205/) by Unknown Author is licensed under [CC BY-NC](https://creativecommons.org/licenses/by-nc/3.0/)
+:::
+
+---
+
+### The Atmel ATMega328 ADC
+
+The Atmel ATMega328 features a **10-bit successive approximation ADC**. 
+
+The ADC is connected to an 8-channel **Analog Multiplexer** which allows eight single-ended voltage inputs (referenced to GND) constructed from the pins of Port C.
+
+---
+
+#### Technical specifications
+
+The ADC provides:
+
+::: {.incremental}
+- 10-bit Resolution
+- 13 - 260μs Conversion Time
+- Up to 76.9kSPS[^SPS] (Up to 15kSPS at Maximum Resolution)
+- 9 Multiplexed Single Ended Input Channels
+:::
+
+[^SPS]: SPS = Samples per second.
+
+---
+
+#### Hardware registers used
+
+::: {.incremental}
+- `ADMUX` - ADC Multiplexer Selection Register.
+- `ADCSRA` - ADC Status and Control Register A.
+- `ADCSRB` - ADC Status and Control Register B.
+- `ADCL` and `ADCH` - The ADC Output Registers.
+- `DIDR0` - Digital Input Disable Register 0.
+:::
+
+::: {.fragment}
+These registers are described in the following sections.
+:::
+
+---
+
+##### ADMUX – ADC Multiplexer Selection
+
+The `ADMUX` is an 8-bit register arranged as shown in @fig-wk6-admux.
+
+::: {#fig-wk6-admux}
+![](pictures/admux.png){fig-alt="The ADMUX Register."}
+
+The ACD Multplexer Selection Register `ADMUX` (Source: Atmel Documentation).
+:::
+
+---
+
+##### Reference selection bits
+
+![](pictures/admux-bits76.png){fig-alt="The ADMUX Register with bits 7 and 6 highlighted."}
+
+Bits 7 and 6&mdash;`REFS1` and `REFS0`&mdash;select the reference voltage for the ADC[^refs].
+
+
+
+[^refs]: The internal voltage reference options may not be used if an external reference voltage is being applied to the *AREF* pin of the microcontroller chip.
+
+::: {.notes}
+The settings for the reference selection bits are tabulated in @tbl-wk6-table1.
+
+|  REFS1 | REFS0 | Voltage Reference Selection |
+|:-------|:------|:----------------------------|
+|  0 | 0 | AREF, Internal $V_\mathrm{REF}$ turned off. |
+|  0 | 1 | AVCC with external capacitor on `AREF`. |
+|  1 | 0 | Reserved |
+|  1 | 1 | Internal 1.1V reference with external capacitor at `AREF` pin. |
+: The settings for the reference selection bits of the `ADMUX` register. {#tbl-wk6-table1}
+:::
+
+
+---
+
+##### Bit 5 – `ADLAR`: ADC Left Adjust Result
+
+![](pictures/admux-bit5.png){fig-alt="The ADMUX Register with bit5 highlighted."}
+
+`ADLAR` bit (bit 5) affects the presentation of the ADC conversion result in the **ADC Data Register**. 
+
+We write 1 to `ADLAR` to *left adjust* the result. 
+
+Otherwise, the result is *right adjusted*.
+
+
+::: {.notes}
+
+*We will revisit this in a couple of slides when we discuss the results registers*.
+
+:::
+
+---
+
+##### Bits 3:0 – `MUX[3:0]`: Analog Channel Selection Bits
+
+![](pictures/admux-mux.png){fig-alt="The ADMUX Register with bit5 highlighted."}
+
+The value of these bits selects which analogue inputs are connected to the ADC (see @fig-wk6-admux-mux and @tbl-wk6-table2).
+
+---
+
+::: {#fig-wk6-admux-mux}
+![](pictures/mux_pins.png){fig-alt="The pins on the Atmel ATmega328 that may be multiplexed to act as ADC inputs."}
+
+The pins on the Atmel ATmega328 that may be multiplexed to act as ADC inputs
+:::
+
+---
+
+|   MUX3:0 | Input Selected |
+|:---------|:---------------|
+|   $0000$ | ADC0 |
+|   $0001$ | ADC1 |
+|   $0010$ | ADC2 |
+|   $0011$ | ADC3 |
+|   $0100$ | ADC4 |
+|   $0101$ | ADC5 |
+|   $0110$ | ADC6 - Not used on the Arduino nano board |
+|   $0111$ | ADC7 - Not used on the Arduino nano board |
+|   $1000$ | ADC8 - Used for internal temperature sensor. |
+|   $1001$ | Reserved |
+|   $1010$ | Reserved |
+|   $1011$ | Reserved |
+|   $1100$ | Reserved |
+|   $1101$ | Reserved |
+|   $1110$ | 1.1V ($V_\mathrm{BG}$) |
+|   $1111$ | GND |
+: ADC multiplexer bit settings for the ADMUX register {#tbl-wk6-table2}
+
+---
+
+##### `ADCSRA` - ADC Control and Status Register A
+
+###### Bit 7 - `ADEN`: ADC Enable
+
+![](pictures/adcsra7.png){fig-alt="ADCSRCA with bit 7 highlighted."}
+
+Writing 1 to bit 7 of the `ADCSRA` register enables the ADC. Writing 0 to this bit turns the ADC off.
+
+---
+
+###### Bit 6 - `ADSC`: ADC Start Conversion
+
+![](pictures/adcsra6.png){fig-alt="ADCSRCA with bit 6 highlighted."}
+
+::: {.incremental}
+* In *Single Conversion Mode*, writing 1 to bit 6 of the `ADCSRA` register starts the conversion.
+* In *Free Running Mode*, writing 1 to this bit starts the first conversion.
+:::
+
+---
+
+###### Bit 5 - `ADATE`: ADC Start Conversion
+
+![](pictures/adcsra5.png){fig-alt="ADCSRCA with bit 5 highlighted."}
+
+When 1 is written to bit 5 of the `ADCSRA` register, the ADC will start a conversion on a positive edge of the selected trigger signal[^clock]
+
+[^clock]: This bit is used for clock-based ADC operation when you need a controlled and predictable sampling rate.
+
+---
+
+###### Bit 4 - `ADIF`: ADC Interrupt Flag
+
+![](pictures/adcsra4.png){fig-alt="ADCSRCA with bit 4 highlighted."}
+
+This bit is set when an ADC conversion completes, and the data registers are updated. The *ADC Conversion Complete Interrupt* is executed if the `ADIE` bit and the I-bit in the status register are set.
+
+---
+
+###### Bit 3 - `ADIE`: ADC Interrupt Enable
+
+![](pictures/adcsra3.png){fig-alt="ADCSRCA with bit 3 highlighted."}
+
+Writing 1 to bit30 of the `ADCSRA` register, when the I-bit in the status register is set, activates the *ADC Conversion Complete Interrupt*
+
+---
+
+##### Bits 2-0 - `ADPS[2:0]`: ADC Interrupt Enable
+
+![](pictures/adcsra2-0.png){fig-alt="ADCSRCA with bit2 2-0 highlighted."}
+
+Bits 2-0 of `ADCSRA` determine the division factor between the system clock frequency and the input clock to the ADC. That is they set the sample rate for free-running mode. The prescaler settings are tabulated in @tbl-wk7-table3.
+
+---
+
+|   `ADPS2` | `ADPS1` | `ADPS0` | Division Factor |
+|-----------|---------|---------|----------------:|
+|   0 | 0 | 0 | 2 |
+|   0 | 0 | 1 | 2 |
+|   0 | 1 | 0 | 4 |
+|   0 | 1 | 1 | 8 |
+|   1 | 0 | 0 | 16 |
+|   1 | 0 | 1 | 32 |
+|   1 | 1 | 0 | 64 |
+|   1 | 1 | 1 | 128 |
+: Clock Division Factor selected by Prescaler Select Bits 2-0 {#tbl-wk7-table3}
+
+---
+
+##### ADCSRB - ADC Control and Status Register B
+
+###### Bit 6 - `ACME`: Analogue comparator multiplexer enable
+
+![](pictures/adcsrb6.png){fig-alt="ADCSRB with bit 6 highlighted."}
+
+When logic 1 is written to bit 6 of `ADCSRB` the ADC is switched off, the ADC multiplexer selects the negative input to the *Analog Comparator*. When 0 is written to this bit,  `AIN1` is applied to the negative input of the Analog Comparator.
+
+::: {.notes}
+
+Note: The Analog Comparator compares the input values on the positive pin `AIN0` and negative pin `AIN1`. When the voltage on the positive pin AIN0 is higher than the voltage on the negative pin `AIN1`, the Analog Comparator output, `ACO`, is set.
+
+:::
+
+---
+
+###### Bits 2:0 - `ADT[2:0]`: ADC Autotrigger source
+
+![](pictures/adcsrb6.png){fig-alt="ADCSRB with bit 6 highlighted."}
+
+If logic 1 is written to the `ADATE` bit in the `ADCSRA` register, the value of the `ADTS` bits selects which source will trigger an ADC conversion. The trigger source settings are tabulated in @tbl-wk7-table4.
+
+---
+
+|   `ADTS2` | `ADTS1` | `ADTS0` | Trigger Source |
+|-----------|---------|---------|:----------------|
+|   0 | 0 | 0 | Free Running Mode |
+|   0 | 0 | 1 | Analogue Comparitor |
+|   0 | 1 | 0 | External Interrupt Request 0 |
+|   0 | 1 | 1 | Timer/Counter 0 Compare Match A |
+|   1 | 0 | 0 | Timer/Counter 0 Overflow |
+|   1 | 0 | 1 | Timer/Counter 0 Compare Match B |
+|   1 | 1 | 0 | Timer/Counter 1 Overflow |
+|   1 | 1 | 1 | Timer/Counter 1 Capture Event |
+: ADC Trigger Source. {#tbl-wk7-table4}
+
+---
+
+##### ADCL and ADCH - The ADC Data Registers
+
+The ADC Data Registers are illustrated in @fig-wk6-adc-data.
+
+::: {#fig-wk6-adc-data}
+![](pictures/adc_results.png){fig-alt="The ADC Data Registers."}
+
+The ADC Data Registers `ADCH` and `ADCL` when (a) ADLAR = 0 and (b) when ADLAR = 1.
+:::
+
+When an ADC conversion is complete, the result is put in these two registers[^precision].
+
+[^precision]: Recall that the ADC has a precision of up to 10 bits so two data registers are required. Register `ADCL` contains the least significant 8 bits, bits [0-7] and `ACDH` contains the most significant bits bit 8 and bit 9.
+
+When `ADCL` is read, the ADC Data Register is not updated until `ADCH` is read. 
+
+If the result is left adjusted and no more than 8-bit precision is required, it is sufficient to read `ADCH`. Otherwise, `ADCL` must be read first, then `ADCH`.
+
+---
+
+##### `DIDR0` - Digital Input Disable Register 0
+
+###### Bits 5:0 - ADC5D...ADC0D: ADC5...0 Digital Input Disable
+
+![](pictures/didr0.png){fig-alt="Register DIDR0 with bits 0-5 highlighted."}
+
+When logic 1 is written to one of these bits, the digital input buffer on the corresponding ADC pin is disabled. (i.e. the corresponding PIN register bit will always read zero).
+
+When an analog signal is applied to the ADC5...0 pin and the digital input from this pin is not needed, logic 1 should be written to this bit to reduce power consumption in the digital input buffer.
+
+---
+
+#### Setting up the ADC
+
+::: {.notes}
+The following steps are illustrated in flow-chart form in @fig-wk6-flc1.
+:::
+
+::: {#fig-wk6-flc1}
+![](pictures/flc1.png){fig-alt="A flow chart of the ADC initialization steps." width="30%"}
+
+A flow chart of the ADC initialization steps
+:::
+
+::: {.notes}
+
+In words, the operations to be completed are:
+
+1. **Define** convenient **names** for the required registers.
+2. Set the **data direction** of the relevant pins to input (`DDRxn`)
+3. Set the corresponding pin in the **input disable register** to 1 to disable the input buffer (`DIDR0`)
+4. Select the **reference voltage**, **result alignment** and **input channel** (`ADMUX`)
+5. Select the **ADC prescaler value** in the A control and status register (`ADCSRA`)
+6. Write a **1 to the `ADEN` bit** of the A control and status register to enable the ADC (`ADCSRA`)
+:::
+
+---
+
+::: {.notes}
+The **main code** is illustrated in the flowchart shown in @fig-wk6-flc2.
+:::
+
+::: {#fig-wk6-flc2}
+![](pictures/flc2.png){fig-alt="A flow chart of the ADC operation loop." width="25%"}
+
+A flow chart of the ADC operation loop
+:::
+
+::: {.notes}
+
+In words, the operations to be completed are:
+
+1. Within the infinite for loop, **Write a 1 to the `ADSC` bit** of the A control and status register each time you want to start a conversion (`ADCSRA``) 
+2. Monitor for the **`ADSC` bit going low** (or the `ADIF` bit going high) of the A control and status register.
+3. Read the converted value from the result registers (`ADCH`  and `ADCL`).
+4. Do something with the ADC result.
+
+We illustrate this in @sec-wk6-sect4.
+:::
+
+::: {.center}
+## Analogue I/O Example program{#sec-wk6-sect4 background-image="pictures/adc_board_wallpaper.png"}
+:::
+
+::: {.notes}
+![](pictures/adc_board_wallpaper.png){fig-alt="Decorative image showing a protopype ADC application for the Arduino nano."}
+:::
+
+---
+
+### Single Conversion Example 
+
+::: {#fig-wk6-adc_board}
+![](pictures/adc_board.jpg){fig-alt="The prototype board showing the finished Arduino nano application with ADC and digital outputs."}
+
+The prototype board showing the finished Arduino nano application with ADC and digital outputs.
+:::
+
+---
+
+::: {.incremental}
+- The centre tap of the blue potentiometer shown in @fig-wk6-adc_board is connected to the analogue input `A0` which represents Port C Bit 0 on the ATmega328 microcontroller. 
+- As the voltage at the input changes, the value is reflected on the 6 LEDs.
+- What does the code for this look like without using the predefined Arduino function – `analogRead`?
+:::
+
+---
+
+### Example code - aligning port names to the I/O memory map
+
+We showed how we use the `#define` function to map our program variables to the I/O memory map shown in [Example code - aligning port names to the I/O memory map](/lectures/week05/#sec-wk5-align-to-io-mem-map). We use the same technique to map the digital and analogue registers to programmer friendly names:
+
+---
+
+```{.c code-line-numbers="|6-11|6|7|8|9|10|11"}
 //I/O and ADC Register definitions taken from datasheet
-#define	PORTD (*(volatile uint8_t *)(0x2B))
-#define DDRD (*(volatile uint8_t *)(0x2A))
-#define PIND (*(volatile uint8_t *)(0x29))
+#define PORTB  (*(volatile uint8_t *)(0x25))
+#define DDRB   (*(volatile uint8_t *)(0x24))
+#define PINB   (*(volatile uint8_t *)(0x23))
 
-#define PORTB (*(volatile uint8_t *)(0x25))
-#define DDRB (*(volatile uint8_t *)(0x24))
-#define PINB (*(volatile uint8_t *)(0x23))
-
-int main(void)
-{
-	//Set Data Direction Registers
-	DDRD = DDRD & 0b11110011; //setup bits 2 and 3 of port D as inputs
-	DDRB = DDRB | 0b00000011; //setup bits 0 and 1 of port B as outputs
-
-	PORTB = PORTB & 0b11111100; //both pins B0 (D8) and B1 (D9) start low
-	
-	PORTD = PORTD | 0b00001100; // Enable the pull up resistor for bits 2 and 3 of port D
-	
-	for(;;)
-	{
-		if((PIND & 0b00000100) == 0)
-		{
-			PORTB = PORTB | 0b00000001; //sets port B, bit 0 to logic 1/high, switches the LED connected to D8 on
-		}
-		else if ((PIND & 0b00001000) == 0)
-		{
-			PORTB = PORTB | 0b00000010; //sets port B, bit 1 to logic 1/high, switches the LED connected to D9 on
-		}
-		else
-		{
-			PORTB = PORTB & 0b11111100; //sets bits 0-5 of port B to logic 0/low, switches off both the LED's
-		}
-	}
-	
-}
+#define ADMUX  (*(volatile uint8_t *)(0x7C))
+#define ADCSRA (*(volatile uint8_t *)(0x7A))
+#define ADCRSB (*(volatile uint8_t *)(0x7B))
+#define ADCH   (*(volatile uint8_t *)(0x79))
+#define ADCL   (*(volatile uint8_t *)(0x78))
+#define DIDR0  (*(volatile uint8_t *)(0x7E))
 ```
 
 ---
 
-#### I/O Addresses
-
-::: {#fig-wk7-io-addresses}
-![](pictures/io_registers.png){fig-alt="The addresses of the IO registers with information on which can be used in particular contexts."}
-
-The addresses of the IO registers with information on which can be used in particular contexts.
-:::
-
----
-
-#### Assigning a name to the I/O addresses
-
-::: {.notes}
-We use `.EQU`, `.SET` or `.DEF` to assign a name to a memory location[^assembly_names] (@lst-assign-names-to-memory-locations):
-
-[^assembly_names]: The purpose of these assembly directives is to assign a meaningful name to a label, constant, data value (*variable*), or memory location.
-:::
-
-```{.asm #lst-assign-names-to-memory-locations lst-cap="Assigning a name to the I/0 addresses" code-line-numbers="|2|3|5|6|7"}
-; Equate easy to read names to the I/O addresses
-.EQU DDRB = 0x04
-.EQU PORTB = 0x05
-
-.EQU PIND = 0x09
-.EQU DDRD = 0x0A
-.EQU PORTD = 0x0B
-```
----
-
-#### Assembly equivalent of `int main(void)`
-
-::: {.notes}
-In C language we put our code (or calls to external functions) within a main function, written as @lst-wk7-main-c:
-:::
-
-```{.c #lst-wk7-main-c lst-cap="Program start in C language: the *main* function"}
-int main(void) {
-  // Program code
-}
-```
----
-
-::: {.notes}
-
-In assembly language, there isn't a main function as such but rather the `.CSEG` / `.DSEG` / `.ESEG` directives along with the `.ORG` directive are used to define the start address of code, data and EEPROM segments, repectivley, in memory.
-
-In the lines shown in @lst-code-segment-start we are telling the assembler that we want the code segment to start at memory location with address $200_{16}$.
-
-:::
-
-::: {.fragment}
-
-```{.asm #lst-code-segment-start lst-cap="Define the code segment start address" code-line-numbers="|1|2"}
-.CSEG
-.ORG 0x0200
-```
-
-:::
-
----
-
-#### I/O port access and bitmasking operations
-
-::: {.fragment}
-We can use the `IN` and `OUT` operations for reading from and writing to ports respectively, and the `ANDI` and `ORI` operations for setting up bitmasks.
-:::
-
-::: {.fragment}
-We include scans of the documentation for these operators in the following images.
-:::
-
----
-
-![](pictures/in.png){fig-alt="The IN operator."}
-
----
-
-![](pictures/out.png){fig-alt="The OUT operator."}
-
----
-
-![](pictures/andi.png){fig-alt="The ANDI operator."}
-
----
-
-![](pictures/ori.png){fig-alt="The ORI operator."}
-
----
-
-#### Setting up the I/O Ports
-
-::: {.fragment}
-Using the C language, we wrote:
-
-```c
-DDRD = DDRD & 0b11110011;
-```
-
-to ensure bits 2 and 3 of port D are configured as inputs. 
-:::
-
-::: {.fragment}
-Similar lines were written to set up the output bits in Port B, the starting condition of these bits and then to enable the pull up resistors on Port D.
-:::
-
----
-
-::: {.notes}
-The direct translation to Assembly language involves three lines for each action as illustrated in @lst-wk7-port_io.
-:::
-
-```{.asm #lst-wk7-port_io lst-cap="Assembly code to set up the inputs and outputs." code-line-numbers=|2-4|7-9|12-14|17-19} 
-;setup bits 2 and 3 of port D as inputs
-IN R16, DDRD
-ANDI R16, 0b11110011
-OUT DDRD, R16
-
-;setup bits 0 and 1 of port B as outputs
-IN R16, DDRB
-ORI R16, 0b00000011
-OUT DDRB, R16
-
-;both pins B0 (D8) and B1 (D9) start low
-IN R16, PORTB
-ANDI R16, 0b11111100
-OUT PORTB, R16
-
-;Enable the pull up resistor for bits 2 and 3 of port D
-IN R16, PORTD
-ORI R16, 0b00001100
-OUT PORTD, R16
-```
-
----
-
-#### Infinite loop
-
-::: {.fragment}
-Using the C language, we created an infinite loop as follows:
-:::
-	
-::: {.fragment}
-```c
-for (;;) {
-  // Program code
-}
-```
-:::
-
-::: {.fragment}
-This essentially "*traps*" the program to ensure it continuously loops executing the program code within the code block.
-:::
-
----
-
-In assembly language we can produce the same result by creating a "Label" and using the operation `RJMP` (*relative jump*): 
-
-::: {.fragment}
-```{.asm #lst-jump-to-label lst-cap="Infinite loop in assembly code: jump to a label with `RJMP`."}
-LOOP:
-	RJMP LOOP
-```
-:::
-
----
-
-The documention for `RJMP` is shown here:
-
-
-![](pictures/rjmp.png){fig-alt="The RJMP operator."}
-
----
-
-#### Detecting a button press
-
-::: {.notes}
-In C language, to detect a button press we used the 'if statement' below with a bit mask corresponding to a particular bit of the port and monitoring for its state changing to 0 or Low (@lst-detect-button-press).
-:::
-
-::: {.fragment}
-
-```{.c #lst-detect-button-press lst-cap="Detecting a button press in C" code-line-numbers="|1|3"}
-if ( (PIND & 0b00000100) == 0)
-{
-  PORTB = 0b00000001;	 // sets port B, bit 0 to logic 1 (high)
-						 // which switches the LED connected to D8 on
-}
-```
-:::
-
-::: {.fragment}
-In assembly we can use the *compare* (`CP`) and *branch if equal* (`BREQ`) instructions to achieve this same implementation.
-:::
-
----
-
-![](pictures/cp.png){fig-alt="Documentation for the CP (compare) operation."}
-
----
-
-![](pictures/breq.png){fig-alt="Documentation for the BREQ (branch if equal) operation."}
-
----
-
-::: {.notes}
-Consider the assembly code shown in @lst-detect-switch below.
-:::
-
-```{.asm #lst-detect-switch lst-cap="Assembly code for detecting button presses in main loop." code-line-numbers="|2-6|8-12|14-16|17|1"}
-LOOP: 
-	IN R16, PIND
-	ANDI R16, 0b00000100
-	LDI R17, 0x00
-	CP R16, R17
-	BREQ LED1
-
-    IN R16, PIND
-	ANDI R16, 0b00001000
-	LDI R17, 0x00
-	CP R16, R17
-	BREQ LED1 
-
-	IN R16, PORTB
-	ANDI R16, 0b11111100
-	OUT PORTB, R16
-	RJMP LOOP
-```
-
-::: {.notes}
-
-- In lines 2&ndash;6 we read `PIND`, use a bit mask to select bit 2, compare the value of the selected bit with zero and branch to label `LED1` if the value is zero (`0x00`).
-- In lines 9-12 we read `PIND`, use a bit mask to select bit 3, compare the value of the selected bit with zero and branch to label `LED2` if the value is zero (`0x00`).
-- If we reach line 14, then both buttons were high (not pressed) so we use the bitmask `0x11111100` to ensure that both LEDs connected to bits 0 and 1 of port B are turned off (lines 14&ndash;16). 
-- We then jump to the label `LOOP` (line 17).
-
-:::
-
----
-
-::: {.notes}
-In the next few lines (see @lst-turn-leds-on) we:
-
-1. Line 2: read the current value of Port B into `R16` 
-2. Line 3: perform a bitwise or operation with the immediate pattern provided (mask). 
-3. Line 4: The new value stored in `R16` is then sent to the `PORTB` register essentially changing the state of the LED to on. 
-4. Line 5: Finally the `RJMP` instruction ensures the program loops back to the start.
-:::
-
-```{.asm #lst-turn-leds-on lst-cap="Assembly code to switch on the LEDs." code-line-numbers="|2-4|5|8-10|11"}
-LED1:
-	IN R16, PORTB
-	ORI R16, 0b00000001
-	OUT PORTB, R16
-	RJMP LOOP
-
-LED2:
- 	IN R16, PORTB
-	ORI R16, 0b00000010
-	OUT PORTB, R16
-	RJMP LOOP
-```
-::: {.notes}
-A similar process is used for LED2.
-:::
-
----
-
-#### Comparison with C
-
-::: {.notes}
-In @fig-wk7-comp-asm-with-c we compare the C program with the equivalent assembly program. 
-:::
-
-::: {#fig-wk7-comp-asm-with-c} 
-![](pictures/comp_asm_with_c.png){fig-alt="Comparing an I/O program written in C with an equvalent assembly program."}
-
-Comparing an I/O program written in C with an equvalent assembly program. The assembly code is available for study as a Gist [main.asm](https://gist.github.com/cpjobling/e72f37ff363353b6ed10ecdbeaa970af).
-:::
-
----
-
-#### An Advantage of Assembly Language
+We now define some unsigned integers as either 8 or 16 bits:
 
 ::: {.incremental}
-- Using C language, it is not possible to read or write individual bits of a register or I/O port.
-- In assembly language, this *is possible* using bit operations such as `SBI`, `CBI`, `SBIC`, `SBIS` and a handful of others:
+
+* Variable type: `uint16_t`
+* first variable name: `adc_result`
+* High and low byte of `adc_result`: `adc_result_high`, `adc_result_low`
+* second variable name: `previous_result`
+* Initial value of `previous_result = 0;`"
 :::
 
----
+::: {.fragment}
 
-![](pictures/sbi.png){fig-alt="The SBI operation."}
+The definitions are:
 
----
-
-![](pictures/sbic.png){fig-alt="The SBIC operation."}
-
----
-
-These can only be used on certain registers as identified in the documentation for the I/O memory map:
-
-![](pictures/io_mem_map2.png){fig-alt="The I/O memory map showing the registers for which bitwise operations are available."}
-
----
-
-::: {.notes}
-The code given in @lst-using-bit-manipulation shows the equivalent code implemented with `SBI` and `SBIC` operations.
-:::
-
-```{.asm #lst-using-bit-manipulation lst-cap="Equivalent assembly program using the SBI and SBIC operations."}
-LOOP:
-	SBIC PIND, 2
-	RJMP LED1
-
-	SBIC PINC, 3
-	RJMP LED2
-
-	IN R16, PORTB
-	ANDI R16, 0b11111100
-	OUT PORTB, R16
-	RJMP LOOP
-
-LED1:
-	SBI PORTB, 0
-	RJMP LOOP
-
-LED2: 
-	SBI PORTB, 1
-	RJMP LOOP
+```c
+uint16_t adc_result, previous_result = 0;
+uint8_t  adc_result_low, adc_result_high;
 ```
 
-#### Comparison
-
-::: {#fig-wk7-comparison}
-![](pictures/comparison.png){fig-alt="Comparison of three equivalent programs."}
-
-Comparison of three equivalent programs
 :::
 
-::: {.notes}
-In @fig-wk7-comparison we show the original C program, the first version of the assembly program, and a version that is using `SBIC` to directly branch based on the value of a single bit in Port D. These three programs
-all work in the same way.
-:::
+---
 
+### Example - the main function
+
+We discussed this in [Example Code - the main function](/lectures/week05/#sec-wk5-main-c).
+
+---
+
+### Example - set up I/O using the registers
+
+```{.c code-line-numbers="|2|5|8|10|12|14"}
+// Set Data Direction Registers
+DDRB = DDRB | 0b00111111; // Setup bits 0 - 5 of port B as outputs
+
+// Turn all LEDs off
+PORTB = PORTB & 0b11000000; // Pins B0 (D8) - B5 (D13) start low
+	
+// Set up ADC on pin A0
+DIDR0 = DIDR0 | 0b00000001; //Disable pin A0 as a digital input
+	
+ADMUX = 0b01000000; // Select reference voltage, right adjusted result and select channel ADC0 - A0
+
+ADCSRA = ADCSRA | 0b00000111; // Select ADC Prescaler
+
+ADCSRA = ADCSRA | 0b10000000; // Enable ADC
+```
+
+---
+
+### Example - the processing loop
+
+```{.c code-line-numbers="|1-15|1|3|5|7|8|11"}
+for(;;)
+{
+	ADCSRA = ADCSRA | 0b01000000;	      //start conversion by writing 1 to the ADSC bit
+		
+	while((ADCSRA & 0b01000000) != 0) { } //wait until the ADSC bit changes to 0
+
+	adc_result_low  = ADCL;		//read the low byte of the result into adc_result_low
+	adc_result_high = ADCH;		//read the high byte of the result into adc_result_high
+    /* shift whole 8 bits of ADC high byte into most significant byte of ADC result and 
+       add in ADC low byte using bitwise OR. */
+	adc_result = (adc_result_high<<8) | adc_result_low; 
+
+    // do somethinhg interesting with the ADC readings
+
+}
+```
+
+---
+
+### Example - the full program
+
+The full program is available as a GitHub gist: [main.c](https://gist.github.com/cpjobling/db5e3e157b6e6153f7cb75157dae1e94). You will need a fully featured IDE, such as Microchip Studio, to compile and upload the code to the Ardino nano board.
+
+### Simulation of the full program
+
+> Wokwi is an online Electronics simulator. You can use it to simulate Arduino, ESP32, STM32, and many other popular boards, parts and sensors.
+-- [Welcome to Wokwi!](https://docs.wokwi.com/?utm_source=wokwi)
+
+My 2024-2025 EG-353 Individual Engineering Project student, Yousef Alsayegh, has created Wokwi simulations of Ben Clifford's demonstration programs. Here is the simulation of this week's simulation [Week 6: Interfacing to analogue I/O with C](https://wokwi.com/projects/413612952684749825). You can run the simulation and play with the code.
 
 ## Summary{.unnumbered}
 
-In this section:
+In this section we have:
 
 ::: {.incremental}
-- We have introduced assembly language as a direct mapping of mnemonics to machine code.
-- We have explored the basic structure of an assembly language program including operator classification, operands and comments.
-- Finally, we have revisited out digital switch example from C and looked at how this can directly translate to Assembly language and how it can be optimized using specific features of the Atmel ATmega328 microcontroller.
+* Discussed the differences between analogue and digital signals and the challenges in working with them.
+* Explored analogue to digital conversion looking at the architectures and focusing on SAR based ADCs.
+* Continued looking at I/O operations on the Atmel ATmega328 microcontroller focusing on analogue signals and using the ADC registers.
 :::
 
---- 
+---
 
 ### On Canvas{.unnumbered}
 
-This week on the [Canvas course pages](https://canvas.swansea.ac.uk/courses/52902/pages/week-7-assembler-directives?module_item_id=2882187), you will find the sample program from today's lecture, look through this and ensure you are confident in how it works and how the masks are defined and registers set. 
+This week on the [canvas course pages](https://canvas.swansea.ac.uk/courses/44971/pages/example-program-analogue-to-digital-conversion-with-registers?module_item_id=2258104), you will find the sample program from today's lecture, look through this and ensure you are confident in how it works and how the registers are set for analogue inputs and how masks are used for the digital outputs to the LEDS. 
 
-There is also a [short quiz](https://canvas.swansea.ac.uk/courses/52902/assignments/407482?display=full_width) to test your knowledge on these topics.
+There is also a short quiz to test your knowledge on these topics.
+
+---
+
+### Any Questions?{.unnumbered}
+
+Please use the [Course Question Board](https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656) on Canvas or take advantage of the lecturers' office hours. 
 
 ---
 
 ### Next time{.unnumbered}
 
-- [Microcontroller Architecture – Program Operation](/lectures/week08)
+* [Introduction to Assembly Language](/lectures/week07)

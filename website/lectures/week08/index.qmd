@@ -1,33 +1,45 @@
 ---
-title: Microcontroller Architecture – Program Operation
+title: Introduction to Assembly Language
 author: 
   name: Ben Clifford
   affiliation: Welsh Centre for Printing and Coatings
 copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
-date: 11/19/2024
+date: 11/12/2024
 ---
+
 ::: {.notes}
-[Presentation version](/slides/lecture09.html) of these [notes](#sec-week08-intro).
+[Presentation version](/slides/lecture08.html) of these [notes](#sec-week07-intro).
 :::
 
-![](pictures/week08_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
+![](pictures/week07_chapter_heading.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
 
-## Introduction{.unnumbered #sec-wk8-intro}
+## Introduction{.unnumbered #sec-wk7-intro}
+So far in this course a number of topics have been covered including 
 
 ::: {.incremental}
-- In [Introduction to Microcontrollers and Microcontroller Architecture](/lectures/week02), we discussed  some of the core components of a microcontroller's architecture including the general purpose registers, status register, program counter and stack pointers. 
-- Aside from the program counter, these are registers which the programmer can directly access and manipulate. 
+- [Introduction to Data Representation](/lectures/data_representation/),
+- [Architecture of the Atmel ATmega 328 Microcontroller](/lectures/week02),
+- [Introduction to Programming and Program Development](/lectures/week03), and 
+- [Introduction to Programming with C](/lectures/week04). 
 :::
 
 ---
 
-- In this section, we will look at some of the other components in the microcontroller CPU including the control unit, clock, memory address register, memory data register, instruction register and decoder. 
+In this lecture we will study assembly language which is a low level language that provides a one-to-one mapping between mnemonic instructions and the machine code that is executed on the microcontroller. 
 
 ::: {.fragment}
-- After introducing these components an example program will be demonstrated that is written in C language, showing the translation to assembly language using the listing file, followed by an explanation of how the program is executed through the fetch-decode-execute cycle.
+This will allow you to see how complex high-level instructions and functions in C are written in assembly language and the final program that gets transferred to the microcontroller.
 :::
 
---- 
+---
+
+### Topics discussed{.unnumbered}
+
+In this lecture we will present an introduction to assembly language, including program structure and syntax as well as operation classifications. 
+
+We will also revisit the **Direct Port Manipulation in C** example from [Digital I/O Example Program](/lectures/week05/#sec-wk5-digital-io-example) and translate this into assembly language looking at some of the key instructions involved.
+
+---
 
 ### Contents{.unnumbered}
 
@@ -35,498 +47,497 @@ date: 11/19/2024
 
 ::: {.column width="25%"}
 
-![](pictures/week08_contents_image.png){fig-alt="Decorative image used as a slide background."}
+![](pictures/week07_contents_image.png){fig-alt="Decorative image used as a slide background."}
 
 :::
 
 ::: {.column width="75%"}
 
-* @sec-wk8-sect1: [Architecture recap](#sec-wk8-sect1)
-* @sec-wk8-sect2: [Additional components](#sec-wk8-sect2)
-* @sec-wk8-sect3: [Fetch-Decode-Execute cycle](#sec-wk8-sect3)
-* @sec-wk8-sect4: [An Example Program](#sec-wk8-sect4)
+* @sec-wk7-sect1: [Machine Code and Assembly Language](#sec-wk7-sect1)
+* @sec-wk7-sect2: [Introduction to Assembly Language](#sec-wk7-sect2)
+* @sec-wk7-sect3: [Interfacing with Digital I/O example](#sec-wk7-sect3)
 
 :::
 
 ::::
 
 ::: {.center}
-## Architecture recap{#sec-wk8-sect1 background-image="pictures/week08_wallpaper.png"}
+## Machine Code and Assembly Language{#sec-wk7-sect1 background-image="pictures/machine_code_wallpaper.jpg"}
 :::
 
 ::: {.notes}
-![](pictures/week08_wallpaper.png){fig-alt="mage of a microcontroller used as chapter headings in slide show."}
+![](pictures/machine_code_wallpaper.jpg){fig-alt="A decaorative image of machine code."}
 
-[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+[This Photo](https://stackoverflow.com/questions/16512580/how-do-i-stop-xcode-from-showing-me-this-assembly-language-when-im-debugging-an) by Unknown Author is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
 :::
 
 ---
 
-### Arithmetic Logic Unit (ALU)
+### Machine code
 
-::: {.notes}
-
-The Arithmetic Logic Unit (ALU) (@fig-wk8-alu), is the part of the processor that performs arithmetic and logic operations on data from the storage area.
-
-Memory is used to store data and information but the real goal of the MCU is computation or manipulating data in a structured and purposeful way, like adding two numbers together. These operations are handled by the ALU which is the numerical and logical brain of the MCU. The Atmel ATmega328 has an 8-bit ALU which takes two 8-bit inputs, an opcode describing the operation to perform and outputs an 8-bit result along with a series of 1-bit flags which we can access through the status register.
-
-:::
-
-::: {#fig-wk8-alu} 
-![](pictures/alu.png){fig-alt="The arithmetic logic unit (ALU)." width="75%"}
-
-The arithmetic logic unit (ALU)
-:::
-
-::: {.notes}
-
-First, data are read from storage into the ALU’s data input ports. Once inside the ALU, they’re modified by means of an arithmetic or logic operation (`ADD`, `SUB`, `AND`, `OR` ...), and then they’re written back to storage via the ALU’s output port.
-
-Depending on the result of the computation, certain flags in the status register will be set or unset.
-
-To illustrate this, here is the reference manual entry for the **add without carry** operator (`ADD`)
-
-![](pictures/add_op.png){fig-alt="Add without carry operator."}
-
-:::
-
----
-
-### The CPU Core
-
-::: {.notes}
-The CPU core of the Atmel ATmega328 microcontroller is illustrated in @fig-wk8-cpu_core.
-:::
-
-::: {#fig-wk8-cpu_core} 
-![](pictures/cpu_core.png){fig-alt="The CPU core with program counter, status and control register, general registers, and ALU highlighted."}
-
-The CPU core with program counter, status and control register, general registers, and ALU highlighted.
-:::
-
-::: {.notes}
-The CPU core of the Atmel ATmega328 microcontroller with *program counter*, *status and control register*, *32 general registers*, and *ALU* highlighted.
-
-The highlighted components are:
-
-**General Purpose Registers** – 32 8-bit wide registers which are used by the CPU to hold operands and immediate results of arithmetic and logic operations.
-
-**Program Counter** – a 14-bit wide register that stores the address of the next instruction or operand to be fetched.
-
-**Stack Pointer** – 2 8-bit wide registers that stores the address of the last item in the stack.
-
-**Status and Control Register** – an 8-bit wide register that contains information about the state of the processor based on the execution of the last instruction[^sr_control_bits].
-
-[^sr_control_bits]: The status and control register also contains bits that can change the operation of the microcontroller. For example the *global interrupt enable* bit is set if interrupts have been enabled. Interrupts will be discussed in EG-252 next year.
-
-::: {.callout-note}
-* The stack is an area in SRAM where data/information/MCU state can be temporarily pushed on and popped off - the stack pointer holds the memory address of the top of the stack.
-
-* The program counter holds the address of the next address to be executed.
-
-* The general purpose registers are located at the bottom of the data space so can be accessed directly by the ALU. Lower spec microcontrollers/CPUs may only have a single register which is referred to as an accumulator.
-:::
-
-:::
-
-::: {.center}
-## Additional components{#sec-wk8-sect2 background-image="pictures/week08_wallpaper.png"}
-:::
-
-::: {.notes}
-![](pictures/week08_wallpaper.png){fig-alt="Image of a microcontroller used as chapter headings in slide show."}
-
-[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
-:::
-
----
-
-### Simplified block diagram of the microcontroller core
-
-::: {.notes}
-For this section we will used the simplified block diagram shown in @fig-wk8-simplified_bd to represent the microcontroller core. This shows the parts that we have already seen as well as the new ones, highlighted, that we will discuss in the following.
-:::
-
-::: {#fig-wk8-simplified_bd} 
-![](pictures/simple_bd.png)
-
-Simplified block diagram showing the major components of a microcontroller
-:::
-
----
-
-### Block 1: Clock
-
-The clock generates a signal that oscillates between a high and a low state and acts like a metronome which coordinates/synchronizes the actions of the different microcontroller elements.
-
-::: {.notes}
-
-The clock signal typically takes the form of a square wave with a 50% duty cycle[^duty_cycle] and a fixed frequency see @fig-wk8-clk.
-
-:::
-
-[^duty_cycle]: The duty cycle is $\mu=T_\mathrm{on}/\left(T_\mathrm{on}+T_\mathrm{off}\right)$ and $\mu = 0.5$ (50%) if $T_\mathrm{on}=T_\mathrm{off}$. That is for half of a cycle (i.e. for $T_\mathrm{on}$s) it is in a high state and for the other half of the cycle (for $T_\mathrm{off}$s) it is in a low state. 
+Programs are stored on a microcontroller as a series of binary codes located within sequential memory addresses ...
 
 ::: {.fragment}
 
-::: {#fig-wk8-clk} 
-![](pictures/clock.png){fig-alt="A typical clock signal. The frequency is 1/T."}
+... this is known as **machine code**[^machine_code].
 
-A typical clock signal. The frequency is $f=0.5/T_\mathrm{on}$ if $\mu = 0.5$.
-:::
+[^machine_code]: Programs are stored on a microcontroller as a series of binary codes located within sequential memory addresses. These instructions are executed in order, dictated by the program counter, unless an instruction modifies the program counter and changes the program flow e.g. for a function call.
 
-:::
-
-::: {.notes}
-
-In older microcontrollers the clock signal was generated by an external circuit, but modern microcontrollers typically come with an external crystal as well as an internal oscillator.
-
-At every cycle of the clock, a step of the *fetch-decode-execute* cycle is performed.
-
-The ATmega328 is shipped with an internal RC oscillator with a frequency of 8MHz and the Arduino nano board includes a 16MHz *external* crystal which is typically set to be the default clock[^execution_speed].
-
-:::
-
-[^execution_speed]: If the frequency is $x$MHz, then the microcontroller can execute $x$ million instructions a second and each instruction takes 1/x microseconds to execute. Therefore, for the ATmega328 with internal clock the execution speed is 0.125$\mu$s per instruction. For the ATmega328 on the Arduino nano it is half this.
-
----
-
-#### Internal Clock
-
-::: {.notes}
-Internal clocks are made from RC oscillators.
-
-Limited manufacturing abilities mean that there are large differences between individual microcontrollers. These differences are typically $\pm 10\%$, but clocks can usually be tuned to $\pm 0.5\%$.
- 
-**Advantages**
-
-- Cheaper
-- Leaves pins that are used for the external clock source, e.g. see atmel_clk_pins`, available for other functions such as I/O
-- Simplifies PCB design and routing for high frequency traces.
-:::
-
-::: {#fig-wk8-atmel-clk-pins} 
-![](pictures/atmel_clk.png){fig-alt="Pins reserved for an external clock signal on the Atmel ATmega328 microcontroller."}
-
-Pins reserved for an external clock signal on the Atmel ATmega328 microcontroller.
-:::
-
----
-
-#### External clock
-
-::: {.notes}
-Many components inside the microcontroller will use a scaled version of the clock signal (recall the ADC) and so high clock accuracy is not needed. However, for other applications, such as communication based applications like the CAN bus, USB and Ethernet, high frequency and accurate clock signals are required. 
-
-For these applications, external ceramic resonators or crystals have a much higher accuracy when it comes to frequency as well as stability. 
-:::
-
-::: {#fig-wk8-crystal-clk} 
-![](pictures/crystal_clk.png){fig-alt="Images of the crystal oscillators used with microcontrollers."}
-
-Examples of the crystal oscillators used with microcontrollers. a) The circuit symbol for a crystal; b) A 16Mhz crystal packaged as a component; c) the external crystal provided with the ATmega328 chip on the Arduino nano board.
-:::
-
----
-
-#### The Atmel ATmega328 clock
-
-::: {.notes}
-A block diagram of the clock circuity is given in @fig-wk8-atmel328-clk. This is a complex diagram and the details are not too important. What is important is to note is how the clock signal is distributed to all the major subsystems. This is to ensure that all the internal operations that the microcontrollers are carried out in lock-step with the clock signal and in synchronization with each other. The clock sources are shown at the bottom of the diagram and the major blocks which use the clock are at the top. The blocks in the centre of the diagram are concerned with the functions needed to monitor the status of the microcontroller. 
-:::
-
-::: {#fig-wk8-atmel328-clk} 
-![](pictures/atmel328_clk.png){fig-alt="Clock distribution of the ATmega328."}
-
-Clock distribution of the ATmega328 (Reproduced from Figure 8.1 of the Atmel ATmega328 data sheet).
-:::
-
----
-
-The **CKSEL3..0** are special memory locations in flash memory ("fuses") that are used to set the clock sources as shown in Table 9.1 of the data sheet reproduced below.
-
-![](pictures/clksel.png){fig-alt="Reproduction of table 9.1 of the Atmel ATmega328 data sheet."}
-
----
-
-#### Programmer's registers for clock control
-
-There are two registers accessible to the programmer with respect to the clock. These are
-
-::: {.incremental}
-- **`OSCCAL` - Oscillation Calibration Register** used to trim the calibrated internal RC oscillator to remove process variations from the oscillator frequency.y
-- **`CLKPR` – Clock Prescale Register** whose bits define the division factor between the selected clock source and the internal system clock. These bits can be set at run-time to vary the clock frequency to suit the application requirements.
-:::
-
----
-
-### Block 2: Control Unit
-
-::: {.notes}
-The **control unit** coordinates all activities and sends signals through the control bus to all elements of the microcontroller, including the ALU, memory, and input/output, instructing them how to respond to the instructions from the program code it has just read and interpreted from the memory unit.
 :::
 
 ::: {.fragment}
 
-The control unit is responsible for
+The program in our microntroller looks like this
 
-:::
-
-::: {.incremental}
-- Coordinating and controlling activities of the CPU;
-- Managing data flow between other components and the CPU;
-- Acknowledging and accepting the next instruction; and
-- Storing the resulting data back into a memory unit.
-:::
-
----
-
-### Block 3: Memory Address Register (MAR)
-
-During operation the address in the program counter is loaded into the **Memory Address Register** and a request is sent onto the address bus to retrieve the data stored at that memory location.
-
----
-
-### Block 4: Memory Data Register (MDR)
-
-The data at a particular memory location is loaded from the data bus into the **Memory Data Register** before being passed to the **instruction register** or being operated on.
-
----
-
-### Block 5: Instruction Register (IR)
-
-After fetching an instruction from program memory, the microcontroller stores it in the **instruction register**.
-
----
-
-### Block 6: Instruction Decoder (ID)
-
-::: {.incremental}
-- The **instruction decoder** decodes the instruction opcode from the **instruction register** and generates appropriate control signals to execute the instruction.
-- It contains a lookup table featuring a mapping of all binary instructions in the microcontroller's instruction set architecture.
-- Once an instruction arrives at the instruction register it is passed to the decoder. Once decoded the output is passed to the control unit to select the correct hardware for the operation or to get the next word of data from memory.
-:::
-
-::: {.notes}
-A summary of some example operations taken from section 5 of the AVR Instruction Set Manual [@avr_instruction_set] are given in @tbl-wk8-table1 in the notes.
-
-The interested reader will find full details at the manual reference quoted in the table.
-
-|  16 Bit Opcode | Operation | Usage | Syntax | Program Counter (PC) | Manual reference |
-|:---------------|:----------|:------|:-------|:---------------------|:-----------------|
-|  0001 11rd dddd rrrr | Add with carry (`ADC`) | Rd <- Rd + Rr + C[^carry_flag] | `ADD Rd, Rr` | PC <- PC + 1 | 5.1 |
-|  0000 11rd dddd rrrr | Add without carry (`ADD`) | Rd <- Rd + Rr | `ADD Rd, Rr` | PC <- PC + 1 | 5.2 |
-|  1001 0110 KKdd KKKK | Add Immedidate to Word (`ADIW`) | R[d+1]:Rd <- R[d+1]:Rd + K | `ADIW Rd+1:Rd,K` | PC <- PC + 1 | 5.3 |
-|  0010 00rd dddd rrrr | Logical AND (`AND`) | Rd <- Rd & Rr | `AND Rd, Rr` | PC <- PC + 1 | 5.4 |
-|  0111 KKKK dddd KKKK | Logical AND with Immediate (`ANDI`) | Rd <- Rd & K | `ANDI Rd, K` | PC <- PC + 1 | 5.5 |
-|  1001 010d dddd 0101 | Arithmetic Shift Right (`ASR`) | ![ASR Operation](pictures/asr.png) | `ASR Rd` | PC <- PC + 1 | 5.6  |
-|  1001 0100 1sss 1000 | Bit Clear in SREG (`BCLR`) | SREG(s) <- 0 | `BCLR s` | PC <- PC + 1 | 5.7 |
-: Some examples of instruction decoding {#tbl-wk8-table1} 
-
-[^carry_flag]: The carry flag C comes from the status register.
-:::
-
----
-
-### Busses
-
-::: {.notes}
-Inside the microcontroller, components communicate with each other using sets of parallel connectors known as buses. The processor is connected to the main memory by three separate buses as illustrated in @fig-wk8-busses. 
-:::
-
-::: {#fig-wk8-busses} 
-![](pictures/mc_busses.png){fig-alt="The three busses in the ATmega328 microntroller."}
-
-The three busses in the ATmega328 microntroller.
-:::
-
-::: {.notes}
-The three buses are:
-
-- **Address bus**: a unidirectional bus from the processor to the memory or an I/O controller that carries the location of the data to be read from or written to. 
-- **Data bus**: a bi-directional pathway that carries data or instructions between processor components. The width of data bus is key in determining the overall computer performance. The AVR CPU data bus is 8-bits wide but the word size is 16-bits meaning the data bus has to use two cloxk cycles to fetch each byte of a word from the main memory.
-- **Control bus**: is a bi-directional pathway that carries command, timing and specific status information among components. Examples of control information include:
-  - Read/write from/to memory
-  - Read/write from/to I/O port
-  - Request access to the data bus
-  - Grant access to the data bus
-  - Sync clock
-  - Reset
-:::
-
-::: {.center}
-## Fetch-Decode-Execute cycle{#sec-wk8-sect3 background-image="pictures/week08_wallpaper.png"}
-:::
-
-::: {.notes}
-![](pictures/week08_wallpaper.png){fig-alt="Image of a microcontroller used as chapter headings in slide show."}
-
-[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
-:::
-
----
-
-### Recap: Program Instructions{#sec-wk8-add-code}
-
-::: {.notes}
-The microcontroller program consists of a sequence of instructions, each consisting of an opcode (`LDI`, `ADD`, `OUT`, etc…) defining the operation to be carried out and an operand containing the data or location of the data which the instruction is to operate on.
-:::
-
-::: {.fragment}
-
-**High level language**
-
-```c
-myVariable = 121 + 103;
+```
+1000101010110001 1000001101111111 1000101010111001 
+1000010010110001 1000001101100000 1000010010111001
+1000010110110001 1000110001111111 1000010110111001
 ```
 
 :::
 
+---
+
+::: {.center}
+
+### So what is wrong with machine code?{background-image="pictures/machine_code.png"}
+:::
+
+::: {.notes}
+
+![](pictures/machine_code.png){fig-alt="A photograph showing some machine code."}
+
+A photograph showing some machine code[^source-image-1]
+
+[^source-image-1]: Image source: [www.shutterstock.com/image-vector/binary-code-digital-numbers-green-background-1724376772](https://www.shutterstock.com/image-vector/binary-code-digital-numbers-green-background-1724376772).
+
+:::
+
+---
+
+Well nothing really ... if you are a computer!
+
 ::: {.fragment}
 
-![](pictures/arrow.png){fig-qlt="Arrow pointing downwards"}
+Otherwise ... if you're a human...[^source-image-2] 
 
-**Low Level Language**
+![](pictures/confused_human.png){fig-alt="Human beings looking confused."}
 
+[^source-image-2]: Image source [www.shutterstock.com/search/confused+person](https://www.shutterstock.com/search/confused+person).
+
+:::
+
+::: {.fragment}
+... machine code is difficult to:
+:::
+
+---
+
+::: {.incremental}
+* Write,
+* Read,
+* Understand,
+* Debug,
+:::
+
+::: {.fragment}
+
+and most importantly
+
+:::
+
+::: {.fragment}
+
+* Maintain
+
+:::
+
+::: {.fragment}
+
+Instead, instructions can be written in a mnemonic form termed **assembly language** and then translated into machine code by an **assembler**.
+
+:::
+
+---
+
+### Assembly Language
+
+::: {.fragment}
+Every CPU (or family of CPUs) has an instruction set where each operation that can be performed is represented by a certain binary combination.
+:::
+
+::: {.fragment}
+The next step up in language levels is to represent each of these binary patterns with a **short mnemonic**.
+:::
+
+::: {.fragment}
+Programs written using these mnemonics are known as **assembly language programs**[^disassembly].
+:::
+
+[^disassembly]: Because each mnemonic is associated with a single machine code, it is also easy to convert machine code to assembly language. This is sometimes useful for debugging programs. It is known as **disassembly**.
+
+---
+
+::: {#fig-wk7-adc-code}
+![](pictures/adc_code.png){fig-alt="An example of an assembly code instruction."}
+
+An example of an assembly code instruction `ADC` - Add with carry. Extracted from the Atmel ATmega328 reference manual.
+:::
+
+---
+
+### A Short history of assembly languages
+
+::: {.fragment}
+Assembly languages were first developed in the 1950s and were referred to as **2nd generation programming languages**. 
+:::
+
+::: {.fragment}
+Assembly language is a low level language that uses mnemonic codes (symbols) to represent machine code instructions, rather than using the instructions' numeric (binary) values. 
+:::
+
+::: {.fragment}
+Essentially, assembly languages are a much more readable but directly translatable representation of machine code. 
+:::
+
+::: {.fragment}
+Assembly language is commonly called just assembly, ASM, or symbolic machine code.
+:::
+
+---
+
+Despite the giant leap from machine code to assembly language, by the 1980s its use had largely been overtaken by higher-level languages, such as Fortran and C, and more recently Python, for many applications.
+
+---
+
+### Why learn low level languages
+
+::: {.incremental}
+- High Level Language (HLL) programs are designed to be independent of a particular machine architecture. 
+- As a result, they rarely take into account any special features of the machine &ndash; features which are commonly available to assembly language programmers. 
+- Assembly language is therefore good for hardware-specific jobs such as device drivers.
+:::
+
+---
+
+::: {.incremental}
+- If you understand assembly language, you’ll have an appreciation for the compiler, and you’ll know exactly what it is doing with HLL statements. 
+- Once you see how compilers translate seemingly innocuous statements into a machine code, you will begin to understand how HLL code could be optimised.
+- Good assembly language programmers make better HLL programmers because they understand the limitations of the compiler and they know what it is doing with their code.
+:::
+
+::: {.notes}
+
+As well as these points, assembly programmers will have a better understanding of
+
+- how data is represented in memory and other external devices;
+- how processors access and execute instructions and how instructions access and process data;
+- how a program accesses external devices – I/O;
+- how to write efficient code as it requires less memory and execution time.
+
+:::
+
+---
+
+### Why do people use assembly language?
+
+In short:
+
+::: {.incremental}
+
+* **Speed** - assembly language programs are generally the fastest programs around (up to ten times faster that optimized HLL programs [@hyde2010][^warning].
+* **Space** - assembly language programs are often the smallest.
+* **Capability** - you can do things in assembly which are difficult or impossible in HLLs.
+* **Knowledge** - your knowledge of assembly language will help you write better programs, even when using HLLs.
+* **Reverse Engineer/modify (Hack)** pre-assembled programs.
+
+:::
+
+[^warning]: Please don't get carried away! There are few tasks for which the cost of not starting in a HLL is going to be paid back by writing complete programs in assembly code.
+
+---
+
+::: {.center}
+## Introduction to Assembly Language{#sec-wk7-sect2 background-image="pictures/assembly_wallpaper.png"}
+:::
+
+::: {.notes}
+![](pictures/assembly_wallpaper.png){fig-alt="A decaorative image of assembly code."}
+
+[This Photo](https://www.flickr.com/photos/132889348@N07/20607150556) by Unknown Author is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
+:::
+
+---
+
+### Assembly Language 101
+
+An assembly language program consists of a series of instructions to an assembler which will then produce the machine code program that is loaded to the microcontroller.
+
+::: {.fragment}
+
+A program is written as a sequence of statements - one statement per line:
+
+::: {.incremental}
+* Lines can be empty to separate sections of code.
+* Statements cannot span multiple lines.
+:::
+
+:::
+
+---
+
+Each statement contains up to four fields each separated by one or more space or tab characters as shown below:
+
+::: {.fragment}
 ```asm
-LDI r16, 0b01111001
-LDI r17, 0b01100111
-ADD r16, r17
-STS 0xFF00, r16
+[label:]    operator    [operand]     [;comment]
 ```
-
-:::
-
-::: {.fragment}
-
-![](pictures/arrow.png){fig-qlt="Arrow pointing downwards"}
-
-**Machine Code**
-
-```
-1110011100001001
-1110011000010111
-0000111100000001
-1001001100000000
-1111111100000000
-```
-:::
-
----
-
-### Fetch-Decode-Execute Cycle
-
-Each instruction is carried out by a sequence of operations, known as the **fetch-decode-execute cycle** illustrated as a flow chart in @fig-wk8-fetch-decode-execute-cycle.
-
----
-
-#### Flowchart of fetch-decode-execute cycle
-::: {#fig-wk8-fetch-decode-execute-cycle}
-![](pictures/fetch_decode_execute_cycle.png){width="50%" fig-alt="A flow chart illustrating the fetch-decode-execute cycle."}
-
-A flow chart illustrating the fetch-decode-execute cycle
 :::
 
 ::: {.notes}
 
-The fetch-decode-execute cycle follows the following steps
+All statements must have something in the Operator field, but the label, operand and comment fields can be empty.
 
 :::
 
 ---
 
-#### Fetch
+#### Assembly language labels
+
+The label field is used to create a reference point in the program than can be used to identify/locate a collection of instructions.
+
+::: {.fragment}
+Examples:
+```{asm}
+
+
+SECTION1    operator
+```
+:::
+
+::: {.notes}
+
+Labels must follow a set of rules and a particular format:
+
+* All labels must be **unique** and cannot use **system reserved phrases**.
+* All labels **must start with a letter**.
+* Labels can contain **letters, numbers, and special characters** (symbols, such as `@`, `$, `_` ).
+* Labels that **don't begin at column 1** must be followed by a colon character ( `:` ).
+* Labels are written in **all capitals**.
+
+:::
+
+---
+
+#### Assembly Language Operators
+
+::: {.fragment}
+The **operator field** contains either an assembly directive or a mnemonic/instruction.
+:::
+
+::: {.fragment}
+**Assembly directives**, sometimes termed *pseudo-operations* are directives to the assembler that will not be translated to machine code but provide information critical to the program's function or is required by the assembler.
+:::
+
+::: {.notes}
+
+Assembly directives can be used to specify the starting address in memory, generate fixed tables and data, indicate the end of a program and several others.
+
+:::
+
+---
+
+#### Assembly mnemonics
+
+A **mnemonic**  is an instruction that will be directly translated into machine code and is used to manipulate data in some way.
+
+::: {.fragment}
+
+The list of allowed mnemonics/instructions is called the **instruction set** and is specific to a particular microcontroller architecture.
+
+:::
+
+---
+
+However in general, the mnemonics can be classified into one of six groups:
+
 ::: {.incremental}
-- **Fetch** the operator code from memory via the data bus and store it in the instruction register. 
 
-::: {.notes}
-This occurs by placing an address on the address bus and then reading the instruction at this address from the data bus.
+- **Data Transfer**: `IN`, `LD`, `LDI`, `LDS`, `MOV`, `OUT`, `ST`, `STS`;
+- **Arithmetic**: `ADD`, `ADC`, `ADIW`, `SUB`, `SUBI`, `SBC`, `INC`, `DEC`, `MUL`, `MULS`, `FMUL`;
+- **Logical**: `AND`, `ANDI`, `EOR`, `OR`, `ORI`;
+- **Program flow**: `BREQ`, `BRGE`, `BRNE`, `BRLO`, `BRMI`, `BRPL`, `CALL`, `JMP`, `RET`, `RJMP`;
+- **Bit and Bit Test**: `LSL`, `LSR`, `ROL`, `ROR`, `ASR`, `SBI`, `CBI`, `BSET`, `BCLR`;
+- **MCU Control**: `BREAK`, `NOP`, `SLEEP`, `WDR`.
+
 :::
 
-- The address of the instruction to be fetched is stored in the program counter which is then loaded into the **Memory Address Register** and a request is sent onto the address bus.
-- The program counter is then incremented to point to the next sequential memory address.
-- The contents of the memory location are then transferred through the data bus to the **Memory Data Register** and then into the **instruction register** before passing to the decoder.
+::: {.notes}
+
+For this module we have been working  with an Atmel ATmega328 microcontroller which is based on the  AVR® enhanced (AVRe+) architecture.
+
 :::
 
 ---
 
-#### Decode
+#### Assembler Directives
 
-- **Decode** the operator code within the instruction decoder and determine the nature of the operation specified (load immediately, load a byte from memory, load a word from memory). Fetch further data using the address and data busses as necessary based on the instruction decoded.
+The **operator field** contains either an **assembly directive** or a **mnemonic/instruction**.
+
+::: {.frament}
+Assembly directives, sometimes termed pseudo-operations are **directives to the assembler** that will not be translated to machine code but provide information critical to the program's function that is **required by the assembler**.
+:::
 
 ---
 
-#### Execute
-- **Execute** the instruction on the necessary operands.
+Some common directives include;
+
+::: {.incremental}
+- `.CSEG` / `.DSEG` / `.ESEG`
+- `.ORG` / `.EXIT`
+- `.EQU` / `.SET` / `.DEF` / `INCLUDE`
+- `.DB` / `.DW `/ `.BYTE`
+:::
+
+::: {.fragment}
+Directives are specific to a particular microcontroller family (different to the instruction set). A list of supported directives for the AVR based microcontrollers can be found [here](https://onlinedocs.microchip.com/pr/GUID-0B644D8F-67E7-49E6-82C9-1B2B9ABE6A0D-en-US-1/index.html?GUID-BA59618D-4850-490B-B176-0BCC3D9438A1).
+:::
 
 ---
 
-#### Continue
-- The fetch-decode-execute is now complete and starts again for the next code memory location indicated by the program counter.
+#### Assembly Language Operands
+
+::: {.incremental}
+- The operand field follows the operator and contains the **address or data** to be used by the instruction.
+- A name (‘label’) can be used to represent the address of the data or a symbol to represent a data constant.
+- The **field can be empty** if the instructions given by the operator do not need an address or data.
+  - As an example the operator `NOP` (no-operation) requires no operand.
+- **Some operators allow for multiple operands** and in these cases the operands are separated by commas (`,`).
+:::
 
 ---
 
-### Fetch-Decode-Execute cycle algorithm
+##### Examples 1
 
-The process is illustrated as an algorithm below
+```{.asm code-line-numbers="|1|2|3|4|5"}
+LDI     R16, 0b01010101
+ADD     R16, R17
+LDS     R2, 0xFF00
+NOP
+MOV     R16, R17
+```
+
+::: {.notes}
+- Line 1: Load Register `R16` with binary value `0b01010101`
+- Line 2: Add the contents of register `R16` to the contents of register `R17`
+- Line 3: Load Register `R2` with contents of data memory with address `0xFF00`
+- Line 4: No operation - do nothing for one clock cycle
+- Line 5: Move the contents of register `R16` to register `R17`
+::: 
+
+---
+
+#### Assembly Language Comments
 
 ::: {.fragment}
-Step 1: 
-```
-MAR <- (PC)
-```
-::: {.notes}
-The address in the program counter (PC) is transferred to the memory address register (MAR).
-:::
-:::
-
-::: {.fragment}
-Step 2:
-```
-(PC) <- (PC) + 1
-```
-::: {.notes}
-The program counter is incremented to point to the next instruction.
-:::
-:::
-
-::: {.fragment}
-Step 3: 
-```
-MDR <- (MAR)
-```
-::: {.notes}
-The contents of the location specified by the memory address register (MAR) are transferred to the memory data register (MDR).
-:::
+As with the C language, the comment field is there to allow the programmer to include any comments which may make the program easier to understand at a later time or by another reader.
 :::
 
 ::: {.fragment}
-Step 4: 
-```
-IR <- (MDR)
-```
-::: {.notes}
-The contents of the memory data register (MDR) are loaded to the instruction register (IR) and then decoded.
+When the **assembler is reading** the line of text, the **comment field is ignored**.
 :::
+
+---
+
+::: {.fragment}
+Comments also follow a set of rules and a particular format dependent on the assembler being used[^comments_in_asm]:
+:::
+
+::: {.incremental}
+- If an **entire line** is a comment, it must start with a **semicolon** or an **asterisk symbol** in the first column.
+- If **not starting in the first column**, the comment must start with a **semicolon**.
+- The comment must be separated from the operator or operand field by at least one space. 
+:::
+
+[^comments_in_asm]: As assembly codes are generally less readable than higher level languages, like the C language, it is good practice to be very liberal with comments in assembly code programs.
+
+---
+
+##### Examples 2
+
+```{.asm code-line-numbers="|1|2|4|5"}
+;This comment line starts with a semicolon
+*This comment line starts with an asterisk
+
+operator ;This comment follows an operator
+operator
+```
+
+---
+
+#### Assembler{#sec-wk7-assembler}
+
+::: {.notes}
+It is important to be aware of the assembler and the structure assembly language programs follow.
+
+The assembler takes the sequence of mnemonics (instructions) written in assembly language and translates them into machine code using the process illustrated in @fig-wk7-assembly.
+:::
+
+::: {#fig-wk7-assembly}
+![](pictures/assembler.png){fig-alt="The assembly process."}
+
+The assembly process
+:::
+
+---
+
+The assembler processes the assembly language file and generates an object file and listing file(s)
+
+::: {.incremental}
+- An object file is essentially a one-to-one mapping of mnemonics against the binary (sometimes hexadecimal) instruction set.
+- The listing file shows each line of the assembly language input along with the memory addresses resolved by the assembler, resulting machine code or data and other diagnostic information.
+:::
+
+::: {.fragment}
+The linker combines multiple object files as well as any library files and generates an executable which can be loaded onto the microcontroller (this file is often a `*.hex` file).
 :::
 
 ---
 
 ::: {.center}
-## An Example Program{#sec-wk8-sect4 background-image="pictures/week08_wallpaper.png"}
+## Interfacing with Digital I/O example.{#sec-wk7-sect3 background-image="pictures/week07_breadboard_wallpaper.jpg"}
 :::
 
 ::: {.notes}
-[](pictures/week08_wallpaper.png){fig-alt="Image of a microcontroller used as chapter headings in slide show."}
-
-[wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)
+![](pictures/week07_breadboard_wallpaper.jpg){fig-alt="Decorative background image showing the circuit discussed in the example."}
 :::
 
 ---
 
-### Recall the digital I/O program…
+### Example
 
-```{.c #lst-wk8-add-code lst-cap="Digital I/O program in C"}
+::: {.notes}
+Recall the example from [Digital I/O Example Program](/lectures/week05/#sec-wk5-digital-io-example) reproduced again here as @fig-wk7-example-circuit. The left and right push buttons connected to the digital inputs `D3` and `D2` respectively corresponding with Port D Bits 3 and 2 on the Atmega328 microcontroller. 
+
+When the left push button is pressed the red LED (Port B Bit 1) is illuminated and the green LED (Port B Bit 0) illuminated when the right push button is pressed.
+:::
+
+::: {#fig-wk7-example-circuit} 
+![](pictures/week07_breadboard.jpg){fig-alt="A photograph of the example circuit which has two buttons and two LEDs."}
+
+A photograph of the example circuit which has two buttons and two LEDs discussed in [Digital I/O Example Program](/lectures/week05/#sec-wk5-digital-io-example). 
+:::
+
+---
+
+#### C-Language Code
+
+::: {.notes}
+Let us start with the C-language program we wrote for this (@lst-wk7-example-c-program).
+:::
+
+```{#lst-wk7-example-c-program .c lst-cap="Example Program [main.c](https://gist.github.com/cpjobling/07585093f8eafe69a4eeff1186110883)"}
 #include <stdint.h>
 
 //I/O and ADC Register definitions taken from datasheet
@@ -567,181 +578,372 @@ int main(void)
 }
 ```
 
-Code: [main.c](https://gist.github.com/cpjobling/07585093f8eafe69a4eeff1186110883)
+---
+
+#### I/O Addresses
+
+::: {#fig-wk7-io-addresses}
+![](pictures/io_registers.png){fig-alt="The addresses of the IO registers with information on which can be used in particular contexts."}
+
+The addresses of the IO registers with information on which can be used in particular contexts.
+:::
 
 ---
 
-### Listing File
+#### Assigning a name to the I/O addresses
 
 ::: {.notes}
-This is the listing file (refer to @lst-wk8-assembly) generated by the assembler which shows each line of C code and what it has been translated to in assembly language along with the memory address the instruction will be stored at[^wk8_note].
+We use `.EQU`, `.SET` or `.DEF` to assign a name to a memory location[^assembly_names] (@lst-assign-names-to-memory-locations):
 
-[^wk8_note]: This file is not completely accurate as the assembler used has assumed the memory space is 8-bits wide where as it is actually 16-bits wide. This means each memory address shown should be divided by 2.
+[^assembly_names]: The purpose of these assembly directives is to assign a meaningful name to a label, constant, data value (*variable*), or memory location.
 :::
 
-```{#lst-wk8-assembly lst-cap="Listing file for example program"}
-00000080 <main>:
-#define PINB (*(volatile uint8_t *)(0x23))
+```{.asm #lst-assign-names-to-memory-locations lst-cap="Assigning a name to the I/0 addresses" code-line-numbers="|2|3|5|6|7"}
+; Equate easy to read names to the I/O addresses
+.EQU DDRB = 0x04
+.EQU PORTB = 0x05
 
-int main(void)
+.EQU PIND = 0x09
+.EQU DDRD = 0x0A
+.EQU PORTD = 0x0B
+```
+---
+
+#### Assembly equivalent of `int main(void)`
+
+::: {.notes}
+In C language we put our code (or calls to external functions) within a main function, written as @lst-wk7-main-c:
+:::
+
+```{.c #lst-wk7-main-c lst-cap="Program start in C language: the *main* function"}
+int main(void) {
+  // Program code
+}
+```
+---
+
+::: {.notes}
+
+In assembly language, there isn't a main function as such but rather the `.CSEG` / `.DSEG` / `.ESEG` directives along with the `.ORG` directive are used to define the start address of code, data and EEPROM segments, repectivley, in memory.
+
+In the lines shown in @lst-code-segment-start we are telling the assembler that we want the code segment to start at memory location with address $200_{16}$.
+
+:::
+
+::: {.fragment}
+
+```{.asm #lst-code-segment-start lst-cap="Define the code segment start address" code-line-numbers="|1|2"}
+.CSEG
+.ORG 0x0200
+```
+
+:::
+
+---
+
+#### I/O port access and bitmasking operations
+
+::: {.fragment}
+We can use the `IN` and `OUT` operations for reading from and writing to ports respectively, and the `ANDI` and `ORI` operations for setting up bitmasks.
+:::
+
+::: {.fragment}
+We include scans of the documentation for these operators in the following images.
+:::
+
+---
+
+![](pictures/in.png){fig-alt="The IN operator."}
+
+---
+
+![](pictures/out.png){fig-alt="The OUT operator."}
+
+---
+
+![](pictures/andi.png){fig-alt="The ANDI operator."}
+
+---
+
+![](pictures/ori.png){fig-alt="The ORI operator."}
+
+---
+
+#### Setting up the I/O Ports
+
+::: {.fragment}
+Using the C language, we wrote:
+
+```c
+DDRD = DDRD & 0b11110011;
+```
+
+to ensure bits 2 and 3 of port D are configured as inputs. 
+:::
+
+::: {.fragment}
+Similar lines were written to set up the output bits in Port B, the starting condition of these bits and then to enable the pull up resistors on Port D.
+:::
+
+---
+
+::: {.notes}
+The direct translation to Assembly language involves three lines for each action as illustrated in @lst-wk7-port_io.
+:::
+
+```{.asm #lst-wk7-port_io lst-cap="Assembly code to set up the inputs and outputs." code-line-numbers=|2-4|7-9|12-14|17-19} 
+;setup bits 2 and 3 of port D as inputs
+IN R16, DDRD
+ANDI R16, 0b11110011
+OUT DDRD, R16
+
+;setup bits 0 and 1 of port B as outputs
+IN R16, DDRB
+ORI R16, 0b00000011
+OUT DDRB, R16
+
+;both pins B0 (D8) and B1 (D9) start low
+IN R16, PORTB
+ANDI R16, 0b11111100
+OUT PORTB, R16
+
+;Enable the pull up resistor for bits 2 and 3 of port D
+IN R16, PORTD
+ORI R16, 0b00001100
+OUT PORTD, R16
+```
+
+---
+
+#### Infinite loop
+
+::: {.fragment}
+Using the C language, we created an infinite loop as follows:
+:::
+	
+::: {.fragment}
+```c
+for (;;) {
+  // Program code
+}
+```
+:::
+
+::: {.fragment}
+This essentially "*traps*" the program to ensure it continuously loops executing the program code within the code block.
+:::
+
+---
+
+In assembly language we can produce the same result by creating a "Label" and using the operation `RJMP` (*relative jump*): 
+
+::: {.fragment}
+```{.asm #lst-jump-to-label lst-cap="Infinite loop in assembly code: jump to a label with `RJMP`."}
+LOOP:
+	RJMP LOOP
+```
+:::
+
+---
+
+The documention for `RJMP` is shown here:
+
+
+![](pictures/rjmp.png){fig-alt="The RJMP operator."}
+
+---
+
+#### Detecting a button press
+
+::: {.notes}
+In C language, to detect a button press we used the 'if statement' below with a bit mask corresponding to a particular bit of the port and monitoring for its state changing to 0 or Low (@lst-detect-button-press).
+:::
+
+::: {.fragment}
+
+```{.c #lst-detect-button-press lst-cap="Detecting a button press in C" code-line-numbers="|1|3"}
+if ( (PIND & 0b00000100) == 0)
 {
-	//Set Data Direction Registers
-	DDRD = DDRD & 0b11110011; //setup bits 2 and 3 of port D as inputs
-  80:	8a b1       	in	r24, 0x0a	; 10
-  82:	83 7f       	andi	r24, 0xF3	; 243
-  84:	8a b9       	out	0x0a, r24	; 10
-	DDRB = DDRB | 0b00000011; //setup bits 0 and 1 of port B as outputs
-  86:	84 b1       	in	r24, 0x04	; 4
-  88:	83 60       	ori	r24, 0x03	; 3
-  8a:	84 b9       	out	0x04, r24	; 4
+  PORTB = 0b00000001;	 // sets port B, bit 0 to logic 1 (high)
+						 // which switches the LED connected to D8 on
+}
+```
+:::
 
-	PORTB = PORTB & 0b11111100; //both pins B0 (D8) and B1 (D9) start low
-  8c:	85 b1       	in	r24, 0x05	; 5
-  8e:	8c 7f       	andi	r24, 0xFC	; 252
-  90:	85 b9       	out	0x05, r24	; 5
-	
-	PORTD = PORTD | 0b00001100; // Enable the pull up resistor for bits 2 and 3 of port D
-  92:	8b b1       	in	r24, 0x0b	; 11
-  94:	8c 60       	ori	r24, 0x0C	; 12
-  96:	8b b9       	out	0x0b, r24	; 11
-	
-	for(;;)
-	{
-		if((PIND & 0b00000100) == 0)
-  98:	4a 99       	sbic	0x09, 2	; 9
-  9a:	02 c0       	rjmp	.+4      	; 0xa0 <main+0x20>
-		{
-			PORTB = PORTB | 0b00000001; //sets port B, bit 0 to logic 1/high, switches the LED connected to D8 on
-  9c:	28 9a       	sbi	0x05, 0	; 5
-  9e:	fc cf       	rjmp	.-8      	; 0x98 <main+0x18>
-		}
-		else if ((PIND & 0b00001000) == 0)
-  a0:	4b 99       	sbic	0x09, 3	; 9
-  a2:	02 c0       	rjmp	.+4      	; 0xa8 <main+0x28>
-		{
-			PORTB = PORTB | 0b00000010; //sets port B, bit 1 to logic 1/high, switches the LED connected to D9 on
-  a4:	29 9a       	sbi	0x05, 1	; 5
-  a6:	f8 cf       	rjmp	.-16     	; 0x98 <main+0x18>
-		}
-		else
-		{
-			PORTB = PORTB & 0b11111100; //sets bits 0-5 of port B to logic 0/low, switches off both the LED's
-  a8:	85 b1       	in	r24, 0x05	; 5
-  aa:	8c 7f       	andi	r24, 0xFC	; 252
-  ac:	85 b9       	out	0x05, r24	; 5
-  ae:	f4 cf       	rjmp	.-24     	; 0x98 <main+0x18>
+::: {.fragment}
+In assembly we can use the *compare* (`CP`) and *branch if equal* (`BREQ`) instructions to achieve this same implementation.
+:::
 
-000000b0 <_exit>:
-  b0:	f8 94       	cli
+---
 
-000000b2 <__stop_program>:
-  b2:	ff cf       	rjmp	.-2      	; 0xb2 <__stop_program>
+![](pictures/cp.png){fig-alt="Documentation for the CP (compare) operation."}
+
+---
+
+![](pictures/breq.png){fig-alt="Documentation for the BREQ (branch if equal) operation."}
+
+---
+
+::: {.notes}
+Consider the assembly code shown in @lst-detect-switch below.
+:::
+
+```{.asm #lst-detect-switch lst-cap="Assembly code for detecting button presses in main loop." code-line-numbers="|2-6|8-12|14-16|17|1"}
+LOOP: 
+	IN R16, PIND
+	ANDI R16, 0b00000100
+	LDI R17, 0x00
+	CP R16, R17
+	BREQ LED1
+
+    IN R16, PIND
+	ANDI R16, 0b00001000
+	LDI R17, 0x00
+	CP R16, R17
+	BREQ LED1 
+
+	IN R16, PORTB
+	ANDI R16, 0b11111100
+	OUT PORTB, R16
+	RJMP LOOP
 ```
 
----
-
-### Fetch
-
-![](pictures/fetch_example.png){fig-alt="The fetch operation as a video."}
-
 ::: {.notes}
 
-**Fetch operation described**
-
-1. The PC is set to $0040.
-2. The contents of the PC is copied to the MAR and transferred via the address bus to the memory controller.
-3. The value of PC is incremented.
-4. The contents of the memory location specified by the MAR are transferred via the data bus to the MDR
-5. The contents of the MDR are placed into the IR.
+- In lines 2&ndash;6 we read `PIND`, use a bit mask to select bit 2, compare the value of the selected bit with zero and branch to label `LED1` if the value is zero (`0x00`).
+- In lines 9-12 we read `PIND`, use a bit mask to select bit 3, compare the value of the selected bit with zero and branch to label `LED2` if the value is zero (`0x00`).
+- If we reach line 14, then both buttons were high (not pressed) so we use the bitmask `0x11111100` to ensure that both LEDs connected to bits 0 and 1 of port B are turned off (lines 14&ndash;16). 
+- We then jump to the label `LOOP` (line 17).
 
 :::
 
 ---
 
-### Decode
-
-![](pictures/decode_example.png){fig-alt="The decode operation as a video."}
-
 ::: {.notes}
+In the next few lines (see @lst-turn-leds-on) we:
 
-**Decode operation described**
+1. Line 2: read the current value of Port B into `R16` 
+2. Line 3: perform a bitwise or operation with the immediate pattern provided (mask). 
+3. Line 4: The new value stored in `R16` is then sent to the `PORTB` register essentially changing the state of the LED to on. 
+4. Line 5: Finally the `RJMP` instruction ensures the program loops back to the start.
+:::
 
-The program instruction at line 40 is b1 8a = 1011 0001 1000 1010.
+```{.asm #lst-turn-leds-on lst-cap="Assembly code to switch on the LEDs." code-line-numbers="|2-4|5|8-10|11"}
+LED1:
+	IN R16, PORTB
+	ORI R16, 0b00000001
+	OUT PORTB, R16
+	RJMP LOOP
 
-The most significant 5 bits 10110 correspond to the `IN` opcode [@avr_instruction_set, Section 5.61].
-
-![](pictures/in_opcode.png){fig-alt="Documentation for the IN opcode."}
-
-From the documentation the remaining bits are distributed as per the table below:
-
-| opcode | AA | ddddd | AAAA |
-|--------|----|-------|------|
-| 10110  | 00 | 11000 | 1010 |
-
-
-So
-
-AAAAAA = 00 1010 (0x0A) and ddddd = 11000 (24).
-
-Disassembling the instruction gives:
+LED2:
+ 	IN R16, PORTB
+	ORI R16, 0b00000010
+	OUT PORTB, R16
+	RJMP LOOP
 ```
-in r24, 0x0a
+::: {.notes}
+A similar process is used for LED2.
+:::
+
+---
+
+#### Comparison with C
+
+::: {.notes}
+In @fig-wk7-comp-asm-with-c we compare the C program with the equivalent assembly program. 
+:::
+
+::: {#fig-wk7-comp-asm-with-c} 
+![](pictures/comp_asm_with_c.png){fig-alt="Comparing an I/O program written in C with an equvalent assembly program."}
+
+Comparing an I/O program written in C with an equvalent assembly program. The assembly code is available for study as a Gist [main.asm](https://gist.github.com/cpjobling/e72f37ff363353b6ed10ecdbeaa970af).
+:::
+
+---
+
+#### An Advantage of Assembly Language
+
+::: {.incremental}
+- Using C language, it is not possible to read or write individual bits of a register or I/O port.
+- In assembly language, this *is possible* using bit operations such as `SBI`, `CBI`, `SBIC`, `SBIS` and a handful of others:
+:::
+
+---
+
+![](pictures/sbi.png){fig-alt="The SBI operation."}
+
+---
+
+![](pictures/sbic.png){fig-alt="The SBIC operation."}
+
+---
+
+These can only be used on certain registers as identified in the documentation for the I/O memory map:
+
+![](pictures/io_mem_map2.png){fig-alt="The I/O memory map showing the registers for which bitwise operations are available."}
+
+---
+
+::: {.notes}
+The code given in @lst-using-bit-manipulation shows the equivalent code implemented with `SBI` and `SBIC` operations.
+:::
+
+```{.asm #lst-using-bit-manipulation lst-cap="Equivalent assembly program using the SBI and SBIC operations."}
+LOOP:
+	SBIC PIND, 2
+	RJMP LED1
+
+	SBIC PINC, 3
+	RJMP LED2
+
+	IN R16, PORTB
+	ANDI R16, 0b11111100
+	OUT PORTB, R16
+	RJMP LOOP
+
+LED1:
+	SBI PORTB, 0
+	RJMP LOOP
+
+LED2: 
+	SBI PORTB, 1
+	RJMP LOOP
 ```
-which in words is *read I/O register 0x0A into register 24*.
+
+#### Comparison
+
+::: {#fig-wk7-comparison}
+![](pictures/comparison.png){fig-alt="Comparison of three equivalent programs."}
+
+Comparison of three equivalent programs
 :::
-
----
-
-### Execute
-
-![](pictures/execute_example.png){fig-alt="The execute operation as a video."}
 
 ::: {.notes}
-
-**Execute operation described**
-
-1. MAR set to I/O register $000A (DDRD) and transferred via the address bus to the memory controller.
-2. The contents of the memory location specified by the MAR are transferred via the data bus to the MDR.
-3. The contents of the MDR are copied to R24
+In @fig-wk7-comparison we show the original C program, the first version of the assembly program, and a version that is using `SBIC` to directly branch based on the value of a single bit in Port D. These three programs
+all work in the same way.
 :::
 
----
-
-### Assembly to Machine Code
-
-::: {.notes}
-The assembly/machine code instructions equivalent to the program given in @sec-wk8-add-code is tabulated in @tbl-wk8-table2. Refer also to [Introduction to Assembly Language](/lectures/week07/index.html#wk7-assembler).
-:::
-
-| Assembler | Machine Code | Documentation |
-|:----------|:-------------|:--------------|
-|  `ldi r16, 0b01111001` | 1110 0111 0000 1001 | ![LDI - Load immediate documentation](pictures/ldi_opcode.png) |
-|  `ldi r17, 0b01100111` | 1110 0110 0001 0111 | See cell above |
-|  `add r16, r17` | 0000 1111 0000 0001 | ![ADD - Add without carry](pictures/add_opcode.png) |
-|  `sts 0xFF00, r16` | 1001 0011 0000 0000 1111 1111 0000 0000 | ![STS - Store direct to data space](pictures/sts_opcode.png) |
-: Assembly to machine code {#tbl-wk8-table2}
-
----
 
 ## Summary{.unnumbered}
 
-In this section we have:
+In this section:
 
 ::: {.incremental}
-- Recapped the core components of the AVR CPU including the ALU, general purpose registers, program counter, stack pointer and status register as well as their function in the microcontroller.
-- Looked at the function of some of the other components within the CPU including the clock, memory address register, memory data register, instruction register and decoder.
-- Looked at an example of what happens during program execution through the fetch-decode-execute cycle.
+- We have introduced assembly language as a direct mapping of mnemonics to machine code.
+- We have explored the basic structure of an assembly language program including operator classification, operands and comments.
+- Finally, we have revisited out digital switch example from C and looked at how this can directly translate to Assembly language and how it can be optimized using specific features of the Atmel ATmega328 microcontroller.
 :::
 
----
+--- 
 
 ### On Canvas{.unnumbered}
 
-This week on the canvas course pages, you will find a [short quiz](https://canvas.swansea.ac.uk/courses/44971/assignments/52902) to test your knowledge on these topics.
+This week on the [Canvas course pages](https://canvas.swansea.ac.uk/courses/52902/pages/week-7-assembler-directives?module_item_id=2882187), you will find the sample program from today's lecture, look through this and ensure you are confident in how it works and how the masks are defined and registers set. 
 
+There is also a [short quiz](https://canvas.swansea.ac.uk/courses/52902/assignments/407482?display=full_width) to test your knowledge on these topics.
 
 ---
 
 ### Next time{.unnumbered}
 
-* [Addressing Modes](/lectures/week09)
+- [Microcontroller Architecture – Program Operation](/lectures/week08)
