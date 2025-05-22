@@ -1,0 +1,18 @@
+project:
+  type: default
+  output-dir: ../../../_build/html/slides/week07
+
+format:
+  revealjs:
+    theme: dark
+    scrollable: true
+    slide-number: true
+    notes: true
+    pdfexport: true
+    chalkboard: true
+    code-line-numbers: true
+    code-annotations: hover
+    title-slide-attributes:
+      data-background-image: ../../pictures/image1.png
+      data-background-size: contain
+      data-background-opacity: "0.9"
