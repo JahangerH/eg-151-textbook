@@ -2,13 +2,13 @@
 author: 
   name: "Dr Timothy Davies"
   affiliation: "Department of Electronic and Electrical Engineering"
-date: "10/03/2024"
+date: "9/30/2025"
 number-sections: false
 ---
 
 # Assessment of the Laboratory Introduction {#sec-labintro-assessment}
 
-**Start date**: Thursday, 3rd October 2024
+**Start date**: Tuesday, 30th September 2025
 
 The laboratory introduction is assessed according to the following:
 
