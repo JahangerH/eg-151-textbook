@@ -8,7 +8,7 @@ See the Canvas calendar for timings of the live activities.
 
 ### Lectures and Office Hours
 
-There will be one lecture a week on **Tuesday** at **11:00 am** on the architecture of the target microcontroller. This will be delivered on-campus and will be supported by on-demand after-class formative tests which aim to reinforce the knowledge gained in lectures by means of [retrieval practice](https://youtu.be/gncl5Fn7CJ4).
+There will be one lecture a week on **Monday** at **02:00 pm** on the architecture of the target microcontroller. This will be delivered on-campus and will be supported by on-demand after-class formative tests which aim to reinforce the knowledge gained in lectures by means of [retrieval practice](https://youtu.be/gncl5Fn7CJ4).
 
 In addition, there will be an online office hour at **1:00 pm on Tuesday** for group activities in support of the lecture course which is designed to address the areas of difficulty that have been identified by the formative tests. 
 
@@ -68,4 +68,4 @@ Knowledge and understanding will be increased via retrieval practice based on we
 
 ## Class test
 
-The lecture course and the laboratory work will be assessed by an online class test worth 35%. We anticipate that the class test will be held between  **11 am -- 1 pm Tuesday 3rd December in Y Twyni PC Lab 104** in Week 10 with a resit being held in week commencing 20th January 2025.
+The lecture course and the laboratory work will be assessed by an online class test worth 35%. We anticipate that the class test will be held between  **12 PM -- 2 pm Friday 5th December in The College 025 PC (Bay)** in Week 10 with a resit being held in week commencing 20th January 2025.
