@@ -3,7 +3,7 @@ title: "Introduction to Microcontrollers and Microcontroller Architecture"
 author: 
   name: "Ben Clifford"
   affiliation: "Welsh Centre for Printing and Coatings"
-date: "10/01/2024"
+date: "10/01/2025"
 ---
 
 ![](pictures/cover.png){width="100%" fig-alt="lecture cover image showing architecture, some gates and an Arduino nano board"}
