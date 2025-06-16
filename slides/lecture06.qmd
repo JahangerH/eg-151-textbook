@@ -4,8 +4,8 @@ title: Interfacing to digital I/O with C
 author: 
   name: Ben Clifford
   affiliation: Welsh Centre for Printing and Coatings
-copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
-date: 10/29/2024
+copyright: Copyright &copy; 2021-2025 Swansea University. All rights reserved.
+date: 10/29/2025
 code-annotations: below
 ---
 ::: {.notes}
