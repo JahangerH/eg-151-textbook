@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.30">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ben Clifford">
+
+<title>Appendix A — Other Data Representations – EG-151 Microcontrollers 2025-2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../appendix/programming_in_c.html" rel="next">
+<link href="../references.html" rel="prev">
+<link href="../logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-662ae1889177880cb371f83234c0a158.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-de0027c6417e353ce4980619e2136061.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="application/json" class="js-hypothesis-config">
+{
+  "theme": "clean",
+  "openSidebar": false
+}
+</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendix/appendix_a.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendix/appendix_a.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Other Data Representations</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">EG-151 Microcontrollers 2025-2026</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/JahangerH/eg-151-textbook/tree/main/website/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Course Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/course_aims.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Aims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro/course_delivery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Delivery Method</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../lectures/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontrollers Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers—Module Staff</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/week01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Microcontrollers and Microcontroller Architecture</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/week02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/week03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/week04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Introduction to Programming and Program Development</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/week05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Introduction to Programming with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/week06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/week07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/week08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/week09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lectures/week10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../lab_intro/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Laboratory Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_intro/assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Assessment of the Laboratory Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_intro/lab_work.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Laboratory Work in the Department of Electronic and Electrical Engineering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_intro/lab_instruments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Laboratory Instruments</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_intro/lab_safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Laboratory Safety</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_intro/experiment0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Experiment: to construct an oscillator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_intro/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Simulation Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_intro/questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Questions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_intro/construction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Construction Exercise - Continuity Tester</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab_intro/soldering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Safe Soldering</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontroller Programming Laboratory</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../labs/get_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../labs/lab01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Experiment 1: Binary Counter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../labs/lab02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Experiment 2: Digital Input</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../labs/lab03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Experiment 3: Analogue to Digital Conversion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../labs/lab04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Experiment 4: Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../labs/lab05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Experiment 5: LCD Display Panel</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mini Projects</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects/voltmeter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Voltmeter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects/range_finder.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Ultrasonic Range Finder</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects/clock_timer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Clock Time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../projects/weather_station.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Weather Station</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/appendix_a.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Other Data Representations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/programming_in_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Programming in C – from nothing to software</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#contents" id="toc-contents" class="nav-link active" data-scroll-target="#contents">Contents</a></li>
+  <li><a href="#sec-appendixa-2scomp" id="toc-sec-appendixa-2scomp" class="nav-link" data-scroll-target="#sec-appendixa-2scomp"><span class="header-section-number">A.1</span> Twos Compliment</a>
+  <ul class="collapse">
+  <li><a href="#negative-numbers" id="toc-negative-numbers" class="nav-link" data-scroll-target="#negative-numbers"><span class="header-section-number">A.1.1</span> Negative Numbers</a></li>
+  <li><a href="#twos-complement" id="toc-twos-complement" class="nav-link" data-scroll-target="#twos-complement"><span class="header-section-number">A.1.2</span> Twos Complement</a></li>
+  <li><a href="#more-examples" id="toc-more-examples" class="nav-link" data-scroll-target="#more-examples"><span class="header-section-number">A.1.3</span> More examples</a></li>
+  </ul></li>
+  <li><a href="#sec-appendixa-bcd" id="toc-sec-appendixa-bcd" class="nav-link" data-scroll-target="#sec-appendixa-bcd"><span class="header-section-number">A.2</span> Binary Coded Decimal (BCD)</a>
+  <ul class="collapse">
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples"><span class="header-section-number">A.2.1</span> Examples</a></li>
+  <li><a href="#pros-and-cons-of-binary-coded-decimal" id="toc-pros-and-cons-of-binary-coded-decimal" class="nav-link" data-scroll-target="#pros-and-cons-of-binary-coded-decimal"><span class="header-section-number">A.2.2</span> Pros and Cons of Binary Coded Decimal</a></li>
+  </ul></li>
+  <li><a href="#sec-appendixa-binary-fractions" id="toc-sec-appendixa-binary-fractions" class="nav-link" data-scroll-target="#sec-appendixa-binary-fractions"><span class="header-section-number">A.3</span> Binary Fractions</a>
+  <ul class="collapse">
+  <li><a href="#floating-point-numbers" id="toc-floating-point-numbers" class="nav-link" data-scroll-target="#floating-point-numbers"><span class="header-section-number">A.3.1</span> Floating Point Numbers</a></li>
+  <li><a href="#decimal-floating-point-number-conversion" id="toc-decimal-floating-point-number-conversion" class="nav-link" data-scroll-target="#decimal-floating-point-number-conversion"><span class="header-section-number">A.3.2</span> Decimal Floating-Point Number Conversion</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">A.3.3</span> Limitations</a></li>
+  <li><a href="#reality" id="toc-reality" class="nav-link" data-scroll-target="#reality"><span class="header-section-number">A.3.4</span> Reality</a></li>
+  </ul></li>
+  <li><a href="#sec-appendixa-ascii" id="toc-sec-appendixa-ascii" class="nav-link" data-scroll-target="#sec-appendixa-ascii"><span class="header-section-number">A.4</span> ASCII</a>
+  <ul class="collapse">
+  <li><a href="#example-2" id="toc-example-2" class="nav-link" data-scroll-target="#example-2"><span class="header-section-number">A.4.1</span> Example</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/appendix/appendix_a.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendix/appendix_a.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendix/appendix_a.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Other Data Representations</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Appendix A — Other Data Representations</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Ben Clifford </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>The content of this appendix is intended to expand on what was covered in <a href="..\lectures/data_representation/">Introduction to Data Representation</a>.</p>
+<p>The text is supported by four short videos which present the material and cover additional information and methods about how data is represented on a microcontroller; these include, two’s complement, binary coded decimal, binary fractions and A.S.C.I.I.</p>
+<p>You will find the videos on Canvas on page <a href="https://canvas.swansea.ac.uk/courses/52902/pages/twos-complement-bcd-binary-fractions-and-a-dot-s-c-dot-i-i?module_item_id=2882135">Two’s complement, BCD, Binary Fractions and A.S.C.I.I</a>.</p>
+<section id="contents" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="contents">Contents</h2>
+<ul>
+<li><a href="#sec-appendixa-2scomp" class="quarto-xref"><span>Section A.1</span></a>: <a href="#sec-appendixa-2scomp">Twos Complement</a></li>
+<li><a href="#sec-appendixa-bcd" class="quarto-xref"><span>Section A.2</span></a>: <a href="#sec-appendixa-bcd">Binary Coded Decimal</a></li>
+<li><a href="#sec-appendixa-binary-fractions" class="quarto-xref"><span>Section A.3</span></a>: <a href="#sec-appendixa-binary-fractions">Binary Fractions</a></li>
+<li><a href="#sec-appendixa-ascii" class="quarto-xref"><span>Section A.4</span></a>: <a href="#sec-appendixa-ascii">ASCII</a></li>
+</ul>
+</section>
+<section id="sec-appendixa-2scomp" class="level2" data-number="A.1">
+<h2 data-number="A.1" class="anchored" data-anchor-id="sec-appendixa-2scomp"><span class="header-section-number">A.1</span> Twos Compliment</h2>
+<section id="negative-numbers" class="level3" data-number="A.1.1">
+<h3 data-number="A.1.1" class="anchored" data-anchor-id="negative-numbers"><span class="header-section-number">A.1.1</span> Negative Numbers</h3>
+<p>Up until now, we have only considered positive or unsigned values, how can we handle negative numbers?</p>
+<p>An unsigned number itself contains no indication whether it is negative or positive.</p>
+<p>A number is said to be signed when the most significant bit (MSB) is used to indicate the sign of the number ‘0’ being used if the number is positive and ‘1’ being used if the number is negative.</p>
+<p>Whilst this technique can be used to represent a negative number it is not a practical approach.</p>
+<section id="example" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="example">Example</h4>
+<p>Try the following simple sum <span class="math inline">\(2 + -1 = ?\)</span></p>
+<p>Start with the two numbers</p>
+<p><span class="math display">\[\begin{array}{lrr}
+\mathrm{Addend} &amp; 010 &amp; 2\\
+\mathrm{Augend} &amp; 001 &amp; 1\\
+\hline
+\mathrm{Sum} &amp; &amp;
+\end{array}\]</span></p>
+<p>Chamge the MSB of number 2 to 1 to indicate that it is negative</p>
+<p><span class="math display">\[\begin{array}{lrr}
+\mathrm{Addend} &amp; 0010 &amp; 2 \\
+\mathrm{Augend} &amp; 1001 &amp; -1 \\
+\hline
+\mathrm{Sum} &amp; &amp;
+\end{array}\]</span></p>
+<p>Now add the addend to the augend</p>
+<p><span class="math display">\[\begin{array}{lrr}
+\mathrm{Addend} &amp; 0010 &amp; 2 \\
+\mathrm{Augend} &amp; 1001 &amp; -1 \\
+\hline
+\mathrm{Sum} &amp; 1011 &amp; -3
+\end{array}\]</span></p>
+<p>The answer comes out as <span class="math inline">\(-3\)</span> which is clearly wrong. We must use a different approach.</p>
+</section>
+</section>
+<section id="twos-complement" class="level3" data-number="A.1.2">
+<h3 data-number="A.1.2" class="anchored" data-anchor-id="twos-complement"><span class="header-section-number">A.1.2</span> Twos Complement</h3>
+<p>A more useful way to represent negative numbers is to use the twos complement method.</p>
+<p>A binary number has two complements - a ones complement and a twos complement.</p>
+<ul>
+<li>To get the ones complement, change all 1’s of the unsigned number to 0’s and all 0’s to 1’s, then</li>
+<li>To get the twos complement add 1 to the ones complement.</li>
+</ul>
+<p><a href="#fig-appa1-2scomplement" class="quarto-xref">Figure&nbsp;<span>A.1</span></a> shows the twos complement numbers for all the four bit integers.</p>
+<div id="fig-appa1-2scomplement" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Twos complement.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-appa1-2scomplement-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/2scomplement.png" class="img-fluid figure-img" alt="Twos complement.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-appa1-2scomplement-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;A.1: Twos complement
+</figcaption>
+</figure>
+</div>
+<section id="example-1" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="example-1">Example</h4>
+<p>Consider the representation of the decimal number <span class="math inline">\(-1\)</span></p>
+<p><span class="math display">\[\begin{array}{lr}
+\mathrm{Unsigned\ binary\ number} &amp; 0001\\
+\mathrm{Ones\ complement} &amp; 1110\\
+\mathrm{Add\ one} &amp; 1\\
+\hline
+\mathrm{Signed\ twos\ complement}&amp; \mathrm{c}1111
+\end{array}\]</span></p>
+<p>Now try the addition with the twos complement value (<span class="math inline">\(1111\)</span>) of <span class="math inline">\(-1\)</span>:</p>
+<p><span class="math display">\[\begin{array}{lrr}
+\mathrm{Addend} &amp; 0010 &amp; 2 \\
+\mathrm{Augend} &amp; 1111 &amp; -1 \\
+\hline
+\mathrm{Sum} &amp; \mathrm{c}0001 &amp; -3
+\end{array}\]</span></p>
+<p>When performing addition with twos complement, if the MSB is a <code>carry bit</code>, it is dropped.</p>
+</section>
+</section>
+<section id="more-examples" class="level3" data-number="A.1.3">
+<h3 data-number="A.1.3" class="anchored" data-anchor-id="more-examples"><span class="header-section-number">A.1.3</span> More examples</h3>
+<p>Use the twos complement method to represent the decimal number <span class="math inline">\(-27\)</span></p>
+<p><span class="math display">\[\begin{array}{lr}
+\mathrm{Unsigned\ value} &amp; 00011011 \\
+\mathrm{Ones\ complement} &amp; 11100100 \\
+\hline
+\mathrm{Twos\ complement} &amp; 11100101 \\
+\hline
+\end{array}\]</span></p>
+<p>Check</p>
+<p><span class="math display">\[\begin{array}{lrr}
+\mathrm{Addend} &amp; 00011011 &amp; 27_{10}\\
+\mathrm{Augend} &amp; 11100101 &amp; -27_{10}\\
+\hline
+\mathrm{Signed\ twos\ complement}&amp; \mathrm{c}00000000 &amp; 0_{10}
+\end{array}\]</span></p>
+<p>Use the twos complement method to represent the decimal number <span class="math inline">\(-84\)</span></p>
+<p><span class="math display">\[\begin{array}{lr}
+\mathrm{Unsigned\ value} &amp;  01010100 \\
+\mathrm{Ones\ complement} &amp; 10101011 \\
+\hline
+\mathrm{Twos\ complement} &amp; 10101100 \\
+\hline
+\end{array}\]</span></p>
+<p>Check</p>
+<p><span class="math display">\[\begin{array}{lrr}
+\mathrm{Addend} &amp; 01010100 &amp; 84_{10}\\
+\mathrm{Augend} &amp; 10101100 &amp; -84_{10}\\
+\hline
+\mathrm{Signed\ twos\ complement}&amp; \mathrm{c}00000000 &amp; 0_{10}
+\end{array}\]</span></p>
+</section>
+</section>
+<section id="sec-appendixa-bcd" class="level2" data-number="A.2">
+<h2 data-number="A.2" class="anchored" data-anchor-id="sec-appendixa-bcd"><span class="header-section-number">A.2</span> Binary Coded Decimal (BCD)</h2>
+<p>Binary Coded Decimal, also known as BCD or 8421 format is another widely used numbering system whereby each decimal digit from 0-9 is individually represented as a 4-bit binary number between <code>0000</code> and <code>1001</code>.</p>
+<p>The main advantage of binary coded decimal is that it allows easy conversion between decimal and binary form.</p>
+<p>Where is BCD used</p>
+<ul>
+<li>Calculators</li>
+<li>Decimal display drivers</li>
+<li>Digital Clocks</li>
+<li>PC BIOS to store date and time</li>
+</ul>
+<p><a href="#tbl-appxa-1" class="quarto-xref">Table&nbsp;<span>A.1</span></a> shows the codes for the 10 values that are used in BCD coded representations.</p>
+<div id="tbl-appxa-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-appxa-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;A.1: Binary Coded Decimal
+</figcaption>
+<div aria-describedby="tbl-appxa-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Decimal</th>
+<th>BCD Coding</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td><code>0000</code></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td><code>0001</code></td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td><code>0010</code></td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td><code>0011</code></td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td><code>0100</code></td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td><code>0101</code></td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td><code>0110</code></td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td><code>0111</code></td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td><code>1000</code></td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td><code>1001</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="examples" class="level3" data-number="A.2.1">
+<h3 data-number="A.2.1" class="anchored" data-anchor-id="examples"><span class="header-section-number">A.2.1</span> Examples</h3>
+<p><span class="math inline">\(5_{10} ≡ 0101_\textrm{BCD}\)</span></p>
+<p><span class="math inline">\(22_{10} ≡ 0010\, 0010_\textrm{BCD}\)</span></p>
+<p><span class="math inline">\(86_{10} ≡ 1000\, 0110_\textrm{BCD}\)</span></p>
+<p><span class="math inline">\(2020_{10} ≡ 0010\, 0000\, 0010\, 0000_\textrm{BCD}\)</span></p>
+</section>
+<section id="pros-and-cons-of-binary-coded-decimal" class="level3" data-number="A.2.2">
+<h3 data-number="A.2.2" class="anchored" data-anchor-id="pros-and-cons-of-binary-coded-decimal"><span class="header-section-number">A.2.2</span> Pros and Cons of Binary Coded Decimal</h3>
+<section id="pros" class="level4" data-number="A.2.2.1">
+<h4 data-number="A.2.2.1" class="anchored" data-anchor-id="pros"><span class="header-section-number">A.2.2.1</span> Pros</h4>
+<ul>
+<li>Simple to convert between BCD and decimal values.</li>
+<li>SLess data loss in floating point calculations.</li>
+</ul>
+</section>
+<section id="cons" class="level4" data-number="A.2.2.2">
+<h4 data-number="A.2.2.2" class="anchored" data-anchor-id="cons"><span class="header-section-number">A.2.2.2</span> Cons</h4>
+<ul>
+<li><p>Requires more complex circuitry.</p></li>
+<li><p>Wasteful as only uses 10 out of 16 possible 8-bit representations.</p></li>
+<li><p>Requires more storage than other encoding systems.</p>
+<ul>
+<li><span class="math inline">\(15_{10} = 1111_2 = 0001\, 0101_\textrm{BCD}\)</span></li>
+<li><span class="math inline">\(255_{10} = 1111\, 1111_2 = 0010\, 0101\, 0101_\textrm{BCD}\)</span></li>
+<li><span class="math inline">\(8579_{10} = 0010\, 0001\, 1000\, 0011_2 = 1000\, 0101\, 0111\, 1001_\textrm{BCD}\)</span></li>
+</ul></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="sec-appendixa-binary-fractions" class="level2" data-number="A.3">
+<h2 data-number="A.3" class="anchored" data-anchor-id="sec-appendixa-binary-fractions"><span class="header-section-number">A.3</span> Binary Fractions</h2>
+<section id="floating-point-numbers" class="level3" data-number="A.3.1">
+<h3 data-number="A.3.1" class="anchored" data-anchor-id="floating-point-numbers"><span class="header-section-number">A.3.1</span> Floating Point Numbers</h3>
+<p>With decimal numbers a decimal point is used to separate the whole and fractional parts of a number. Recalling from {ref}<code>week02</code> that we represent numbers using a weighted <a href="https://en.wikipedia.org/wiki/Positional_notation">positional notation</a> in which a digit’s value is relative to its position. <a href="#fig-pos-ntn" class="quarto-xref">Figure&nbsp;<span>A.2</span></a> illustrates the idea:</p>
+<div id="fig-pos-ntn" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Positional notation.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pos-ntn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/positional_notation.png" class="img-fluid figure-img" style="width:50.0%" alt="Positional notation.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pos-ntn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;A.2: Positional notation
+</figcaption>
+</figure>
+</div>
+<p>We use exponentiation of negative powers of the base to represent the fractional part of a number:</p>
+<p><span class="math display">\[14.12_{10} = \left(1\times 10^1\right) + \left(4\times 10^0\right) + \left(1\times 10^{-1}\right) + \left(2\times 10^{-2}\right)\]</span> <!-- #endregion --></p>
+<p>The idea extends to binary, octal and hexadecimal numbers:</p>
+<p><span class="math display">\[\begin{align*}
+0000.101_2 &amp;= \left(1\times 2^{-1}\right) + \left(0\times 2^{-2}\right) + \left(1\times 2^{-3}\right) \\
+&amp;= \frac{1}{2} + 0\times \frac{1}{4} + \frac{1}{8}\\
+&amp;= 0.5 + 0 + 0.125 = 0.625_{10}
+\end{align*}\]</span></p>
+<p>The representation of octal and hexadecimal numbers is left as an exercise.</p>
+</section>
+<section id="decimal-floating-point-number-conversion" class="level3" data-number="A.3.2">
+<h3 data-number="A.3.2" class="anchored" data-anchor-id="decimal-floating-point-number-conversion"><span class="header-section-number">A.3.2</span> Decimal Floating-Point Number Conversion</h3>
+<p>To convert a decimal fraction (base 10) to a new base (n) the fractional part is repeatedly multiplied by n.</p>
+<ul>
+<li><p>The whole number part of the product gives the value at the current power.</p></li>
+<li><p>The decimal part of the product is multiplied by n and repeated until the fractional part of the product is zero.</p></li>
+<li><p>Read the result from <strong>top to bottom</strong>.</p></li>
+</ul>
+</section>
+<section id="limitations" class="level3" data-number="A.3.3">
+<h3 data-number="A.3.3" class="anchored" data-anchor-id="limitations"><span class="header-section-number">A.3.3</span> Limitations</h3>
+<p>Convert <span class="math inline">\(0.675_{10}\)</span> to binary</p>
+<p>0.675 × 2 = 1.35 1</p>
+<p>0.35 × 2 = 0.7 0</p>
+<p>0.7 × 2 = 1.4 1</p>
+<p>0.4 × 2 = 0.8 0</p>
+<p>0.8 × 2 = 1.6 1</p>
+<p>0.6 × 2 = 1.2 1</p>
+<p>0.2 × 2 = 0.4 0</p>
+<p>0.4 × 2 = 0.8 0</p>
+<p>0.8 × 2 = 1.6 1</p>
+<p>Note this is a recurring fraction.</p>
+</section>
+<section id="reality" class="level3" data-number="A.3.4">
+<h3 data-number="A.3.4" class="anchored" data-anchor-id="reality"><span class="header-section-number">A.3.4</span> Reality</h3>
+<p>Modern computers use a special data format called <strong>floating point</strong> which can be used to approximate decimal numbers to a reasonable precision over a large range. However, floating point numbers need more storage (typically 32 or 64 bits per number) and special hardware to make computation with these values efficient. For microcontrollers, particularly with limited memory and 8-bit data storage, we rarely use floating point arithmetic, or fractions, and rely instead of integer representations.</p>
+</section>
+</section>
+<section id="sec-appendixa-ascii" class="level2" data-number="A.4">
+<h2 data-number="A.4" class="anchored" data-anchor-id="sec-appendixa-ascii"><span class="header-section-number">A.4</span> ASCII</h2>
+<p>ASCII. (American Standard Code for Information Interchange) is an encoding format for text developed in the early 1960’s.</p>
+<p>The original ASCII format was based on the English alphabet and encodes 128 specified characters into seven-bit binary numbers.</p>
+<p>Ninety-five of the encoded characters are printable, including the digits 0 to 9, lowercase letters a to z, uppercase letters A to Z, space, and punctuation symbols.</p>
+<p>The remaining 32 non-printing control codes for based around the standards original implementation with Teletype machines – most of these are now obsolete but some are still used including carriage return (<code>\r</code> in C), line feed (<code>\n</code> in C), tab (<code>\t</code> in C).</p>
+<p>As microprocessors evolved to 8-bit and higher the ASCII standard has also evolved to use the eighth bit allowing a further 127 characters (extended ASCII).<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>The ANSI ASCII table for … is reproduced in <a href="#tbl-ascii-table" class="quarto-xref">Table&nbsp;<span>A.2</span></a>.</p>
+<div id="tbl-ascii-table" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ascii-table-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;A.2: ANSI ASCII Table
+</figcaption>
+<div aria-describedby="tbl-ascii-table-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 7%">
+<col style="width: 26%">
+<col style="width: 4%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Dec</th>
+<th style="text-align: left;">Hex</th>
+<th style="text-align: left;">Symbol</th>
+<th style="text-align: center;">Dec</th>
+<th style="text-align: left;">Hex</th>
+<th style="text-align: left;">Symbol</th>
+<th style="text-align: center;">Dec</th>
+<th style="text-align: left;">Hex</th>
+<th style="text-align: left;">Symbol</th>
+<th style="text-align: center;">Dec</th>
+<th style="text-align: left;">Hex</th>
+<th style="text-align: left;">Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td style="text-align: left;"><code>0x00</code></td>
+<td style="text-align: left;">Null character<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></td>
+<td style="text-align: center;">32</td>
+<td style="text-align: left;"><code>0x20</code></td>
+<td style="text-align: left;"><code>SP</code></td>
+<td style="text-align: center;">64</td>
+<td style="text-align: left;"><code>0x40</code></td>
+<td style="text-align: left;"><code>@</code></td>
+<td style="text-align: center;">96</td>
+<td style="text-align: left;"><code>0x61</code></td>
+<td style="text-align: left;"><code>`</code></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td style="text-align: left;"><code>0x01</code></td>
+<td style="text-align: left;">Start of heading</td>
+<td style="text-align: center;">32</td>
+<td style="text-align: left;"><code>0x21</code></td>
+<td style="text-align: left;"><code>!</code></td>
+<td style="text-align: center;">65</td>
+<td style="text-align: left;"><code>0x41</code></td>
+<td style="text-align: left;"><code>A</code></td>
+<td style="text-align: center;">96</td>
+<td style="text-align: left;"><code>0x61</code></td>
+<td style="text-align: left;"><code>a</code></td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td style="text-align: left;"><code>0x02</code></td>
+<td style="text-align: left;">Start of text</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: left;"><code>0x22</code></td>
+<td style="text-align: left;"><code>"</code></td>
+<td style="text-align: center;">66</td>
+<td style="text-align: left;"><code>0x42</code></td>
+<td style="text-align: left;"><code>B</code></td>
+<td style="text-align: center;">98</td>
+<td style="text-align: left;"><code>0x62</code></td>
+<td style="text-align: left;"><code>b</code></td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td style="text-align: left;"><code>0x03</code></td>
+<td style="text-align: left;">End of text</td>
+<td style="text-align: center;">35</td>
+<td style="text-align: left;"><code>0x23</code></td>
+<td style="text-align: left;"><code>#</code></td>
+<td style="text-align: center;">67</td>
+<td style="text-align: left;"><code>0x43</code></td>
+<td style="text-align: left;"><code>C</code></td>
+<td style="text-align: center;">99</td>
+<td style="text-align: left;"><code>0x63</code></td>
+<td style="text-align: left;"><code>c</code></td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td style="text-align: left;"><code>0x04</code></td>
+<td style="text-align: left;">End of Transmission</td>
+<td style="text-align: center;">36</td>
+<td style="text-align: left;"><code>0x24</code></td>
+<td style="text-align: left;"><code>$</code></td>
+<td style="text-align: center;">68</td>
+<td style="text-align: left;"><code>0x44</code></td>
+<td style="text-align: left;"><code>D</code></td>
+<td style="text-align: center;">100</td>
+<td style="text-align: left;"><code>0x64</code></td>
+<td style="text-align: left;"><code>d</code></td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td style="text-align: left;"><code>0x05</code></td>
+<td style="text-align: left;">Enquiry</td>
+<td style="text-align: center;">37</td>
+<td style="text-align: left;"><code>0x25</code></td>
+<td style="text-align: left;"><code>%</code></td>
+<td style="text-align: center;">69</td>
+<td style="text-align: left;"><code>0x45</code></td>
+<td style="text-align: left;"><code>E</code></td>
+<td style="text-align: center;">101</td>
+<td style="text-align: left;"><code>0x65</code></td>
+<td style="text-align: left;"><code>e</code></td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td style="text-align: left;"><code>0x06</code></td>
+<td style="text-align: left;">Acknowledgement</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: left;"><code>0x26</code></td>
+<td style="text-align: left;"><code>&amp;</code></td>
+<td style="text-align: center;">70</td>
+<td style="text-align: left;"><code>0x46</code></td>
+<td style="text-align: left;"><code>F</code></td>
+<td style="text-align: center;">102</td>
+<td style="text-align: left;"><code>0x66</code></td>
+<td style="text-align: left;"><code>f</code></td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td style="text-align: left;"><code>0x07</code></td>
+<td style="text-align: left;">Bell</td>
+<td style="text-align: center;">39</td>
+<td style="text-align: left;"><code>0x27</code></td>
+<td style="text-align: left;"><code>'</code></td>
+<td style="text-align: center;">71</td>
+<td style="text-align: left;"><code>0x47</code></td>
+<td style="text-align: left;"><code>G</code></td>
+<td style="text-align: center;">103</td>
+<td style="text-align: left;"><code>0x67</code></td>
+<td style="text-align: left;"><code>g</code></td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td style="text-align: left;"><code>0x08</code></td>
+<td style="text-align: left;">Backspace</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: left;"><code>0x08</code></td>
+<td style="text-align: left;"><code>(</code></td>
+<td style="text-align: center;">72</td>
+<td style="text-align: left;"><code>0x48</code></td>
+<td style="text-align: left;"><code>H</code></td>
+<td style="text-align: center;">104</td>
+<td style="text-align: left;"><code>0x68</code></td>
+<td style="text-align: left;"><code>h</code></td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td style="text-align: left;"><code>0x09</code></td>
+<td style="text-align: left;">Horizontal tab</td>
+<td style="text-align: center;">41</td>
+<td style="text-align: left;"><code>0x29</code></td>
+<td style="text-align: left;"><code>)</code></td>
+<td style="text-align: center;">73</td>
+<td style="text-align: left;"><code>0x49</code></td>
+<td style="text-align: left;"><code>I</code></td>
+<td style="text-align: center;">105</td>
+<td style="text-align: left;"><code>0x69</code></td>
+<td style="text-align: left;"><code>i</code></td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td style="text-align: left;"><code>0x0A</code></td>
+<td style="text-align: left;">Line feed</td>
+<td style="text-align: center;">42</td>
+<td style="text-align: left;"><code>0x2A</code></td>
+<td style="text-align: left;"><code>*</code></td>
+<td style="text-align: center;">74</td>
+<td style="text-align: left;"><code>0x4A</code></td>
+<td style="text-align: left;"><code>J</code></td>
+<td style="text-align: center;">106</td>
+<td style="text-align: left;"><code>0x6A</code></td>
+<td style="text-align: left;"><code>j</code></td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td style="text-align: left;"><code>0x0B</code></td>
+<td style="text-align: left;">Vertical tab</td>
+<td style="text-align: center;">43</td>
+<td style="text-align: left;"><code>0x2B</code></td>
+<td style="text-align: left;"><code>+</code></td>
+<td style="text-align: center;">75</td>
+<td style="text-align: left;"><code>0x4B</code></td>
+<td style="text-align: left;"><code>K</code></td>
+<td style="text-align: center;">107</td>
+<td style="text-align: left;"><code>0x6B</code></td>
+<td style="text-align: left;"><code>k</code></td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td style="text-align: left;"><code>0x0C</code></td>
+<td style="text-align: left;">Form feed</td>
+<td style="text-align: center;">44</td>
+<td style="text-align: left;"><code>0x2C</code></td>
+<td style="text-align: left;"><code>,</code></td>
+<td style="text-align: center;">76</td>
+<td style="text-align: left;"><code>0x4C</code></td>
+<td style="text-align: left;"><code>L</code></td>
+<td style="text-align: center;">108</td>
+<td style="text-align: left;"><code>0x6C</code></td>
+<td style="text-align: left;"><code>l</code></td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td style="text-align: left;"><code>0x0D</code></td>
+<td style="text-align: left;">Carriage return</td>
+<td style="text-align: center;">45</td>
+<td style="text-align: left;"><code>0x2D</code></td>
+<td style="text-align: left;"><code>-</code></td>
+<td style="text-align: center;">77</td>
+<td style="text-align: left;"><code>0x4D</code></td>
+<td style="text-align: left;"><code>M</code></td>
+<td style="text-align: center;">109</td>
+<td style="text-align: left;"><code>0x6D</code></td>
+<td style="text-align: left;"><code>m</code></td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td style="text-align: left;"><code>0x0E</code></td>
+<td style="text-align: left;">Shift out</td>
+<td style="text-align: center;">46</td>
+<td style="text-align: left;"><code>0x2E</code></td>
+<td style="text-align: left;"><code>.</code></td>
+<td style="text-align: center;">78</td>
+<td style="text-align: left;"><code>0x4E</code></td>
+<td style="text-align: left;"><code>N</code></td>
+<td style="text-align: center;">110</td>
+<td style="text-align: left;"><code>0x6E</code></td>
+<td style="text-align: left;"><code>n</code></td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td style="text-align: left;"><code>0x0F</code></td>
+<td style="text-align: left;">Shift in</td>
+<td style="text-align: center;">47</td>
+<td style="text-align: left;"><code>0x2F</code></td>
+<td style="text-align: left;"><code>/</code></td>
+<td style="text-align: center;">79</td>
+<td style="text-align: left;"><code>0x4F</code></td>
+<td style="text-align: left;"><code>O</code></td>
+<td style="text-align: center;">111</td>
+<td style="text-align: left;"><code>0x6F</code></td>
+<td style="text-align: left;"><code>o</code></td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td style="text-align: left;"><code>0x10</code></td>
+<td style="text-align: left;">Data link escape</td>
+<td style="text-align: center;">48</td>
+<td style="text-align: left;"><code>0x30</code></td>
+<td style="text-align: left;"><code>0</code></td>
+<td style="text-align: center;">80</td>
+<td style="text-align: left;"><code>0x50</code></td>
+<td style="text-align: left;"><code>P</code></td>
+<td style="text-align: center;">112</td>
+<td style="text-align: left;"><code>0x70</code></td>
+<td style="text-align: left;"><code>p</code></td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td style="text-align: left;"><code>0x11</code></td>
+<td style="text-align: left;">Device control 1</td>
+<td style="text-align: center;">49</td>
+<td style="text-align: left;"><code>0x31</code></td>
+<td style="text-align: left;"><code>1</code></td>
+<td style="text-align: center;">81</td>
+<td style="text-align: left;"><code>0x51</code></td>
+<td style="text-align: left;"><code>Q</code></td>
+<td style="text-align: center;">113</td>
+<td style="text-align: left;"><code>0x71</code></td>
+<td style="text-align: left;"><code>q</code></td>
+</tr>
+<tr class="odd">
+<td>18</td>
+<td style="text-align: left;"><code>0x02</code></td>
+<td style="text-align: left;">Device control 2</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: left;"><code>0x32</code></td>
+<td style="text-align: left;"><code>2</code></td>
+<td style="text-align: center;">82</td>
+<td style="text-align: left;"><code>0x52</code></td>
+<td style="text-align: left;"><code>R</code></td>
+<td style="text-align: center;">114</td>
+<td style="text-align: left;"><code>0x72</code></td>
+<td style="text-align: left;"><code>r</code></td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td style="text-align: left;"><code>0x13</code></td>
+<td style="text-align: left;">Device control 3</td>
+<td style="text-align: center;">51</td>
+<td style="text-align: left;"><code>0x33</code></td>
+<td style="text-align: left;"><code>3</code></td>
+<td style="text-align: center;">83</td>
+<td style="text-align: left;"><code>0x53</code></td>
+<td style="text-align: left;"><code>S</code></td>
+<td style="text-align: center;">115</td>
+<td style="text-align: left;"><code>0x73</code></td>
+<td style="text-align: left;"><code>s</code></td>
+</tr>
+<tr class="odd">
+<td>20</td>
+<td style="text-align: left;"><code>0x14</code></td>
+<td style="text-align: left;">Device control 4</td>
+<td style="text-align: center;">52</td>
+<td style="text-align: left;"><code>0x34</code></td>
+<td style="text-align: left;"><code>4</code></td>
+<td style="text-align: center;">84</td>
+<td style="text-align: left;"><code>0x54</code></td>
+<td style="text-align: left;"><code>T</code></td>
+<td style="text-align: center;">116</td>
+<td style="text-align: left;"><code>0x74</code></td>
+<td style="text-align: left;"><code>t</code></td>
+</tr>
+<tr class="even">
+<td>21</td>
+<td style="text-align: left;"><code>0x15</code></td>
+<td style="text-align: left;">Negative acknowledgement</td>
+<td style="text-align: center;">53</td>
+<td style="text-align: left;"><code>0x35</code></td>
+<td style="text-align: left;"><code>5</code></td>
+<td style="text-align: center;">85</td>
+<td style="text-align: left;"><code>0x55</code></td>
+<td style="text-align: left;"><code>U</code></td>
+<td style="text-align: center;">117</td>
+<td style="text-align: left;"><code>0x75</code></td>
+<td style="text-align: left;"><code>u</code></td>
+</tr>
+<tr class="odd">
+<td>22</td>
+<td style="text-align: left;"><code>0x16</code></td>
+<td style="text-align: left;">Synchronous idle</td>
+<td style="text-align: center;">54</td>
+<td style="text-align: left;"><code>0x36</code></td>
+<td style="text-align: left;"><code>6</code></td>
+<td style="text-align: center;">86</td>
+<td style="text-align: left;"><code>0x56</code></td>
+<td style="text-align: left;"><code>V</code></td>
+<td style="text-align: center;">118</td>
+<td style="text-align: left;"><code>0x76</code></td>
+<td style="text-align: left;"><code>v</code></td>
+</tr>
+<tr class="even">
+<td>23</td>
+<td style="text-align: left;"><code>0x17</code></td>
+<td style="text-align: left;">End of transmission block</td>
+<td style="text-align: center;">55</td>
+<td style="text-align: left;"><code>0x37</code></td>
+<td style="text-align: left;"><code>7</code></td>
+<td style="text-align: center;">87</td>
+<td style="text-align: left;"><code>0x57</code></td>
+<td style="text-align: left;"><code>W</code></td>
+<td style="text-align: center;">119</td>
+<td style="text-align: left;"><code>0x77</code></td>
+<td style="text-align: left;"><code>w</code></td>
+</tr>
+<tr class="odd">
+<td>24</td>
+<td style="text-align: left;"><code>0x18</code></td>
+<td style="text-align: left;">Cancel</td>
+<td style="text-align: center;">56</td>
+<td style="text-align: left;"><code>0x38</code></td>
+<td style="text-align: left;"><code>8</code></td>
+<td style="text-align: center;">88</td>
+<td style="text-align: left;"><code>0x58</code></td>
+<td style="text-align: left;"><code>X</code></td>
+<td style="text-align: center;">120</td>
+<td style="text-align: left;"><code>0x78</code></td>
+<td style="text-align: left;"><code>x</code></td>
+</tr>
+<tr class="even">
+<td>25</td>
+<td style="text-align: left;"><code>0x19</code></td>
+<td style="text-align: left;">End of medium</td>
+<td style="text-align: center;">57</td>
+<td style="text-align: left;"><code>0x39</code></td>
+<td style="text-align: left;"><code>9</code></td>
+<td style="text-align: center;">89</td>
+<td style="text-align: left;"><code>0x59</code></td>
+<td style="text-align: left;"><code>Y</code></td>
+<td style="text-align: center;">121</td>
+<td style="text-align: left;"><code>0x79</code></td>
+<td style="text-align: left;"><code>y</code></td>
+</tr>
+<tr class="odd">
+<td>26</td>
+<td style="text-align: left;"><code>0x1A</code></td>
+<td style="text-align: left;">Substitute</td>
+<td style="text-align: center;">58</td>
+<td style="text-align: left;"><code>0x3A</code></td>
+<td style="text-align: left;"><code>:</code></td>
+<td style="text-align: center;">90</td>
+<td style="text-align: left;"><code>0x5A</code></td>
+<td style="text-align: left;"><code>Z</code></td>
+<td style="text-align: center;">122</td>
+<td style="text-align: left;"><code>0x7A</code></td>
+<td style="text-align: left;"><code>z</code></td>
+</tr>
+<tr class="even">
+<td>27</td>
+<td style="text-align: left;"><code>0x1B</code></td>
+<td style="text-align: left;">Escape</td>
+<td style="text-align: center;">59</td>
+<td style="text-align: left;"><code>0x3B</code></td>
+<td style="text-align: left;"><code>;</code></td>
+<td style="text-align: center;">91</td>
+<td style="text-align: left;"><code>0x5B</code></td>
+<td style="text-align: left;"><code>[</code></td>
+<td style="text-align: center;">123</td>
+<td style="text-align: left;"><code>0x7B</code></td>
+<td style="text-align: left;"><code>{</code></td>
+</tr>
+<tr class="odd">
+<td>28</td>
+<td style="text-align: left;"><code>0x1C</code></td>
+<td style="text-align: left;">File separator</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: left;"><code>0x3C</code></td>
+<td style="text-align: left;"><code>&lt;</code></td>
+<td style="text-align: center;">92</td>
+<td style="text-align: left;"><code>0x5C</code></td>
+<td style="text-align: left;"><code>\</code></td>
+<td style="text-align: center;">124</td>
+<td style="text-align: left;"><code>0x7C</code></td>
+<td style="text-align: left;"><code>|</code></td>
+</tr>
+<tr class="even">
+<td>29</td>
+<td style="text-align: left;"><code>0x1D</code></td>
+<td style="text-align: left;">Group separator</td>
+<td style="text-align: center;">61</td>
+<td style="text-align: left;"><code>0x3D</code></td>
+<td style="text-align: left;"><code>=</code></td>
+<td style="text-align: center;">93</td>
+<td style="text-align: left;"><code>0x4D</code></td>
+<td style="text-align: left;"><code>]</code></td>
+<td style="text-align: center;">125</td>
+<td style="text-align: left;"><code>0x7D</code></td>
+<td style="text-align: left;"><code>}</code></td>
+</tr>
+<tr class="odd">
+<td>30</td>
+<td style="text-align: left;"><code>0x1E</code></td>
+<td style="text-align: left;">Record separator</td>
+<td style="text-align: center;">62</td>
+<td style="text-align: left;"><code>0x3E</code></td>
+<td style="text-align: left;"><code>&gt;</code></td>
+<td style="text-align: center;">94</td>
+<td style="text-align: left;"><code>0x5E</code></td>
+<td style="text-align: left;"><code>^</code></td>
+<td style="text-align: center;">126</td>
+<td style="text-align: left;"><code>0x7E</code></td>
+<td style="text-align: left;"><code>~</code></td>
+</tr>
+<tr class="even">
+<td>31</td>
+<td style="text-align: left;"><code>0x1F</code></td>
+<td style="text-align: left;">Unit separator</td>
+<td style="text-align: center;">63</td>
+<td style="text-align: left;"><code>0x3F</code></td>
+<td style="text-align: left;"><code>?</code></td>
+<td style="text-align: center;">95</td>
+<td style="text-align: left;"><code>0x5F</code></td>
+<td style="text-align: left;"><code>_</code></td>
+<td style="text-align: center;">127</td>
+<td style="text-align: left;"><code>0x7F</code></td>
+<td style="text-align: left;">Delete</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>A very useful and useful reference is available as <a href="https://ascii-code.com">ascii-code.com</a>. See also <a href="https://www.ascii-code.com/ASCII/codechart">ASCII Code Chart</a>.</p>
+<section id="example-2" class="level3" data-number="A.4.1">
+<h3 data-number="A.4.1" class="anchored" data-anchor-id="example-2"><span class="header-section-number">A.4.1</span> Example</h3>
+<p>Encode the string “Welcome to Swansea University” in ASCII and give the binary codes that would be used to store this string in computer memory.</p>
+<section id="solution" class="level4" data-number="A.4.1.1">
+<h4 data-number="A.4.1.1" class="anchored" data-anchor-id="solution"><span class="header-section-number">A.4.1.1</span> Solution</h4>
+<p>Look up the characters and write down the equivalent hexadecimal code. Note, null (<code>\0</code>) is used to terminate the string</p>
+<p><code>'W'</code> = <span class="math inline">\(87_{10}\)</span> = <code>0x57</code> = <span class="math inline">\(01010111_2\)</span></p>
+<p><code>'e'</code> = <span class="math inline">\(101_{10}\)</span> = <code>0x65</code> = <span class="math inline">\(01100101_2\)</span></p>
+<p><code>'l'</code> = <span class="math inline">\(108_{10}\)</span> = <code>0x6C</code> = <span class="math inline">\(01101011_2\)</span></p>
+<p><code>'c'</code> = <span class="math inline">\(99_{10}\)</span> = <code>0x63</code> = <span class="math inline">\(01100011_2\)</span></p>
+<p><code>'o'</code> = <span class="math inline">\(111_{10}\)</span> = <code>0x6F</code> = <span class="math inline">\(01101111_2\)</span></p>
+<p><code>'m'</code> = <span class="math inline">\(109_{10}\)</span> = <code>0x6D</code> = <span class="math inline">\(01101101_2\)</span></p>
+<p><code>'e'</code> = <span class="math inline">\(108_{10}\)</span> = <code>0x6C</code> = <span class="math inline">\(01101011_2\)</span></p>
+<p><code>' '</code> = <span class="math inline">\(108_{10}\)</span> = <code>0x6C</code> = <span class="math inline">\(01101011_2\)</span></p>
+<p><code>'t'</code> = <span class="math inline">\(108_{10}\)</span> = <code>0x6C</code> = <span class="math inline">\(01101011_2\)</span></p>
+<p><code>'o'</code> = <span class="math inline">\(108_{10}\)</span> = <code>0x6C</code> = <span class="math inline">\(01101011_2\)</span></p>
+<p><code>' '</code> = <span class="math inline">\(32_{10}\)</span> = <code>0x20</code> = <span class="math inline">\(00100000_2\)</span></p>
+<p><code>'S'</code> = <span class="math inline">\(83_{10}\)</span> = <code>0x53</code> = <span class="math inline">\(01010011_2\)</span></p>
+<p><code>'w'</code> = <span class="math inline">\(119_{10}\)</span> = <code>0x77</code> = <span class="math inline">\(01110111_2\)</span></p>
+<p><code>'a'</code> = <span class="math inline">\(97_{10}\)</span> = <code>0x61</code> = <span class="math inline">\(01100001_2\)</span></p>
+<p><code>'n'</code> = <span class="math inline">\(110_{10}\)</span> = <code>0x6E</code> = <span class="math inline">\(01101110_2\)</span></p>
+<p><code>'s'</code> = <span class="math inline">\(115_{10}\)</span> = <code>0x73</code> = <span class="math inline">\(01110011_2\)</span></p>
+<p><code>'e'</code> = <span class="math inline">\(108_{10}\)</span> = <code>0x6C</code> = <span class="math inline">\(01101011_2\)</span></p>
+<p><code>'a'</code> = <span class="math inline">\(97_{10}\)</span> = <code>0x61</code> = <span class="math inline">\(01100001_2\)</span></p>
+<p><code>\0</code> = <code>0x000</code> = <span class="math inline">\(00000000_2\)</span></p>
+<p>The final result (in hexadecimal) is</p>
+<pre><code>57
+65
+6C
+63
+6F
+6D
+65
+32
+74
+6E
+32
+53
+77
+61
+6E
+73
+65
+61
+00</code></pre>
+
+
+</section>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>As ASCII was only designed to represent English, extended ASCII was developed been used to extend the coding so that displays could print accented European characters, some Greek symbols used in mathematics, and some symbols that could be used to draw boxes on a simple display screen. In order to support the rest of the human languages and alphabets, and for other purposes such as Emojis, ASCII has been extended to a standard called <a href="https://en.wikipedia.org/wiki/UTF-8">UTF-8</a>. This uses more bytes to represent each character and therefore greatly extends the types of texts that can be stored and manipulated inside a computer.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>the null character (<code>\0</code> in C) is used in C to mark the end of a string.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+<p>Copyright © 2021-2025 Swansea University. All rights reserved.</p></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jahangerh\.github\.io\/eg-151-textbook");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../references.html" class="pagination-link" aria-label="References">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">References</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../appendix/programming_in_c.html" class="pagination-link" aria-label="Programming in C &amp;ndash; from nothing to software">
+        <span class="nav-page-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Programming in C – from nothing to software</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/appendix/appendix_a.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.30">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ben Clifford">
+<meta name="dcterms.date" content="2025-11-26">
+
+<title>10&nbsp; Addressing Modes – EG-151 Microcontrollers 2025-2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../lab_intro/intro.html" rel="next">
+<link href="../../lectures/week09/index.html" rel="prev">
+<link href="../../logo.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-662ae1889177880cb371f83234c0a158.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-de0027c6417e353ce4980619e2136061.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="application/json" class="js-hypothesis-config">
+{
+  "theme": "clean",
+  "openSidebar": false
+}
+</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week10/index.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">EG-151 Microcontrollers 2025-2026</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/JahangerH/eg-151-textbook/tree/main/website/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Course Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_aims.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Aims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_delivery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Delivery Method</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lectures/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontrollers Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers—Module Staff</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Microcontrollers and Microcontroller Architecture</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Introduction to Programming and Program Development</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Introduction to Programming with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week10/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lab_intro/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Laboratory Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Assessment of the Laboratory Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_work.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Laboratory Work in the Department of Electronic and Electrical Engineering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_instruments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Laboratory Instruments</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Laboratory Safety</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/experiment0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Experiment: to construct an oscillator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Simulation Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Questions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/construction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Construction Exercise - Continuity Tester</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/soldering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Safe Soldering</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontroller Programming Laboratory</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/get_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Experiment 1: Binary Counter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Experiment 2: Digital Input</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Experiment 3: Analogue to Digital Conversion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Experiment 4: Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Experiment 5: LCD Display Panel</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mini Projects</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/voltmeter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Voltmeter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/range_finder.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Ultrasonic Range Finder</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/clock_timer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Clock Time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/weather_station.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Weather Station</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/appendix_a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Other Data Representations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/programming_in_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Programming in C – from nothing to software</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-wk9-intro" id="toc-sec-wk9-intro" class="nav-link active" data-scroll-target="#sec-wk9-intro">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#topics-discussed" id="toc-topics-discussed" class="nav-link" data-scroll-target="#topics-discussed">Topics discussed</a></li>
+  <li><a href="#contents" id="toc-contents" class="nav-link" data-scroll-target="#contents">Contents</a></li>
+  </ul></li>
+  <li><a href="#sec-wk9-sect1" id="toc-sec-wk9-sect1" class="nav-link" data-scroll-target="#sec-wk9-sect1"><span class="header-section-number">10.1</span> What is an addressing mode?</a></li>
+  <li><a href="#sec-wk9-sect2" id="toc-sec-wk9-sect2" class="nav-link" data-scroll-target="#sec-wk9-sect2"><span class="header-section-number">10.2</span> Addressing modes on the Atmel ATmega328</a>
+  <ul class="collapse">
+  <li><a href="#sec-wk9-ia" id="toc-sec-wk9-ia" class="nav-link" data-scroll-target="#sec-wk9-ia"><span class="header-section-number">10.2.1</span> Inherent Addressing Mode</a></li>
+  <li><a href="#sec-wk9-rda" id="toc-sec-wk9-rda" class="nav-link" data-scroll-target="#sec-wk9-rda"><span class="header-section-number">10.2.2</span> Register Direct Addressing</a></li>
+  <li><a href="#sec-wk9-ioda" id="toc-sec-wk9-ioda" class="nav-link" data-scroll-target="#sec-wk9-ioda"><span class="header-section-number">10.2.3</span> I/O Direct Addressing</a></li>
+  <li><a href="#sec-wk9-dda" id="toc-sec-wk9-dda" class="nav-link" data-scroll-target="#sec-wk9-dda"><span class="header-section-number">10.2.4</span> Data Direct Addressing</a></li>
+  <li><a href="#sec-wk9-ima" id="toc-sec-wk9-ima" class="nav-link" data-scroll-target="#sec-wk9-ima"><span class="header-section-number">10.2.5</span> Immediate Addressing</a></li>
+  <li><a href="#sec-wk9-dia" id="toc-sec-wk9-dia" class="nav-link" data-scroll-target="#sec-wk9-dia"><span class="header-section-number">10.2.6</span> Data Indirect Addressing</a></li>
+  <li><a href="#sec-wk9-ra" id="toc-sec-wk9-ra" class="nav-link" data-scroll-target="#sec-wk9-ra"><span class="header-section-number">10.2.7</span> Relative Addressing</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a>
+  <ul class="collapse">
+  <li><a href="#on-canvas" id="toc-on-canvas" class="nav-link" data-scroll-target="#on-canvas">On Canvas</a></li>
+  <li><a href="#next-time---class-test" id="toc-next-time---class-test" class="nav-link" data-scroll-target="#next-time---class-test">Next Time - Class Test!</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week10/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week10/index.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Ben Clifford </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 26, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="notes">
+<p><a href="../..\slides/lecture10.html">Presentation version</a> of these <a href="#sec-week09-intro">notes</a>.</p>
+</div>
+<p><img src="pictures/week09_chapter_heading.png" class="img-fluid" style="width:100.0%" alt="lecture cover image showing architecture, some gates and an Arduino nano board"></p>
+<section id="sec-wk9-intro" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-wk9-intro">Introduction</h2>
+<p>In this week’s lecture, you will learn more about assembly language and the diverse ways to access data dependent on what it is and where it is stored.</p>
+<p>This is based around a concept known as <em>addressing modes</em>.</p>
+<div class="notes">
+<p>There are different ways in which an operand may be specified in an instruction depending on what it is and where it is located. Some operations require no operands and the data to be operated on is implied, in other cases operands can be constants, variables, arrays and memory locations all of which are accessed differently.</p>
+</div>
+<hr>
+<section id="topics-discussed" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="topics-discussed">Topics discussed</h3>
+<p>In this section we will review a number of different addressing modes relevant to the Atmel ATMega328 Microcontroller including, inherent, immediate, direct, indirect and relative.</p>
+<hr>
+</section>
+<section id="contents" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="contents">Contents</h3>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img src="pictures/week09_contents_image.png" class="img-fluid" alt="Decorative image used as a slide background."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><a href="#sec-wk9-sect1" class="quarto-xref"><span>Section 10.1</span></a>: <a href="#sec-wk9-sect1">What is an addressing mode?</a></li>
+<li><a href="#sec-wk9-sect2" class="quarto-xref"><span>Section 10.2</span></a>: <a href="#sec-wk9-sect2">Addressing modes on the Atmel ATmega328</a></li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="sec-wk9-sect1" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="sec-wk9-sect1"><span class="header-section-number">10.1</span> What is an addressing mode?</h2>
+<div class="incremental">
+<ul class="incremental">
+<li>An addressing mode is a way in which an operand is specified in an instruction and defines how the CPU finds it.</li>
+<li>There are different ways in which an operand may be specified in an instruction depending on what it is and where it is located.</li>
+<li>Some operations require no operands and the data to be operated on is <em>implied</em>, in other cases operands can be constants, variables, arrays and memory locations – this is where addressing modes are used.</li>
+</ul>
+</div>
+<div class="notes">
+<p>The six addressing modes found in the AVR architecture used by the Atmel ATmega328 family of processors are summarised in <a href="#fig-wk9-addressing_modes" class="quarto-xref">Figure&nbsp;<span>10.1</span></a>.</p>
+</div>
+<hr>
+<div id="fig-wk9-addressing_modes" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The six addressing modes of an AVR processor - inherent, immediate, extended, direct, relative and indexed.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-addressing_modes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/addressing_modes.png" class="img-fluid figure-img" alt="The six addressing modes of an AVR processor - inherent, immediate, extended, direct, relative and indexed.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-addressing_modes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.1: The six addressing modes of an AVR processor.
+</figcaption>
+</figure>
+</div>
+<hr>
+<ul>
+<li>The memory address where data is stored is called the <em>effective address</em> of the operand and the addressing mode refers to the way in which the operand is specified and how the CPU accesses it.</li>
+</ul>
+<div class="notes">
+<p><strong>Addressing modes</strong>&nbsp;are an aspect of the&nbsp;<em>instruction set architecture</em>&nbsp;in most&nbsp;<em>central processing unit</em>&nbsp;(CPU) designs. The various addressing modes that are defined in a given instruction set architecture define how the&nbsp;<em>machine language&nbsp;instructions</em>&nbsp;in that architecture identify the <em>operand</em>(s) of each instruction. An addressing mode specifies how to calculate the effective&nbsp;<em>memory address</em>&nbsp;of an operand by using information held in&nbsp;<em>registers</em>&nbsp;and/or constants contained within a machine instruction or elsewhere.</p>
+</div>
+<hr>
+</section>
+<section id="sec-wk9-sect2" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="sec-wk9-sect2"><span class="header-section-number">10.2</span> Addressing modes on the Atmel ATmega328</h2>
+<p>The AVR<sup>®</sup> Enhanced RISC microcontroller supports powerful and efficient addressing modes for access to the program memory (Flash) and Data memory (SRAM, Register file, I/O Memory, and Extended I/O Memory).</p>
+<hr>
+<p>The Atmel ATmega328 microcontroller makes use of the following addressing modes:</p>
+<div class="incremental">
+<ul class="incremental">
+<li><a href="#sec-wk9-ia" class="quarto-xref"><span>Section 10.2.1</span></a>: <a href="#sec-wk9-ia">Inherent/Implied Addressing</a></li>
+<li><a href="#sec-wk9-rda" class="quarto-xref"><span>Section 10.2.2</span></a>: <a href="#sec-wk9-rda">Register Direct (single and two-register) Addressing</a></li>
+<li><a href="#sec-wk9-ioda" class="quarto-xref"><span>Section 10.2.3</span></a>: <a href="#sec-wk9-ioda">I/O Direct Addressing</a></li>
+<li><a href="#sec-wk9-dda" class="quarto-xref"><span>Section 10.2.4</span></a>: <a href="#sec-wk9-dda">Data Direct Addressing</a></li>
+<li><a href="#sec-wk9-ima" class="quarto-xref"><span>Section 10.2.5</span></a>: <a href="#sec-wk9-ima">Immediate Addressing</a></li>
+<li><a href="#sec-wk9-dia" class="quarto-xref"><span>Section 10.2.6</span></a>: <a href="#sec-wk9-dia">Data Indirect Addressing</a></li>
+<li><a href="#sec-wk9-ra" class="quarto-xref"><span>Section 10.2.7</span></a>: <a href="#sec-wk9-ra">Relative Addressing</a></li>
+<li>Program Addressing (Not covered)</li>
+</ul>
+</div>
+<div class="notes">
+<p>Apart from <em>program addressing</em>, we will discuss each of these addressing modes in the following.</p>
+</div>
+<hr>
+<section id="sec-wk9-ia" class="level3" data-number="10.2.1">
+<h3 data-number="10.2.1" class="anchored" data-anchor-id="sec-wk9-ia"><span class="header-section-number">10.2.1</span> Inherent Addressing Mode</h3>
+<div class="fragment">
+<p>For instructions that use <strong>inherent addressing</strong>, sometimes called <em>implicit</em> or <em>implied</em> addressing, the operands are not explicitly specified but are implied by the instruction<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+</div>
+<hr>
+<section id="examples-of-inherent-addressing" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="examples-of-inherent-addressing">Examples of inherent addressing</h4>
+<div id="lst-wk9-inherent-addressing" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2|3">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-inherent-addressing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.1: Examples of inherent addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-inherent-addressing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1"></a>SEN    <span class="co">; Set Negative Flag in Status Register (SREG)</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>CLN    <span class="co">; Clear Nagative Flag in Status Register (SREG)</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="bu">NOP</span>    <span class="co">; No Operation (do nothing for one clock cycle)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+<div class="notes">
+<p>Since no additional clock cycles are required to fetch and move data around, this is the <strong>simplest and fastest addressing mode</strong>.</p>
+<p>Some of the AVR instructions that use inherent addressing are listed in <a href="#tbl-wk9-table1" class="quarto-xref">Table&nbsp;<span>10.1</span></a>.</p>
+</div>
+<div id="tbl-wk9-table1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-wk9-table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;10.1: AVR instructions that use inherent addressing
+</figcaption>
+<div aria-describedby="tbl-wk9-table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Mnemonic</th>
+<th style="text-align: center;">Operands</th>
+<th style="text-align: left;">Decription</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>CLZ</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Clear <em>Zero Flag</em> in SREG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SEI</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Global Interrupt Enable</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>CLI</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Global Interrupt Disable</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SES</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Set <em>Sign</em> Bit in SREG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>CLS</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Clear <em>Sign</em> Bit in SREG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SEV</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Set Two’s <em>Complement Overflow</em> bit in SREG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>CLV</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Clear <em>Two’s Complement Overflow</em> bit in SREG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SET</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Set <em>T</em> bit in SREG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>CLT</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Clear <em>T</em> bit in SREG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SEH</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Set <em>Half Carry Flag</em> in SREG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>CLH</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Clear <em>Half Carry Flag</em> in SREG</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Microcontrollers that have single accumulators in place of a bank of general-purpose registers often have more instructions that use inherent addressing such as <code>CLRA</code>, <code>DECA</code>, <code>INCA</code>.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="sec-wk9-rda" class="level3" data-number="10.2.2">
+<h3 data-number="10.2.2" class="anchored" data-anchor-id="sec-wk9-rda"><span class="header-section-number">10.2.2</span> Register Direct Addressing</h3>
+<div class="fragment">
+<p>For these operators, the operands are contained in registers in the <em>register file</em>. There are single register operators which operates on and returns the result to the destination register, known as <code>Rd</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+</div>
+<div class="notes">
+<p>Because the microcontroller can access the register file faster than memory, they are also fast instructions.</p>
+</div>
+<hr>
+<section id="single-register-addressing-rd" class="level4" data-number="10.2.2.1">
+<h4 data-number="10.2.2.1" class="anchored" data-anchor-id="single-register-addressing-rd"><span class="header-section-number">10.2.2.1</span> Single Register Addressing (<code>Rd</code>)</h4>
+<div class="fragment">
+<p>For instructions that use <strong>single direct register addressing</strong>, the operand is contained in the destination register Rd as illustrated in <a href="#fig-wk9-srda" class="quarto-xref">Figure&nbsp;<span>10.2</span></a>.</p>
+</div>
+<hr>
+<div id="fig-wk9-srda" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustrating single register direct addressing.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-srda-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/srda.png" class="img-fluid figure-img" alt="Illustrating single register direct addressing.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-srda-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.2: Illustrating single register direct addressing: <code>d</code> is the register number and <code>Rd</code> is source of the operand and the destination of the result.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="examples" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="examples">Examples</h5>
+<div id="lst-wk9-register-direct-addressing" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2|3">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-register-direct-addressing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.2: Examples of single register direct addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-register-direct-addressing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1"></a><span class="bu">DEC</span> R16     <span class="co">;Decrement R16</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="bu">INC</span> R17     <span class="co">;Increment R17</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>CLR R16     <span class="co">;Clear R16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Remember the operand represents the data so this addressing mode is accessing or acting on the data using only one of the general purpose registers but does not include any write back to SRAM/EEPROM.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="two-register-addressing-rd-rr" class="level4" data-number="10.2.2.2">
+<h4 data-number="10.2.2.2" class="anchored" data-anchor-id="two-register-addressing-rd-rr"><span class="header-section-number">10.2.2.2</span> Two Register Addressing (<code>Rd</code>, <code>Rr</code>)</h4>
+<div class="fragment">
+<p>For instructions that use <strong>direct register addressing with two registers</strong>, the operand is <em>contained</em> in the source and destination registers <code>Rr</code><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> and <code>Rd</code> respectively. As a result of these operations is that the data in <code>Rd</code> is overwritten. This is illustrated in <a href="#fig-wk9-rda-with-2-regs" class="quarto-xref">Figure&nbsp;<span>10.3</span></a>.</p>
+</div>
+<hr>
+<div id="fig-wk9-rda-with-2-regs" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustrating direct register addressing with two registers.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-rda-with-2-regs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/srda2.png" class="img-fluid figure-img" alt="Illustrating direct register addressing with two registers.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-rda-with-2-regs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.3: Illustrating register direct addressing with two registers: d is the source of the first operand, <code>r</code> is the source of the second operand. The result overwrites the data in register <code>d</code>.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="examples-1" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="examples-1">Examples</h5>
+<div id="lst-wk9-rda-with-2-regs" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2|3">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-rda-with-2-regs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.3: Examples of direct register addressing with two registers.
+</figcaption>
+<div aria-describedby="lst-wk9-rda-with-2-regs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1"></a><span class="bu">ADD</span> R16<span class="op">,</span> R17  <span class="co">;Add the contents of R16 and R17. Return sum to R17.</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>CP R16<span class="op">,</span> R17   <span class="co">;Compare the values of R16 and R17 - sets the Z, N flags in SR</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="bu">MOV</span> R16<span class="op">,</span> R17  <span class="co">;Copy contents of R16 into R17</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As with the previous addressing mode, this one is accessing or acting on the data in two of the general purpose registers and although it overwrites the data in Rd is also does not include any write back to SRAM/EEPROM.</p>
+<p>Note that the result of <code>CP</code> is the sign of R16 - R17. If the difference is zero the <code>Z</code> flag is set in the status register. If the difference is a negative number, the <code>S</code> (sign) flag will be set. If the difference is positive, no flags are set. Carry and half-carry flags are also set as appropriate. The <code>CP</code> operation is typically followed by one of the branch operations <code>BEQ</code> (branch if equal to zero), <code>BLT</code> (branch if less than zero), <code>BGT</code> (branch if greater than zero), etc. The operation <code>CP</code> plus branch is typically used in the compilation of logical comparisons in C’s <code>if</code>, <code>else if</code>, <code>while</code>, and <code>for</code> statements.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="sec-wk9-ioda" class="level3" data-number="10.2.3">
+<h3 data-number="10.2.3" class="anchored" data-anchor-id="sec-wk9-ioda"><span class="header-section-number">10.2.3</span> I/O Direct Addressing</h3>
+<div class="fragment">
+<p>Within the user data space there are 64 I/O registers as well as 160 Extended I/O registers. The <strong>first 64</strong> of these can be accessed using instructions <strong>such as <code>IN</code> and <code>OUT</code> using I/O direct addressing mode</strong>. In I/O direct addressing mode the operands contain the <strong>address A of one of the lower 64 I/O locations</strong> and a source (<code>Rr</code>) or destination register (<code>Rd</code>). This is illustrated in <a href="#fig-wk9-io-addr" class="quarto-xref">Figure&nbsp;<span>10.4</span></a>.</p>
+</div>
+<hr>
+<div id="fig-wk9-io-addr" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustrating I/O direct register addressing - one of the operands comes from one of the I/O registers.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-io-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/io_addr.png" class="img-fluid figure-img" alt="Illustrating I/O direct register addressing - one of the operands comes from one of the I/O registers.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-io-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.4: Illustrating I/O direct addressing: the source (or destination) will be from an I/O register. The destination (or source) will be one of the general purpose registers.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="exampleswk9note1" class="level5">
+<h5 class="anchored" data-anchor-id="exampleswk9note1">Examples<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></h5>
+<div id="lst-wk9-io-addr" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-io-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.4: Examples of I/O direct addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-io-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1"></a><span class="bu">IN</span> R16<span class="op">,</span> PIND     <span class="co">;Load (input) the contents of PIND into R16</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="bu">OUT</span> PORTC<span class="op">,</span> R17   <span class="co">;Store (output) the contents of R17 to PORTC</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Be aware that loading and storing data to these registers using instructions such as <code>LD</code> and <code>ST</code> must address these registers differently and does not use I/O direct addressing mode.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="sec-wk9-dda" class="level3" data-number="10.2.4">
+<h3 data-number="10.2.4" class="anchored" data-anchor-id="sec-wk9-dda"><span class="header-section-number">10.2.4</span> Data Direct Addressing</h3>
+<div class="fragment">
+<p>Instructions that use <strong>direct data addressing</strong> are <strong>two words</strong> (32-bits) in length, the first operand, <code>Rr</code>/<code>Rd</code> is one of the general-purpose registers and the second is 16-bit Data Address contained in the 16 LSBs of the two-word instruction. This is illustrated in <a href="#fig-wk9-dd-addr" class="quarto-xref">Figure&nbsp;<span>10.5</span></a>.</p>
+</div>
+<hr>
+<div id="fig-wk9-dd-addr" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustrating data direct addressing with a general purpose register and data stored in memory.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-dd-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/dd_addr.png" class="img-fluid figure-img" alt="Illustrating data direct addressing with a general purpose register and data stored in memory.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-dd-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.5: Illustrating data direct addressing: the source (or destination) will be in memory. The destination (or source) will be one of the general purpose registers.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="examples-2" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="examples-2">Examples</h5>
+<div id="lst-wk9-dd-addr" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-dd-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.5: Examples of direct data addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-dd-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1"></a><span class="bu">LDS</span> R16<span class="op">,</span> <span class="bn">0x0100</span>   <span class="co">;Load the contents of data space address hex 0100 into R16</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>STS <span class="bn">0x0101</span><span class="op">,</span> R17   <span class="co">;Store the contents of R17 to data space address hex 0101</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="sec-wk9-ima" class="level3" data-number="10.2.5">
+<h3 data-number="10.2.5" class="anchored" data-anchor-id="sec-wk9-ima"><span class="header-section-number">10.2.5</span> Immediate Addressing</h3>
+<div class="fragment">
+<p>With instructions that use <strong>immediate addressing</strong> the actual data to be used is included within the instruction itself as a constant value<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. This is illustrated in <a href="#fig-wk9-imm-addr" class="quarto-xref">Figure&nbsp;<span>10.6</span></a>.</p>
+</div>
+<hr>
+<div id="fig-wk9-imm-addr" class="quarto-float quarto-figure quarto-figure-center anchored" alt="llustrating immediate addressing in which the operand is a number in the instruction.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-imm-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/imm_addr.png" class="img-fluid figure-img" alt="llustrating immediate addressing in which the operand is a number in the instruction.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-imm-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.6: Illustrating immediate addressing: the destination will be an one of the general purpose registers. The source will be a data value given in the instruction.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="examples-3" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="examples-3">Examples</h5>
+<div id="lst-wk9-imm-addr" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-imm-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.6: Examples of immediate addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-imm-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1"></a>LDI R16<span class="op">,</span> <span class="bn">0x5B</span>   <span class="co">;Load the hex value 5B into R16</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>SUBI R17<span class="op">,</span> <span class="dv">24</span>    <span class="co">;Subtract the decimal value 24 from the contents of R17</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Since the instruction already contains the data, this is a fast addressing mode and only takes one clock cycle to complete.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="immediate-vs-data-direct-addressing" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="immediate-vs-data-direct-addressing">Immediate vs Data Direct Addressing</h4>
+<div class="fragment">
+<p>Instructions that use immediate addressing, take one clock-cycle to complete.</p>
+</div>
+<div class="fragment">
+<p>For example <code>LDI</code> - load immediate:</p>
+<p><img src="pictures/wk9_ldi.png" class="img-fluid" alt="Manual page for the LDI command."></p>
+</div>
+<hr>
+<p>Instructions that use register or data direct addressing, take two clock-cycles to complete.</p>
+<div class="fragment">
+<p>For example <code>LDS</code> - load from store needs to load the operator and decode the register address, then load data from the data space into the register.</p>
+<p><img src="pictures/wk9_lds.png" class="img-fluid" alt="Manual page for the LDS command."></p>
+</div>
+<hr>
+</section>
+</section>
+<section id="sec-wk9-dia" class="level3" data-number="10.2.6">
+<h3 data-number="10.2.6" class="anchored" data-anchor-id="sec-wk9-dia"><span class="header-section-number">10.2.6</span> Data Indirect Addressing</h3>
+<div class="fragment">
+<p>With instructions that use <strong>indirect data addressing</strong> the operand address is the contents of one of the X- Y- Z-pointer registers. This is illustrated in <a href="#fig-wk9-id-addr" class="quarto-xref">Figure&nbsp;<span>10.7</span></a>.</p>
+</div>
+<hr>
+<div id="fig-wk9-id-addr" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustrating indirect direct addressing in which the registers provide the address of the operand.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-id-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/id_addr.png" class="img-fluid figure-img" alt="Illustrating indirect direct addressing in which the registers provide the address of the operand.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-id-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.7: Illustrating indirect data addressing in which two registers provide the address in memory of the operand.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="examples-4" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="examples-4">Examples</h5>
+<div id="lst-wk9-id-addr" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2|4">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-id-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.7: Examples of indirect data addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-id-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1"></a><span class="bu">LDS</span> R26<span class="op">,</span> <span class="bn">0x00</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="bu">LDS</span> R27<span class="op">,</span> <span class="bn">0x10</span> </span>
+<span id="cb7-3"><a href="#cb7-3"></a></span>
+<span id="cb7-4"><a href="#cb7-4"></a>LD R18<span class="op">,</span> X      <span class="co">;Load R18 with data stored at the address in the X- pointer register</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This mode allows the address to be a run time computed value, whereas the direct address must be computed at compile time/assembly time/load time.</p>
+<p>This has several important use cases including setting up storage for arrays or other structures in memory.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="indirect-data-addressing-with-displacement" class="level4" data-number="10.2.6.1">
+<h4 data-number="10.2.6.1" class="anchored" data-anchor-id="indirect-data-addressing-with-displacement"><span class="header-section-number">10.2.6.1</span> Indirect Data Addressing with Displacement</h4>
+<div class="fragment">
+<p>As with indirect data addressing, the microcontroller makes use of the Y and/or Z pointers with an additional displacement to access data stored in the data space.</p>
+</div>
+<div class="fragment">
+<p>This is the best way to access an array of data and is illustrated in <a href="#fig-wk9-id-addr-2" class="quarto-xref">Figure&nbsp;<span>10.8</span></a>.</p>
+</div>
+<hr>
+<div id="fig-wk9-id-addr-2" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustrating indirect direct addressing with displacement.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-id-addr-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/id_addr_2.png" class="img-fluid figure-img" alt="Illustrating indirect direct addressing with displacement.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-id-addr-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.8: Illustrating indirect direct addressing with displacement.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="examples-5" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="examples-5">Examples</h5>
+<div id="lst-wk9-id-addr-2" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2|4">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-id-addr-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.8: Examples of indirect data addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-id-addr-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1"></a><span class="bu">LDS</span> R28<span class="op">,</span> <span class="bn">0x00</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="bu">LDS</span> R29<span class="op">,</span> <span class="bn">0x10</span> </span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a>LD R18<span class="op">,</span> Y <span class="op">+</span> <span class="dv">1</span>      <span class="co">;Load R18 with data stored at the address in the Y- pointer register with a displacement of 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This mode allows the address to be a run time computed value, whereas the direct address must be computed at compile time/assembly time/load time.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="indirect-data-addressing-with-incrementdecrement" class="level4" data-number="10.2.6.2">
+<h4 data-number="10.2.6.2" class="anchored" data-anchor-id="indirect-data-addressing-with-incrementdecrement"><span class="header-section-number">10.2.6.2</span> Indirect Data Addressing with Increment/Decrement</h4>
+<div class="fragment">
+<p>Indirect Data Addressing mode also supports <em>Post-increment</em> and <em>Pre-decrement addressing</em>.</p>
+</div>
+<div class="incremental">
+<ul class="incremental">
+<li>With <em>Data Indirect Addressing with Post-increment</em>, the X-, Y-, or the Z-pointer is incremented after the operation.</li>
+<li>The operand address is the content of the X-, Y-, or the Z-pointer before incrementing.</li>
+<li>With <em>Data Indirect Addressing with Pre-decrement</em>, the X,- Y-, or the Z-pointer is decremented before the operation.</li>
+<li>The operand address is the decremented contents of the X-, Y-, or the Z-pointer.</li>
+</ul>
+</div>
+<hr>
+<section id="examples-6" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="examples-6">Examples</h5>
+<div id="lst-wk9-id-addr-3" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-id-addr-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.9: Examples of indirect data addressing with increment/decrement.
+</figcaption>
+<div aria-describedby="lst-wk9-id-addr-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1"></a>LD R16<span class="op">,</span> Z<span class="op">+</span> <span class="co">;Load R16 with data stored at the current address in the Z pointer register then increment the Z register</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>LD R16<span class="op">,</span> <span class="op">-</span>Z <span class="co">;Load R16 with data stored at the current address in the Z pointer register - 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This mode is useful for iterating through arrays of or sequentially stored linked data.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="sec-wk9-ra" class="level3" data-number="10.2.7">
+<h3 data-number="10.2.7" class="anchored" data-anchor-id="sec-wk9-ra"><span class="header-section-number">10.2.7</span> Relative Addressing</h3>
+<div class="fragment">
+<p>With relative program memory addressing the operand contains a signed 12-bit offset value which during execution is added to the program counter to change the flow of the program.</p>
+</div>
+<div class="fragment">
+<p>The destination of the branch (effective address) instruction is calculated by adding the signed byte following the opcode (-2048 to +2047) to the PC content. This is illustrated in <a href="#fig-wk9-rel-addr" class="quarto-xref">Figure&nbsp;<span>10.9</span></a>.</p>
+</div>
+<hr>
+<div id="fig-wk9-rel-addr" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustrating relative addressing which adjusts the program counter and is typically used for branching.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-rel-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/rel_addr.png" class="img-fluid figure-img" alt="Illustrating relative addressing which adjusts the program counter and is typically used for branching.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-rel-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.9: Illustrating relative addressing which adjusts the program counter and is typically used for branching.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="examples-7" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="examples-7">Examples</h5>
+<div id="lst-wk9-rel-addr" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-rel-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.10: Examples of relative addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-rel-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1"></a>RJMP Label  <span class="co">;Jump to the address specified by label</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>RCALL Label <span class="co">;relative call to an address (subroutine)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This addressing mode is used by instructions such as RJMP to modify the flow of a program, this typically is used in conjunction with test conditions or at the end of the code to make it loop back to the start.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="relative-addressing-example" class="level4" data-number="10.2.7.1">
+<h4 data-number="10.2.7.1" class="anchored" data-anchor-id="relative-addressing-example"><span class="header-section-number">10.2.7.1</span> Relative Addressing Example</h4>
+<div id="fig-wk9-rad-example" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-rad-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/rad_example.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-rad-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.10: An example to illustrate relative addressing
+</figcaption>
+</figure>
+</div>
+<hr>
+<div id="lst-using-bit-manipulation" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|3|13">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-using-bit-manipulation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10.11: Assembly code for the example of relative addressing.
+</figcaption>
+<div aria-describedby="lst-using-bit-manipulation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">LOOP:</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>    SBIC PIND<span class="op">,</span> <span class="dv">2</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>    RJMP LED1</span>
+<span id="cb11-4"><a href="#cb11-4"></a></span>
+<span id="cb11-5"><a href="#cb11-5"></a>    SBIC PINC<span class="op">,</span> <span class="dv">3</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a>    RJMP LED2</span>
+<span id="cb11-7"><a href="#cb11-7"></a></span>
+<span id="cb11-8"><a href="#cb11-8"></a>    <span class="bu">IN</span> R16<span class="op">,</span> PORTB</span>
+<span id="cb11-9"><a href="#cb11-9"></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11111100</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a>    <span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb11-11"><a href="#cb11-11"></a>    RJMP LOOP</span>
+<span id="cb11-12"><a href="#cb11-12"></a></span>
+<span id="cb11-13"><a href="#cb11-13"></a><span class="fu">LED1:</span></span>
+<span id="cb11-14"><a href="#cb11-14"></a>    SBI PORTB<span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb11-15"><a href="#cb11-15"></a>    RJMP LOOP</span>
+<span id="cb11-16"><a href="#cb11-16"></a></span>
+<span id="cb11-17"><a href="#cb11-17"></a><span class="fu">LED2:</span> </span>
+<span id="cb11-18"><a href="#cb11-18"></a>    SBI PORTB<span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb11-19"><a href="#cb11-19"></a>    RJMP LOOP</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+<pre><code>RJMP LED1 -&gt; 1100 kkkk kkkk kkkk</code></pre>
+<div class="fragment">
+<p>is</p>
+<pre><code>C006 = 1100 0000 0000 0110 -&gt; RJMP +6</code></pre>
+</div>
+<hr>
+<div id="fig-wk9-rel-addr_3" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The program counter jumps 6 memory locations forward.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk9-rel-addr_3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/rel_addr_3.png" class="img-fluid figure-img" alt="The program counter jumps 6 memory locations forward.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk9-rel-addr_3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.11: The program counter jumps 6 memory locations forward.
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+</section>
+<section id="summary" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="summary">Summary</h2>
+<p>In this section have reviewed different addressing modes supported by the AVR instruction set commenting on use cases and speed (in clock cycles) of their operation.</p>
+<hr>
+<section id="on-canvas" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="on-canvas">On Canvas</h3>
+<p>You should review Section 3 of the AVR instructions set manual <span class="citation" data-cites="avr_instruction_set">(<a href="../../references.html#ref-avr_instruction_set" role="doc-biblioref">Atmel 2020</a>)</span> on program and data addressing modes. There is a short quiz covering the content of this chapter.</p>
+<hr>
+</section>
+<section id="next-time---class-test" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="next-time---class-test">Next Time - Class Test!</h3>
+<div class="fragment">
+<p>In preparation for the class test next week, you should review all the content covered in these lecture notes, self-directed study material and the lab classes.</p>
+</div>
+<div class="fragment">
+<p>Note that the class test is closed-book but you have will access to the reference manuals mentioned in these notes.</p>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-avr_instruction_set" class="csl-entry" role="listitem">
+Atmel. 2020. <em>AVR(r) Instruction Set Manual</em> (version DS40002198A). Microchip; <a href="
+                  https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ReferenceManuals/AVR-InstructionSet-Manual-DS40002198.pdf
+                  " class="uri">
+                  https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ReferenceManuals/AVR-InstructionSet-Manual-DS40002198.pdf
+</a>.
+</div>
+</div>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>In inherent addressing the effective address that the operation acts on is the register itself.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>The <code>d</code> in <code>Rd</code> is a number in the range 0-31.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>The <code>r</code> in <code>Rr</code> is also a number in the range 0-31.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Note: in these examples, the labels <code>PIND</code> and <code>PORTC</code> must have already been defined.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>the value of the second operand of an operator with immediate addressing will be hard coded into the code and cannot be changed during the running of a program.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+<p>Copyright © 2021-2025 Swansea University. All rights reserved.</p></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jahangerh\.github\.io\/eg-151-textbook");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/week09/index.html" class="pagination-link" aria-label="Microcontroller Architecture – Program Operation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../lab_intro/intro.html" class="pagination-link" aria-label="Laboratory Introduction">
+        <span class="nav-page-text">Laboratory Introduction</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week10/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

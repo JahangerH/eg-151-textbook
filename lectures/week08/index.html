@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.30">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ben Clifford">
+<meta name="dcterms.date" content="2025-11-12">
+
+<title>8&nbsp; Introduction to Assembly Language – EG-151 Microcontrollers 2025-2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../lectures/week09/index.html" rel="next">
+<link href="../../lectures/week07/index.html" rel="prev">
+<link href="../../logo.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-662ae1889177880cb371f83234c0a158.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-de0027c6417e353ce4980619e2136061.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="application/json" class="js-hypothesis-config">
+{
+  "theme": "clean",
+  "openSidebar": false
+}
+</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week08/index.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">EG-151 Microcontrollers 2025-2026</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/JahangerH/eg-151-textbook/tree/main/website/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Course Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_aims.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Aims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_delivery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Delivery Method</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lectures/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontrollers Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers—Module Staff</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Microcontrollers and Microcontroller Architecture</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Introduction to Programming and Program Development</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Introduction to Programming with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week08/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lab_intro/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Laboratory Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Assessment of the Laboratory Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_work.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Laboratory Work in the Department of Electronic and Electrical Engineering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_instruments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Laboratory Instruments</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Laboratory Safety</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/experiment0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Experiment: to construct an oscillator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Simulation Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Questions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/construction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Construction Exercise - Continuity Tester</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/soldering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Safe Soldering</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontroller Programming Laboratory</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/get_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Experiment 1: Binary Counter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Experiment 2: Digital Input</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Experiment 3: Analogue to Digital Conversion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Experiment 4: Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Experiment 5: LCD Display Panel</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mini Projects</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/voltmeter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Voltmeter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/range_finder.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Ultrasonic Range Finder</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/clock_timer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Clock Time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/weather_station.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Weather Station</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/appendix_a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Other Data Representations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/programming_in_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Programming in C – from nothing to software</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-wk7-intro" id="toc-sec-wk7-intro" class="nav-link active" data-scroll-target="#sec-wk7-intro">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#topics-discussed" id="toc-topics-discussed" class="nav-link" data-scroll-target="#topics-discussed">Topics discussed</a></li>
+  <li><a href="#contents" id="toc-contents" class="nav-link" data-scroll-target="#contents">Contents</a></li>
+  </ul></li>
+  <li><a href="#sec-wk7-sect1" id="toc-sec-wk7-sect1" class="nav-link" data-scroll-target="#sec-wk7-sect1"><span class="header-section-number">8.1</span> Machine Code and Assembly Language</a></li>
+  <li><a href="#machine-code" id="toc-machine-code" class="nav-link" data-scroll-target="#machine-code"><span class="header-section-number">8.1.1</span> Machine code</a></li>
+  <li><a href="#so-what-is-wrong-with-machine-code" id="toc-so-what-is-wrong-with-machine-code" class="nav-link" data-scroll-target="#so-what-is-wrong-with-machine-code"><span class="header-section-number">8.1.2</span> So what is wrong with machine code?</a></li>
+  <li><a href="#assembly-language" id="toc-assembly-language" class="nav-link" data-scroll-target="#assembly-language"><span class="header-section-number">8.1.3</span> Assembly Language</a></li>
+  <li><a href="#a-short-history-of-assembly-languages" id="toc-a-short-history-of-assembly-languages" class="nav-link" data-scroll-target="#a-short-history-of-assembly-languages"><span class="header-section-number">8.1.4</span> A Short history of assembly languages</a></li>
+  <li><a href="#why-learn-low-level-languages" id="toc-why-learn-low-level-languages" class="nav-link" data-scroll-target="#why-learn-low-level-languages"><span class="header-section-number">8.1.5</span> Why learn low level languages</a></li>
+  <li><a href="#why-do-people-use-assembly-language" id="toc-why-do-people-use-assembly-language" class="nav-link" data-scroll-target="#why-do-people-use-assembly-language"><span class="header-section-number">8.1.6</span> Why do people use assembly language?</a></li>
+  <li><a href="#sec-wk7-sect2" id="toc-sec-wk7-sect2" class="nav-link" data-scroll-target="#sec-wk7-sect2"><span class="header-section-number">8.2</span> Introduction to Assembly Language</a></li>
+  <li><a href="#assembly-language-101" id="toc-assembly-language-101" class="nav-link" data-scroll-target="#assembly-language-101"><span class="header-section-number">8.2.1</span> Assembly Language 101</a></li>
+  <li><a href="#sec-wk7-sect3" id="toc-sec-wk7-sect3" class="nav-link" data-scroll-target="#sec-wk7-sect3"><span class="header-section-number">8.3</span> Interfacing with Digital I/O example.</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example"><span class="header-section-number">8.3.1</span> Example</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a>
+  <ul class="collapse">
+  <li><a href="#on-canvas" id="toc-on-canvas" class="nav-link" data-scroll-target="#on-canvas">On Canvas</a></li>
+  <li><a href="#next-time" id="toc-next-time" class="nav-link" data-scroll-target="#next-time">Next time</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week08/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week08/index.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Ben Clifford </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 12, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="notes">
+<p><a href="../..\slides/lecture08.html">Presentation version</a> of these <a href="#sec-week07-intro">notes</a>.</p>
+</div>
+<p><img src="pictures/week07_chapter_heading.png" class="img-fluid" style="width:100.0%" alt="lecture cover image showing architecture, some gates and an Arduino nano board"></p>
+<section id="sec-wk7-intro" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-wk7-intro">Introduction</h2>
+<p>So far in this course a number of topics have been covered including</p>
+<div class="incremental">
+<ul class="incremental">
+<li><a href="../..\lectures/data_representation/">Introduction to Data Representation</a>,</li>
+<li><a href="../..\lectures/week02">Architecture of the Atmel ATmega 328 Microcontroller</a>,</li>
+<li><a href="../..\lectures/week03">Introduction to Programming and Program Development</a>, and</li>
+<li><a href="../..\lectures/week04">Introduction to Programming with C</a>.</li>
+</ul>
+</div>
+<hr>
+<p>In this lecture we will study assembly language which is a low level language that provides a one-to-one mapping between mnemonic instructions and the machine code that is executed on the microcontroller.</p>
+<div class="fragment">
+<p>This will allow you to see how complex high-level instructions and functions in C are written in assembly language and the final program that gets transferred to the microcontroller.</p>
+</div>
+<hr>
+<section id="topics-discussed" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="topics-discussed">Topics discussed</h3>
+<p>In this lecture we will present an introduction to assembly language, including program structure and syntax as well as operation classifications.</p>
+<p>We will also revisit the <strong>Direct Port Manipulation in C</strong> example from <a href="../..\lectures/week05/#sec-wk5-digital-io-example">Digital I/O Example Program</a> and translate this into assembly language looking at some of the key instructions involved.</p>
+<hr>
+</section>
+<section id="contents" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="contents">Contents</h3>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img src="pictures/week07_contents_image.png" class="img-fluid" alt="Decorative image used as a slide background."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><a href="#sec-wk7-sect1" class="quarto-xref"><span>Section 8.1</span></a>: <a href="#sec-wk7-sect1">Machine Code and Assembly Language</a></li>
+<li><a href="#sec-wk7-sect2" class="quarto-xref"><span>Section 8.2</span></a>: <a href="#sec-wk7-sect2">Introduction to Assembly Language</a></li>
+<li><a href="#sec-wk7-sect3" class="quarto-xref"><span>Section 8.3</span></a>: <a href="#sec-wk7-sect3">Interfacing with Digital I/O example</a></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-wk7-sect1" class="level2 center" data-background-image="pictures/machine_code_wallpaper.jpg" data-number="8.1">
+<h2 data-background-image="pictures/machine_code_wallpaper.jpg" data-number="8.1" class="anchored" data-anchor-id="sec-wk7-sect1"><span class="header-section-number">8.1</span> Machine Code and Assembly Language</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/machine_code_wallpaper.jpg" class="img-fluid" alt="A decaorative image of machine code."></p>
+<p><a href="https://stackoverflow.com/questions/16512580/how-do-i-stop-xcode-from-showing-me-this-assembly-language-when-im-debugging-an">This Photo</a> by Unknown Author is licensed under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA</a></p>
+</div>
+<hr>
+<section id="machine-code" class="level3" data-number="8.1.1">
+<h3 data-number="8.1.1" class="anchored" data-anchor-id="machine-code"><span class="header-section-number">8.1.1</span> Machine code</h3>
+<p>Programs are stored on a microcontroller as a series of binary codes located within sequential memory addresses …</p>
+<div class="fragment">
+<p>… this is known as <strong>machine code</strong><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+</div>
+<div class="fragment">
+<p>The program in our microntroller looks like this</p>
+<pre><code>1000101010110001 1000001101111111 1000101010111001 
+1000010010110001 1000001101100000 1000010010111001
+1000010110110001 1000110001111111 1000010110111001</code></pre>
+</div>
+<hr>
+</section>
+<section id="so-what-is-wrong-with-machine-code" class="level3 center" data-background-image="pictures/machine_code.png" data-number="8.1.2">
+<h3 data-background-image="pictures/machine_code.png" data-number="8.1.2" class="anchored" data-anchor-id="so-what-is-wrong-with-machine-code"><span class="header-section-number">8.1.2</span> So what is wrong with machine code?</h3>
+</section>
+<div class="notes">
+<p><img src="pictures/machine_code.png" class="img-fluid" alt="A photograph showing some machine code."></p>
+<p>A photograph showing some machine code<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+</div>
+<hr>
+<p>Well nothing really … if you are a computer!</p>
+<div class="fragment">
+<p>Otherwise … if you’re a human…<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p><img src="pictures/confused_human.png" class="img-fluid" alt="Human beings looking confused."></p>
+</div>
+<div class="fragment">
+<p>… machine code is difficult to:</p>
+</div>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>Write,</li>
+<li>Read,</li>
+<li>Understand,</li>
+<li>Debug,</li>
+</ul>
+</div>
+<div class="fragment">
+<p>and most importantly</p>
+</div>
+<div class="fragment">
+<ul>
+<li>Maintain</li>
+</ul>
+</div>
+<div class="fragment">
+<p>Instead, instructions can be written in a mnemonic form termed <strong>assembly language</strong> and then translated into machine code by an <strong>assembler</strong>.</p>
+</div>
+<hr>
+<section id="assembly-language" class="level3" data-number="8.1.3">
+<h3 data-number="8.1.3" class="anchored" data-anchor-id="assembly-language"><span class="header-section-number">8.1.3</span> Assembly Language</h3>
+<div class="fragment">
+<p>Every CPU (or family of CPUs) has an instruction set where each operation that can be performed is represented by a certain binary combination.</p>
+</div>
+<div class="fragment">
+<p>The next step up in language levels is to represent each of these binary patterns with a <strong>short mnemonic</strong>.</p>
+</div>
+<div class="fragment">
+<p>Programs written using these mnemonics are known as <strong>assembly language programs</strong><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.</p>
+</div>
+<hr>
+<div id="fig-wk7-adc-code" class="quarto-float quarto-figure quarto-figure-center anchored" alt="An example of an assembly code instruction.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk7-adc-code-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/adc_code.png" class="img-fluid figure-img" alt="An example of an assembly code instruction.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk7-adc-code-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.1: An example of an assembly code instruction <code>ADC</code> - Add with carry. Extracted from the Atmel ATmega328 reference manual.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="a-short-history-of-assembly-languages" class="level3" data-number="8.1.4">
+<h3 data-number="8.1.4" class="anchored" data-anchor-id="a-short-history-of-assembly-languages"><span class="header-section-number">8.1.4</span> A Short history of assembly languages</h3>
+<div class="fragment">
+<p>Assembly languages were first developed in the 1950s and were referred to as <strong>2nd generation programming languages</strong>.</p>
+</div>
+<div class="fragment">
+<p>Assembly language is a low level language that uses mnemonic codes (symbols) to represent machine code instructions, rather than using the instructions’ numeric (binary) values.</p>
+</div>
+<div class="fragment">
+<p>Essentially, assembly languages are a much more readable but directly translatable representation of machine code.</p>
+</div>
+<div class="fragment">
+<p>Assembly language is commonly called just assembly, ASM, or symbolic machine code.</p>
+</div>
+<hr>
+<p>Despite the giant leap from machine code to assembly language, by the 1980s its use had largely been overtaken by higher-level languages, such as Fortran and C, and more recently Python, for many applications.</p>
+<hr>
+</section>
+<section id="why-learn-low-level-languages" class="level3" data-number="8.1.5">
+<h3 data-number="8.1.5" class="anchored" data-anchor-id="why-learn-low-level-languages"><span class="header-section-number">8.1.5</span> Why learn low level languages</h3>
+<div class="incremental">
+<ul class="incremental">
+<li>High Level Language (HLL) programs are designed to be independent of a particular machine architecture.</li>
+<li>As a result, they rarely take into account any special features of the machine – features which are commonly available to assembly language programmers.</li>
+<li>Assembly language is therefore good for hardware-specific jobs such as device drivers.</li>
+</ul>
+</div>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>If you understand assembly language, you’ll have an appreciation for the compiler, and you’ll know exactly what it is doing with HLL statements.</li>
+<li>Once you see how compilers translate seemingly innocuous statements into a machine code, you will begin to understand how HLL code could be optimised.</li>
+<li>Good assembly language programmers make better HLL programmers because they understand the limitations of the compiler and they know what it is doing with their code.</li>
+</ul>
+</div>
+<div class="notes">
+<p>As well as these points, assembly programmers will have a better understanding of</p>
+<ul>
+<li>how data is represented in memory and other external devices;</li>
+<li>how processors access and execute instructions and how instructions access and process data;</li>
+<li>how a program accesses external devices – I/O;</li>
+<li>how to write efficient code as it requires less memory and execution time.</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="why-do-people-use-assembly-language" class="level3" data-number="8.1.6">
+<h3 data-number="8.1.6" class="anchored" data-anchor-id="why-do-people-use-assembly-language"><span class="header-section-number">8.1.6</span> Why do people use assembly language?</h3>
+<p>In short:</p>
+<div class="incremental">
+<ul class="incremental">
+<li><strong>Speed</strong> - assembly language programs are generally the fastest programs around (up to ten times faster that optimized HLL programs <span class="citation" data-cites="hyde2010">(<a href="../../references.html#ref-hyde2010" role="doc-biblioref">Hyde 2010</a>)</span><a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.</li>
+<li><strong>Space</strong> - assembly language programs are often the smallest.</li>
+<li><strong>Capability</strong> - you can do things in assembly which are difficult or impossible in HLLs.</li>
+<li><strong>Knowledge</strong> - your knowledge of assembly language will help you write better programs, even when using HLLs.</li>
+<li><strong>Reverse Engineer/modify (Hack)</strong> pre-assembled programs.</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="sec-wk7-sect2" class="level2 center" data-background-image="pictures/assembly_wallpaper.png" data-number="8.2">
+<h2 data-background-image="pictures/assembly_wallpaper.png" data-number="8.2" class="anchored" data-anchor-id="sec-wk7-sect2"><span class="header-section-number">8.2</span> Introduction to Assembly Language</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/assembly_wallpaper.png" class="img-fluid" alt="A decaorative image of assembly code."></p>
+<p><a href="https://www.flickr.com/photos/132889348@N07/20607150556">This Photo</a> by Unknown Author is licensed under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA</a></p>
+</div>
+<hr>
+<section id="assembly-language-101" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="assembly-language-101"><span class="header-section-number">8.2.1</span> Assembly Language 101</h3>
+<p>An assembly language program consists of a series of instructions to an assembler which will then produce the machine code program that is loaded to the microcontroller.</p>
+<div class="fragment">
+<p>A program is written as a sequence of statements - one statement per line:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Lines can be empty to separate sections of code.</li>
+<li>Statements cannot span multiple lines.</li>
+</ul>
+</div>
+</div>
+<hr>
+<p>Each statement contains up to four fields each separated by one or more space or tab characters as shown below:</p>
+<div class="fragment">
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1"></a>[<span class="pp">label</span><span class="op">:]</span>    operator    <span class="op">[</span>operand<span class="op">]</span>     <span class="op">[</span><span class="co">;comment]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="notes">
+<p>All statements must have something in the Operator field, but the label, operand and comment fields can be empty.</p>
+</div>
+<hr>
+<section id="assembly-language-labels" class="level4" data-number="8.2.1.1">
+<h4 data-number="8.2.1.1" class="anchored" data-anchor-id="assembly-language-labels"><span class="header-section-number">8.2.1.1</span> Assembly language labels</h4>
+<p>The label field is used to create a reference point in the program than can be used to identify/locate a collection of instructions.</p>
+<div class="fragment">
+<p>Examples:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource {asm} number-lines code-with-copy"><code class="sourceCode"><span id="cb3-1"><a href="#cb3-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a>SECTION1    operator</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="notes">
+<p>Labels must follow a set of rules and a particular format:</p>
+<ul>
+<li>All labels must be <strong>unique</strong> and cannot use <strong>system reserved phrases</strong>.</li>
+<li>All labels <strong>must start with a letter</strong>.</li>
+<li>Labels can contain <strong>letters, numbers, and special characters</strong> (symbols, such as <code>@</code>, <code>$,</code>_` ).</li>
+<li>Labels that <strong>don’t begin at column 1</strong> must be followed by a colon character ( <code>:</code> ).</li>
+<li>Labels are written in <strong>all capitals</strong>.</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="assembly-language-operators" class="level4" data-number="8.2.1.2">
+<h4 data-number="8.2.1.2" class="anchored" data-anchor-id="assembly-language-operators"><span class="header-section-number">8.2.1.2</span> Assembly Language Operators</h4>
+<div class="fragment">
+<p>The <strong>operator field</strong> contains either an assembly directive or a mnemonic/instruction.</p>
+</div>
+<div class="fragment">
+<p><strong>Assembly directives</strong>, sometimes termed <em>pseudo-operations</em> are directives to the assembler that will not be translated to machine code but provide information critical to the program’s function or is required by the assembler.</p>
+</div>
+<div class="notes">
+<p>Assembly directives can be used to specify the starting address in memory, generate fixed tables and data, indicate the end of a program and several others.</p>
+</div>
+<hr>
+</section>
+<section id="assembly-mnemonics" class="level4" data-number="8.2.1.3">
+<h4 data-number="8.2.1.3" class="anchored" data-anchor-id="assembly-mnemonics"><span class="header-section-number">8.2.1.3</span> Assembly mnemonics</h4>
+<p>A <strong>mnemonic</strong> is an instruction that will be directly translated into machine code and is used to manipulate data in some way.</p>
+<div class="fragment">
+<p>The list of allowed mnemonics/instructions is called the <strong>instruction set</strong> and is specific to a particular microcontroller architecture.</p>
+</div>
+<hr>
+<p>However in general, the mnemonics can be classified into one of six groups:</p>
+<div class="incremental">
+<ul class="incremental">
+<li><strong>Data Transfer</strong>: <code>IN</code>, <code>LD</code>, <code>LDI</code>, <code>LDS</code>, <code>MOV</code>, <code>OUT</code>, <code>ST</code>, <code>STS</code>;</li>
+<li><strong>Arithmetic</strong>: <code>ADD</code>, <code>ADC</code>, <code>ADIW</code>, <code>SUB</code>, <code>SUBI</code>, <code>SBC</code>, <code>INC</code>, <code>DEC</code>, <code>MUL</code>, <code>MULS</code>, <code>FMUL</code>;</li>
+<li><strong>Logical</strong>: <code>AND</code>, <code>ANDI</code>, <code>EOR</code>, <code>OR</code>, <code>ORI</code>;</li>
+<li><strong>Program flow</strong>: <code>BREQ</code>, <code>BRGE</code>, <code>BRNE</code>, <code>BRLO</code>, <code>BRMI</code>, <code>BRPL</code>, <code>CALL</code>, <code>JMP</code>, <code>RET</code>, <code>RJMP</code>;</li>
+<li><strong>Bit and Bit Test</strong>: <code>LSL</code>, <code>LSR</code>, <code>ROL</code>, <code>ROR</code>, <code>ASR</code>, <code>SBI</code>, <code>CBI</code>, <code>BSET</code>, <code>BCLR</code>;</li>
+<li><strong>MCU Control</strong>: <code>BREAK</code>, <code>NOP</code>, <code>SLEEP</code>, <code>WDR</code>.</li>
+</ul>
+</div>
+<div class="notes">
+<p>For this module we have been working with an Atmel ATmega328 microcontroller which is based on the AVR® enhanced (AVRe+) architecture.</p>
+</div>
+<hr>
+</section>
+<section id="assembler-directives" class="level4" data-number="8.2.1.4">
+<h4 data-number="8.2.1.4" class="anchored" data-anchor-id="assembler-directives"><span class="header-section-number">8.2.1.4</span> Assembler Directives</h4>
+<p>The <strong>operator field</strong> contains either an <strong>assembly directive</strong> or a <strong>mnemonic/instruction</strong>.</p>
+<div class="frament">
+<p>Assembly directives, sometimes termed pseudo-operations are <strong>directives to the assembler</strong> that will not be translated to machine code but provide information critical to the program’s function that is <strong>required by the assembler</strong>.</p>
+</div>
+<hr>
+<p>Some common directives include;</p>
+<div class="incremental">
+<ul class="incremental">
+<li><code>.CSEG</code> / <code>.DSEG</code> / <code>.ESEG</code></li>
+<li><code>.ORG</code> / <code>.EXIT</code></li>
+<li><code>.EQU</code> / <code>.SET</code> / <code>.DEF</code> / <code>INCLUDE</code></li>
+<li><code>.DB</code> / <code>.DW</code>/ <code>.BYTE</code></li>
+</ul>
+</div>
+<div class="fragment">
+<p>Directives are specific to a particular microcontroller family (different to the instruction set). A list of supported directives for the AVR based microcontrollers can be found <a href="https://onlinedocs.microchip.com/pr/GUID-0B644D8F-67E7-49E6-82C9-1B2B9ABE6A0D-en-US-1/index.html?GUID-BA59618D-4850-490B-B176-0BCC3D9438A1">here</a>.</p>
+</div>
+<hr>
+</section>
+<section id="assembly-language-operands" class="level4" data-number="8.2.1.5">
+<h4 data-number="8.2.1.5" class="anchored" data-anchor-id="assembly-language-operands"><span class="header-section-number">8.2.1.5</span> Assembly Language Operands</h4>
+<div class="incremental">
+<ul class="incremental">
+<li>The operand field follows the operator and contains the <strong>address or data</strong> to be used by the instruction.</li>
+<li>A name (‘label’) can be used to represent the address of the data or a symbol to represent a data constant.</li>
+<li>The <strong>field can be empty</strong> if the instructions given by the operator do not need an address or data.
+<ul class="incremental">
+<li>As an example the operator <code>NOP</code> (no-operation) requires no operand.</li>
+</ul></li>
+<li><strong>Some operators allow for multiple operands</strong> and in these cases the operands are separated by commas (<code>,</code>).</li>
+</ul>
+</div>
+<hr>
+<section id="examples-1" class="level5">
+<h5 class="anchored" data-anchor-id="examples-1">Examples 1</h5>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1"></a>LDI     R16<span class="op">,</span> <span class="bn">0b</span><span class="er">01010101</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="bu">ADD</span>     R16<span class="op">,</span> R17</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="bu">LDS</span>     R2<span class="op">,</span> <span class="bn">0xFF00</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="bu">NOP</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="bu">MOV</span>     R16<span class="op">,</span> R17</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="notes">
+<ul>
+<li>Line 1: Load Register <code>R16</code> with binary value <code>0b01010101</code></li>
+<li>Line 2: Add the contents of register <code>R16</code> to the contents of register <code>R17</code></li>
+<li>Line 3: Load Register <code>R2</code> with contents of data memory with address <code>0xFF00</code></li>
+<li>Line 4: No operation - do nothing for one clock cycle</li>
+<li>Line 5: Move the contents of register <code>R16</code> to register <code>R17</code></li>
+</ul>
+</div>
+<hr>
+</section>
+</section>
+<section id="assembly-language-comments" class="level4" data-number="8.2.1.6">
+<h4 data-number="8.2.1.6" class="anchored" data-anchor-id="assembly-language-comments"><span class="header-section-number">8.2.1.6</span> Assembly Language Comments</h4>
+<div class="fragment">
+<p>As with the C language, the comment field is there to allow the programmer to include any comments which may make the program easier to understand at a later time or by another reader.</p>
+</div>
+<div class="fragment">
+<p>When the <strong>assembler is reading</strong> the line of text, the <strong>comment field is ignored</strong>.</p>
+</div>
+<hr>
+<div class="fragment">
+<p>Comments also follow a set of rules and a particular format dependent on the assembler being used<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>:</p>
+</div>
+<div class="incremental">
+<ul class="incremental">
+<li>If an <strong>entire line</strong> is a comment, it must start with a <strong>semicolon</strong> or an <strong>asterisk symbol</strong> in the first column.</li>
+<li>If <strong>not starting in the first column</strong>, the comment must start with a <strong>semicolon</strong>.</li>
+<li>The comment must be separated from the operator or operand field by at least one space.</li>
+</ul>
+</div>
+<hr>
+<section id="examples-2" class="level5">
+<h5 class="anchored" data-anchor-id="examples-2">Examples 2</h5>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">;This comment line starts with a semicolon</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>*This comment line starts with an asterisk</span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a>operator <span class="co">;This comment follows an operator</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>operator</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+</section>
+<section id="sec-wk7-assembler" class="level4" data-number="8.2.1.7">
+<h4 data-number="8.2.1.7" class="anchored" data-anchor-id="sec-wk7-assembler"><span class="header-section-number">8.2.1.7</span> Assembler</h4>
+<div class="notes">
+<p>It is important to be aware of the assembler and the structure assembly language programs follow.</p>
+<p>The assembler takes the sequence of mnemonics (instructions) written in assembly language and translates them into machine code using the process illustrated in <a href="#fig-wk7-assembly" class="quarto-xref">Figure&nbsp;<span>8.2</span></a>.</p>
+</div>
+<div id="fig-wk7-assembly" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The assembly process.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk7-assembly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/assembler.png" class="img-fluid figure-img" alt="The assembly process.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk7-assembly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.2: The assembly process
+</figcaption>
+</figure>
+</div>
+<hr>
+<p>The assembler processes the assembly language file and generates an object file and listing file(s)</p>
+<div class="incremental">
+<ul class="incremental">
+<li>An object file is essentially a one-to-one mapping of mnemonics against the binary (sometimes hexadecimal) instruction set.</li>
+<li>The listing file shows each line of the assembly language input along with the memory addresses resolved by the assembler, resulting machine code or data and other diagnostic information.</li>
+</ul>
+</div>
+<div class="fragment">
+<p>The linker combines multiple object files as well as any library files and generates an executable which can be loaded onto the microcontroller (this file is often a <code>*.hex</code> file).</p>
+</div>
+<hr>
+</section>
+</section>
+<section id="sec-wk7-sect3" class="level2 center" data-background-image="pictures/week07_breadboard_wallpaper.jpg" data-number="8.3">
+<h2 data-background-image="pictures/week07_breadboard_wallpaper.jpg" data-number="8.3" class="anchored" data-anchor-id="sec-wk7-sect3"><span class="header-section-number">8.3</span> Interfacing with Digital I/O example.</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/week07_breadboard_wallpaper.jpg" class="img-fluid" alt="Decorative background image showing the circuit discussed in the example."></p>
+</div>
+<hr>
+<section id="example" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="example"><span class="header-section-number">8.3.1</span> Example</h3>
+<div class="notes">
+<p>Recall the example from <a href="../..\lectures/week05/#sec-wk5-digital-io-example">Digital I/O Example Program</a> reproduced again here as <a href="#fig-wk7-example-circuit" class="quarto-xref">Figure&nbsp;<span>8.3</span></a>. The left and right push buttons connected to the digital inputs <code>D3</code> and <code>D2</code> respectively corresponding with Port D Bits 3 and 2 on the Atmega328 microcontroller.</p>
+<p>When the left push button is pressed the red LED (Port B Bit 1) is illuminated and the green LED (Port B Bit 0) illuminated when the right push button is pressed.</p>
+</div>
+<div id="fig-wk7-example-circuit" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A photograph of the example circuit which has two buttons and two LEDs.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk7-example-circuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/week07_breadboard.jpg" class="img-fluid figure-img" alt="A photograph of the example circuit which has two buttons and two LEDs.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk7-example-circuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.3: A photograph of the example circuit which has two buttons and two LEDs discussed in <a href="../..\lectures/week05/#sec-wk5-digital-io-example">Digital I/O Example Program</a>.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="c-language-code" class="level4" data-number="8.3.1.1">
+<h4 data-number="8.3.1.1" class="anchored" data-anchor-id="c-language-code"><span class="header-section-number">8.3.1.1</span> C-Language Code</h4>
+<div class="notes">
+<p>Let us start with the C-language program we wrote for this (<a href="#lst-wk7-example-c-program" class="quarto-xref">Listing&nbsp;<span>8.1</span></a>).</p>
+</div>
+<div id="lst-wk7-example-c-program" class="c listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk7-example-c-program-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8.1: Example Program <a href="https://gist.github.com/cpjobling/07585093f8eafe69a4eeff1186110883">main.c</a>
+</figcaption>
+<div aria-describedby="lst-wk7-example-c-program-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#include </span><span class="im">&lt;stdint.h&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co">//I/O and ADC Register definitions taken from datasheet</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="pp">#define PORTD </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x2B</span><span class="op">))</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="pp">#define DDRD </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x2A</span><span class="op">))</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="pp">#define PIND </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x29</span><span class="op">))</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="pp">#define PORTB </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x25</span><span class="op">))</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="pp">#define DDRB </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x24</span><span class="op">))</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="pp">#define PINB </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x23</span><span class="op">))</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="op">{</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a>    <span class="co">//Set Data Direction Registers</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a>    DDRD <span class="op">=</span> DDRD <span class="op">&amp;</span> <span class="bn">0b11110011</span><span class="op">;</span> <span class="co">//setup bits 2 and 3 of port D as inputs</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a>    DDRB <span class="op">=</span> DDRB <span class="op">|</span> <span class="bn">0b00000011</span><span class="op">;</span> <span class="co">//setup bits 0 and 1 of port B as outputs</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a></span>
+<span id="cb6-18"><a href="#cb6-18"></a>    PORTB <span class="op">=</span> PORTB <span class="op">&amp;</span> <span class="bn">0b11111100</span><span class="op">;</span> <span class="co">//both pins B0 (D8) and B1 (D9) start low</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a>    </span>
+<span id="cb6-20"><a href="#cb6-20"></a>    PORTD <span class="op">=</span> PORTD <span class="op">|</span> <span class="bn">0b00001100</span><span class="op">;</span> <span class="co">// Enable the pull up resistor for bits 2 and 3 of port D</span></span>
+<span id="cb6-21"><a href="#cb6-21"></a>    </span>
+<span id="cb6-22"><a href="#cb6-22"></a>    <span class="cf">for</span><span class="op">(;;)</span></span>
+<span id="cb6-23"><a href="#cb6-23"></a>    <span class="op">{</span></span>
+<span id="cb6-24"><a href="#cb6-24"></a>        <span class="cf">if</span><span class="op">((</span>PIND <span class="op">&amp;</span> <span class="bn">0b00000100</span><span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb6-25"><a href="#cb6-25"></a>        <span class="op">{</span></span>
+<span id="cb6-26"><a href="#cb6-26"></a>            PORTB <span class="op">=</span> PORTB <span class="op">|</span> <span class="bn">0b00000001</span><span class="op">;</span> <span class="co">//sets port B, bit 0 to logic 1/high, switches the LED connected to D8 on</span></span>
+<span id="cb6-27"><a href="#cb6-27"></a>        <span class="op">}</span></span>
+<span id="cb6-28"><a href="#cb6-28"></a>        <span class="cf">else</span> <span class="cf">if</span> <span class="op">((</span>PIND <span class="op">&amp;</span> <span class="bn">0b00001000</span><span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb6-29"><a href="#cb6-29"></a>        <span class="op">{</span></span>
+<span id="cb6-30"><a href="#cb6-30"></a>            PORTB <span class="op">=</span> PORTB <span class="op">|</span> <span class="bn">0b00000010</span><span class="op">;</span> <span class="co">//sets port B, bit 1 to logic 1/high, switches the LED connected to D9 on</span></span>
+<span id="cb6-31"><a href="#cb6-31"></a>        <span class="op">}</span></span>
+<span id="cb6-32"><a href="#cb6-32"></a>        <span class="cf">else</span></span>
+<span id="cb6-33"><a href="#cb6-33"></a>        <span class="op">{</span></span>
+<span id="cb6-34"><a href="#cb6-34"></a>            PORTB <span class="op">=</span> PORTB <span class="op">&amp;</span> <span class="bn">0b11111100</span><span class="op">;</span> <span class="co">//sets bits 0-5 of port B to logic 0/low, switches off both the LED's</span></span>
+<span id="cb6-35"><a href="#cb6-35"></a>        <span class="op">}</span></span>
+<span id="cb6-36"><a href="#cb6-36"></a>    <span class="op">}</span></span>
+<span id="cb6-37"><a href="#cb6-37"></a>    </span>
+<span id="cb6-38"><a href="#cb6-38"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="io-addresses" class="level4" data-number="8.3.1.2">
+<h4 data-number="8.3.1.2" class="anchored" data-anchor-id="io-addresses"><span class="header-section-number">8.3.1.2</span> I/O Addresses</h4>
+<div id="fig-wk7-io-addresses" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The addresses of the IO registers with information on which can be used in particular contexts.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk7-io-addresses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/io_registers.png" class="img-fluid figure-img" alt="The addresses of the IO registers with information on which can be used in particular contexts.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk7-io-addresses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.4: The addresses of the IO registers with information on which can be used in particular contexts.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="assigning-a-name-to-the-io-addresses" class="level4" data-number="8.3.1.3">
+<h4 data-number="8.3.1.3" class="anchored" data-anchor-id="assigning-a-name-to-the-io-addresses"><span class="header-section-number">8.3.1.3</span> Assigning a name to the I/O addresses</h4>
+<div class="notes">
+<p>We use <code>.EQU</code>, <code>.SET</code> or <code>.DEF</code> to assign a name to a memory location<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> (<a href="#lst-assign-names-to-memory-locations" class="quarto-xref">Listing&nbsp;<span>8.2</span></a>):</p>
+</div>
+<div id="lst-assign-names-to-memory-locations" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|2|3|5|6|7">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-assign-names-to-memory-locations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8.2: Assigning a name to the I/0 addresses
+</figcaption>
+<div aria-describedby="lst-assign-names-to-memory-locations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">; Equate easy to read names to the I/O addresses</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>.<span class="pp">EQU</span> DDRB <span class="op">=</span> <span class="bn">0x04</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>.<span class="pp">EQU</span> PORTB <span class="op">=</span> <span class="bn">0x05</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a>.<span class="pp">EQU</span> PIND <span class="op">=</span> <span class="bn">0x09</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>.<span class="pp">EQU</span> DDRD <span class="op">=</span> <span class="bn">0x0A</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>.<span class="pp">EQU</span> PORTD <span class="op">=</span> <span class="bn">0x0B</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="assembly-equivalent-of-int-mainvoid" class="level4" data-number="8.3.1.4">
+<h4 data-number="8.3.1.4" class="anchored" data-anchor-id="assembly-equivalent-of-int-mainvoid"><span class="header-section-number">8.3.1.4</span> Assembly equivalent of <code>int main(void)</code></h4>
+<div class="notes">
+<p>In C language we put our code (or calls to external functions) within a main function, written as <a href="#lst-wk7-main-c" class="quarto-xref">Listing&nbsp;<span>8.3</span></a>:</p>
+</div>
+<div id="lst-wk7-main-c" class="c listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk7-main-c-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8.3: Program start in C language: the <em>main</em> function
+</figcaption>
+<div aria-describedby="lst-wk7-main-c-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="co">// Program code</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+<div class="notes">
+<p>In assembly language, there isn’t a main function as such but rather the <code>.CSEG</code> / <code>.DSEG</code> / <code>.ESEG</code> directives along with the <code>.ORG</code> directive are used to define the start address of code, data and EEPROM segments, repectivley, in memory.</p>
+<p>In the lines shown in <a href="#lst-code-segment-start" class="quarto-xref">Listing&nbsp;<span>8.4</span></a> we are telling the assembler that we want the code segment to start at memory location with address <span class="math inline">\(200_{16}\)</span>.</p>
+</div>
+<div class="fragment">
+<div id="lst-code-segment-start" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-code-segment-start-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8.4: Define the code segment start address
+</figcaption>
+<div aria-describedby="lst-code-segment-start-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1"></a>.CSEG</span>
+<span id="cb9-2"><a href="#cb9-2"></a>.<span class="bu">ORG</span> <span class="bn">0x0200</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="io-port-access-and-bitmasking-operations" class="level4" data-number="8.3.1.5">
+<h4 data-number="8.3.1.5" class="anchored" data-anchor-id="io-port-access-and-bitmasking-operations"><span class="header-section-number">8.3.1.5</span> I/O port access and bitmasking operations</h4>
+<div class="fragment">
+<p>We can use the <code>IN</code> and <code>OUT</code> operations for reading from and writing to ports respectively, and the <code>ANDI</code> and <code>ORI</code> operations for setting up bitmasks.</p>
+</div>
+<div class="fragment">
+<p>We include scans of the documentation for these operators in the following images.</p>
+</div>
+<hr>
+<p><img src="pictures/in.png" class="img-fluid" alt="The IN operator."></p>
+<hr>
+<p><img src="pictures/out.png" class="img-fluid" alt="The OUT operator."></p>
+<hr>
+<p><img src="pictures/andi.png" class="img-fluid" alt="The ANDI operator."></p>
+<hr>
+<p><img src="pictures/ori.png" class="img-fluid" alt="The ORI operator."></p>
+<hr>
+</section>
+<section id="setting-up-the-io-ports" class="level4" data-number="8.3.1.6">
+<h4 data-number="8.3.1.6" class="anchored" data-anchor-id="setting-up-the-io-ports"><span class="header-section-number">8.3.1.6</span> Setting up the I/O Ports</h4>
+<div class="fragment">
+<p>Using the C language, we wrote:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a>DDRD <span class="op">=</span> DDRD <span class="op">&amp;</span> <span class="bn">0b11110011</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>to ensure bits 2 and 3 of port D are configured as inputs.</p>
+</div>
+<div class="fragment">
+<p>Similar lines were written to set up the output bits in Port B, the starting condition of these bits and then to enable the pull up resistors on Port D.</p>
+</div>
+<hr>
+<div class="notes">
+<p>The direct translation to Assembly language involves three lines for each action as illustrated in <a href="#lst-wk7-port_io" class="quarto-xref">Listing&nbsp;<span>8.5</span></a>.</p>
+</div>
+<div id="lst-wk7-port_io" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|2-4|7-9|12-14|17-19">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk7-port_io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8.5: Assembly code to set up the inputs and outputs.
+</figcaption>
+<div aria-describedby="lst-wk7-port_io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">;setup bits 2 and 3 of port D as inputs</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="bu">IN</span> R16<span class="op">,</span> DDRD</span>
+<span id="cb11-3"><a href="#cb11-3"></a>ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11110011</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="bu">OUT</span> DDRD<span class="op">,</span> R16</span>
+<span id="cb11-5"><a href="#cb11-5"></a></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="co">;setup bits 0 and 1 of port B as outputs</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="bu">IN</span> R16<span class="op">,</span> DDRB</span>
+<span id="cb11-8"><a href="#cb11-8"></a>ORI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">00000011</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="bu">OUT</span> DDRB<span class="op">,</span> R16</span>
+<span id="cb11-10"><a href="#cb11-10"></a></span>
+<span id="cb11-11"><a href="#cb11-11"></a><span class="co">;both pins B0 (D8) and B1 (D9) start low</span></span>
+<span id="cb11-12"><a href="#cb11-12"></a><span class="bu">IN</span> R16<span class="op">,</span> PORTB</span>
+<span id="cb11-13"><a href="#cb11-13"></a>ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11111100</span></span>
+<span id="cb11-14"><a href="#cb11-14"></a><span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb11-15"><a href="#cb11-15"></a></span>
+<span id="cb11-16"><a href="#cb11-16"></a><span class="co">;Enable the pull up resistor for bits 2 and 3 of port D</span></span>
+<span id="cb11-17"><a href="#cb11-17"></a><span class="bu">IN</span> R16<span class="op">,</span> PORTD</span>
+<span id="cb11-18"><a href="#cb11-18"></a>ORI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">00001100</span></span>
+<span id="cb11-19"><a href="#cb11-19"></a><span class="bu">OUT</span> PORTD<span class="op">,</span> R16</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="infinite-loop" class="level4" data-number="8.3.1.7">
+<h4 data-number="8.3.1.7" class="anchored" data-anchor-id="infinite-loop"><span class="header-section-number">8.3.1.7</span> Infinite loop</h4>
+<div class="fragment">
+<p>Using the C language, we created an infinite loop as follows:</p>
+</div>
+<div class="fragment">
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>  <span class="co">// Program code</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="fragment">
+<p>This essentially “<em>traps</em>” the program to ensure it continuously loops executing the program code within the code block.</p>
+</div>
+<hr>
+<p>In assembly language we can produce the same result by creating a “Label” and using the operation <code>RJMP</code> (<em>relative jump</em>):</p>
+<div class="fragment">
+<div id="lst-jump-to-label" class="asm listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-jump-to-label-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8.6: Infinite loop in assembly code: jump to a label with <code>RJMP</code>.
+</figcaption>
+<div aria-describedby="lst-jump-to-label-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">LOOP:</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>    RJMP LOOP</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+<p>The documention for <code>RJMP</code> is shown here:</p>
+<p><img src="pictures/rjmp.png" class="img-fluid" alt="The RJMP operator."></p>
+<hr>
+</section>
+<section id="detecting-a-button-press" class="level4" data-number="8.3.1.8">
+<h4 data-number="8.3.1.8" class="anchored" data-anchor-id="detecting-a-button-press"><span class="header-section-number">8.3.1.8</span> Detecting a button press</h4>
+<div class="notes">
+<p>In C language, to detect a button press we used the ‘if statement’ below with a bit mask corresponding to a particular bit of the port and monitoring for its state changing to 0 or Low (<a href="#lst-detect-button-press" class="quarto-xref">Listing&nbsp;<span>8.7</span></a>).</p>
+</div>
+<div class="fragment">
+<div id="lst-detect-button-press" class="c listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|1|3">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-detect-button-press-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8.7: Detecting a button press in C
+</figcaption>
+<div aria-describedby="lst-detect-button-press-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="cf">if</span> <span class="op">(</span> <span class="op">(</span>PIND <span class="op">&amp;</span> <span class="bn">0b00000100</span><span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="op">{</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>  PORTB <span class="op">=</span> <span class="bn">0b00000001</span><span class="op">;</span>    <span class="co">// sets port B, bit 0 to logic 1 (high)</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>                         <span class="co">// which switches the LED connected to D8 on</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</div>
+<div class="fragment">
+<p>In assembly we can use the <em>compare</em> (<code>CP</code>) and <em>branch if equal</em> (<code>BREQ</code>) instructions to achieve this same implementation.</p>
+</div>
+<hr>
+<p><img src="pictures/cp.png" class="img-fluid" alt="Documentation for the CP (compare) operation."></p>
+<hr>
+<p><img src="pictures/breq.png" class="img-fluid" alt="Documentation for the BREQ (branch if equal) operation."></p>
+<hr>
+<div class="notes">
+<p>Consider the assembly code shown in <a href="#lst-detect-switch" class="quarto-xref">Listing&nbsp;<span>8.8</span></a> below.</p>
+</div>
+<div id="lst-detect-switch" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|2-6|8-12|14-16|17|1">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-detect-switch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8.8: Assembly code for detecting button presses in main loop.
+</figcaption>
+<div aria-describedby="lst-detect-switch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">LOOP:</span> </span>
+<span id="cb15-2"><a href="#cb15-2"></a>    <span class="bu">IN</span> R16<span class="op">,</span> PIND</span>
+<span id="cb15-3"><a href="#cb15-3"></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">00000100</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a>    LDI R17<span class="op">,</span> <span class="bn">0x00</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a>    CP R16<span class="op">,</span> R17</span>
+<span id="cb15-6"><a href="#cb15-6"></a>    BREQ LED1</span>
+<span id="cb15-7"><a href="#cb15-7"></a></span>
+<span id="cb15-8"><a href="#cb15-8"></a>    <span class="bu">IN</span> R16<span class="op">,</span> PIND</span>
+<span id="cb15-9"><a href="#cb15-9"></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">00001000</span></span>
+<span id="cb15-10"><a href="#cb15-10"></a>    LDI R17<span class="op">,</span> <span class="bn">0x00</span></span>
+<span id="cb15-11"><a href="#cb15-11"></a>    CP R16<span class="op">,</span> R17</span>
+<span id="cb15-12"><a href="#cb15-12"></a>    BREQ LED1 </span>
+<span id="cb15-13"><a href="#cb15-13"></a></span>
+<span id="cb15-14"><a href="#cb15-14"></a>    <span class="bu">IN</span> R16<span class="op">,</span> PORTB</span>
+<span id="cb15-15"><a href="#cb15-15"></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11111100</span></span>
+<span id="cb15-16"><a href="#cb15-16"></a>    <span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb15-17"><a href="#cb15-17"></a>    RJMP LOOP</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="notes">
+<ul>
+<li>In lines 2–6 we read <code>PIND</code>, use a bit mask to select bit 2, compare the value of the selected bit with zero and branch to label <code>LED1</code> if the value is zero (<code>0x00</code>).</li>
+<li>In lines 9-12 we read <code>PIND</code>, use a bit mask to select bit 3, compare the value of the selected bit with zero and branch to label <code>LED2</code> if the value is zero (<code>0x00</code>).</li>
+<li>If we reach line 14, then both buttons were high (not pressed) so we use the bitmask <code>0x11111100</code> to ensure that both LEDs connected to bits 0 and 1 of port B are turned off (lines 14–16).</li>
+<li>We then jump to the label <code>LOOP</code> (line 17).</li>
+</ul>
+</div>
+<hr>
+<div class="notes">
+<p>In the next few lines (see <a href="#lst-turn-leds-on" class="quarto-xref">Listing&nbsp;<span>8.9</span></a>) we:</p>
+<ol type="1">
+<li>Line 2: read the current value of Port B into <code>R16</code></li>
+<li>Line 3: perform a bitwise or operation with the immediate pattern provided (mask).</li>
+<li>Line 4: The new value stored in <code>R16</code> is then sent to the <code>PORTB</code> register essentially changing the state of the LED to on.</li>
+<li>Line 5: Finally the <code>RJMP</code> instruction ensures the program loops back to the start.</li>
+</ol>
+</div>
+<div id="lst-turn-leds-on" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|2-4|5|8-10|11">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-turn-leds-on-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8.9: Assembly code to switch on the LEDs.
+</figcaption>
+<div aria-describedby="lst-turn-leds-on-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">LED1:</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>    <span class="bu">IN</span> R16<span class="op">,</span> PORTB</span>
+<span id="cb16-3"><a href="#cb16-3"></a>    ORI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">00000001</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a>    <span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb16-5"><a href="#cb16-5"></a>    RJMP LOOP</span>
+<span id="cb16-6"><a href="#cb16-6"></a></span>
+<span id="cb16-7"><a href="#cb16-7"></a><span class="fu">LED2:</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a>    <span class="bu">IN</span> R16<span class="op">,</span> PORTB</span>
+<span id="cb16-9"><a href="#cb16-9"></a>    ORI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">00000010</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a>    <span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb16-11"><a href="#cb16-11"></a>    RJMP LOOP</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="notes">
+<p>A similar process is used for LED2.</p>
+</div>
+<hr>
+</section>
+<section id="comparison-with-c" class="level4" data-number="8.3.1.9">
+<h4 data-number="8.3.1.9" class="anchored" data-anchor-id="comparison-with-c"><span class="header-section-number">8.3.1.9</span> Comparison with C</h4>
+<div class="notes">
+<p>In <a href="#fig-wk7-comp-asm-with-c" class="quarto-xref">Figure&nbsp;<span>8.5</span></a> we compare the C program with the equivalent assembly program.</p>
+</div>
+<div id="fig-wk7-comp-asm-with-c" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Comparing an I/O program written in C with an equvalent assembly program.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk7-comp-asm-with-c-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/comp_asm_with_c.png" class="img-fluid figure-img" alt="Comparing an I/O program written in C with an equvalent assembly program.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk7-comp-asm-with-c-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.5: Comparing an I/O program written in C with an equvalent assembly program. The assembly code is available for study as a Gist <a href="https://gist.github.com/cpjobling/e72f37ff363353b6ed10ecdbeaa970af">main.asm</a>.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="an-advantage-of-assembly-language" class="level4" data-number="8.3.1.10">
+<h4 data-number="8.3.1.10" class="anchored" data-anchor-id="an-advantage-of-assembly-language"><span class="header-section-number">8.3.1.10</span> An Advantage of Assembly Language</h4>
+<div class="incremental">
+<ul class="incremental">
+<li>Using C language, it is not possible to read or write individual bits of a register or I/O port.</li>
+<li>In assembly language, this <em>is possible</em> using bit operations such as <code>SBI</code>, <code>CBI</code>, <code>SBIC</code>, <code>SBIS</code> and a handful of others:</li>
+</ul>
+</div>
+<hr>
+<p><img src="pictures/sbi.png" class="img-fluid" alt="The SBI operation."></p>
+<hr>
+<p><img src="pictures/sbic.png" class="img-fluid" alt="The SBIC operation."></p>
+<hr>
+<p>These can only be used on certain registers as identified in the documentation for the I/O memory map:</p>
+<p><img src="pictures/io_mem_map2.png" class="img-fluid" alt="The I/O memory map showing the registers for which bitwise operations are available."></p>
+<hr>
+<div class="notes">
+<p>The code given in <a href="../week10/index.html#lst-using-bit-manipulation" class="quarto-xref">Listing&nbsp;<span>10.11</span></a> shows the equivalent code implemented with <code>SBI</code> and <code>SBIC</code> operations.</p>
+</div>
+<div id="lst-using-bit-manipulation" class="asm listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-using-bit-manipulation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8.10: Equivalent assembly program using the SBI and SBIC operations.
+</figcaption>
+<div aria-describedby="lst-using-bit-manipulation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">LOOP:</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a>    SBIC PIND<span class="op">,</span> <span class="dv">2</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a>    RJMP LED1</span>
+<span id="cb17-4"><a href="#cb17-4"></a></span>
+<span id="cb17-5"><a href="#cb17-5"></a>    SBIC PINC<span class="op">,</span> <span class="dv">3</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a>    RJMP LED2</span>
+<span id="cb17-7"><a href="#cb17-7"></a></span>
+<span id="cb17-8"><a href="#cb17-8"></a>    <span class="bu">IN</span> R16<span class="op">,</span> PORTB</span>
+<span id="cb17-9"><a href="#cb17-9"></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11111100</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a>    <span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb17-11"><a href="#cb17-11"></a>    RJMP LOOP</span>
+<span id="cb17-12"><a href="#cb17-12"></a></span>
+<span id="cb17-13"><a href="#cb17-13"></a><span class="fu">LED1:</span></span>
+<span id="cb17-14"><a href="#cb17-14"></a>    SBI PORTB<span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb17-15"><a href="#cb17-15"></a>    RJMP LOOP</span>
+<span id="cb17-16"><a href="#cb17-16"></a></span>
+<span id="cb17-17"><a href="#cb17-17"></a><span class="fu">LED2:</span> </span>
+<span id="cb17-18"><a href="#cb17-18"></a>    SBI PORTB<span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb17-19"><a href="#cb17-19"></a>    RJMP LOOP</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</section>
+<section id="comparison" class="level4" data-number="8.3.1.11">
+<h4 data-number="8.3.1.11" class="anchored" data-anchor-id="comparison"><span class="header-section-number">8.3.1.11</span> Comparison</h4>
+<div id="fig-wk7-comparison" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Comparison of three equivalent programs.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk7-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/comparison.png" class="img-fluid figure-img" alt="Comparison of three equivalent programs.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk7-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.6: Comparison of three equivalent programs
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>In <a href="#fig-wk7-comparison" class="quarto-xref">Figure&nbsp;<span>8.6</span></a> we show the original C program, the first version of the assembly program, and a version that is using <code>SBIC</code> to directly branch based on the value of a single bit in Port D. These three programs all work in the same way.</p>
+</div>
+</section>
+</section>
+<section id="summary" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="summary">Summary</h2>
+<p>In this section:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>We have introduced assembly language as a direct mapping of mnemonics to machine code.</li>
+<li>We have explored the basic structure of an assembly language program including operator classification, operands and comments.</li>
+<li>Finally, we have revisited out digital switch example from C and looked at how this can directly translate to Assembly language and how it can be optimized using specific features of the Atmel ATmega328 microcontroller.</li>
+</ul>
+</div>
+<hr>
+<section id="on-canvas" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="on-canvas">On Canvas</h3>
+<p>This week on the <a href="https://canvas.swansea.ac.uk/courses/52902/pages/week-7-assembler-directives?module_item_id=2882187">Canvas course pages</a>, you will find the sample program from today’s lecture, look through this and ensure you are confident in how it works and how the masks are defined and registers set.</p>
+<p>There is also a <a href="https://canvas.swansea.ac.uk/courses/52902/assignments/407482?display=full_width">short quiz</a> to test your knowledge on these topics.</p>
+<hr>
+</section>
+<section id="next-time" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="next-time">Next time</h3>
+<ul>
+<li><a href="../..\lectures/week08">Microcontroller Architecture – Program Operation</a></li>
+</ul>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-hyde2010" class="csl-entry" role="listitem">
+Hyde, Randall. 2010. <em>The Art of Assembly Language</em>. 2nd ed. No Starch Press.
+</div>
+</div>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Programs are stored on a microcontroller as a series of binary codes located within sequential memory addresses. These instructions are executed in order, dictated by the program counter, unless an instruction modifies the program counter and changes the program flow e.g.&nbsp;for a function call.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Image source: <a href="https://www.shutterstock.com/image-vector/binary-code-digital-numbers-green-background-1724376772">www.shutterstock.com/image-vector/binary-code-digital-numbers-green-background-1724376772</a>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Image source <a href="https://www.shutterstock.com/search/confused+person">www.shutterstock.com/search/confused+person</a>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Because each mnemonic is associated with a single machine code, it is also easy to convert machine code to assembly language. This is sometimes useful for debugging programs. It is known as <strong>disassembly</strong>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Please don’t get carried away! There are few tasks for which the cost of not starting in a HLL is going to be paid back by writing complete programs in assembly code.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>As assembly codes are generally less readable than higher level languages, like the C language, it is good practice to be very liberal with comments in assembly code programs.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>The purpose of these assembly directives is to assign a meaningful name to a label, constant, data value (<em>variable</em>), or memory location.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+<p>Copyright © 2021-2025 Swansea University. All rights reserved.</p></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jahangerh\.github\.io\/eg-151-textbook");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/week07/index.html" class="pagination-link" aria-label="Interfacing to Analogue I/O with C">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../lectures/week09/index.html" class="pagination-link" aria-label="Microcontroller Architecture – Program Operation">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week08/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

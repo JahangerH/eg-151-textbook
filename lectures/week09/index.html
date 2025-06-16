@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.30">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ben Clifford">
+<meta name="dcterms.date" content="2025-11-19">
+
+<title>9&nbsp; Microcontroller Architecture – Program Operation – EG-151 Microcontrollers 2025-2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../lectures/week10/index.html" rel="next">
+<link href="../../lectures/week08/index.html" rel="prev">
+<link href="../../logo.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-662ae1889177880cb371f83234c0a158.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-de0027c6417e353ce4980619e2136061.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="application/json" class="js-hypothesis-config">
+{
+  "theme": "clean",
+  "openSidebar": false
+}
+</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week09/index.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">EG-151 Microcontrollers 2025-2026</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/JahangerH/eg-151-textbook/tree/main/website/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Course Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_aims.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Aims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_delivery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Delivery Method</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lectures/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontrollers Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers—Module Staff</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Microcontrollers and Microcontroller Architecture</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Introduction to Programming and Program Development</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Introduction to Programming with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week09/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lab_intro/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Laboratory Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Assessment of the Laboratory Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_work.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Laboratory Work in the Department of Electronic and Electrical Engineering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_instruments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Laboratory Instruments</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Laboratory Safety</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/experiment0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Experiment: to construct an oscillator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Simulation Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Questions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/construction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Construction Exercise - Continuity Tester</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/soldering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Safe Soldering</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontroller Programming Laboratory</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/get_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Experiment 1: Binary Counter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Experiment 2: Digital Input</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Experiment 3: Analogue to Digital Conversion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Experiment 4: Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Experiment 5: LCD Display Panel</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mini Projects</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/voltmeter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Voltmeter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/range_finder.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Ultrasonic Range Finder</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/clock_timer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Clock Time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/weather_station.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Weather Station</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/appendix_a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Other Data Representations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/programming_in_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Programming in C – from nothing to software</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-wk8-intro" id="toc-sec-wk8-intro" class="nav-link active" data-scroll-target="#sec-wk8-intro">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#contents" id="toc-contents" class="nav-link" data-scroll-target="#contents">Contents</a></li>
+  </ul></li>
+  <li><a href="#sec-wk8-sect1" id="toc-sec-wk8-sect1" class="nav-link" data-scroll-target="#sec-wk8-sect1"><span class="header-section-number">9.1</span> Architecture recap</a></li>
+  <li><a href="#arithmetic-logic-unit-alu" id="toc-arithmetic-logic-unit-alu" class="nav-link" data-scroll-target="#arithmetic-logic-unit-alu"><span class="header-section-number">9.1.1</span> Arithmetic Logic Unit (ALU)</a></li>
+  <li><a href="#the-cpu-core" id="toc-the-cpu-core" class="nav-link" data-scroll-target="#the-cpu-core"><span class="header-section-number">9.1.2</span> The CPU Core</a></li>
+  <li><a href="#sec-wk8-sect2" id="toc-sec-wk8-sect2" class="nav-link" data-scroll-target="#sec-wk8-sect2"><span class="header-section-number">9.2</span> Additional components</a></li>
+  <li><a href="#simplified-block-diagram-of-the-microcontroller-core" id="toc-simplified-block-diagram-of-the-microcontroller-core" class="nav-link" data-scroll-target="#simplified-block-diagram-of-the-microcontroller-core"><span class="header-section-number">9.2.1</span> Simplified block diagram of the microcontroller core</a></li>
+  <li><a href="#block-1-clock" id="toc-block-1-clock" class="nav-link" data-scroll-target="#block-1-clock"><span class="header-section-number">9.2.2</span> Block 1: Clock</a></li>
+  <li><a href="#block-2-control-unit" id="toc-block-2-control-unit" class="nav-link" data-scroll-target="#block-2-control-unit"><span class="header-section-number">9.2.3</span> Block 2: Control Unit</a></li>
+  <li><a href="#block-3-memory-address-register-mar" id="toc-block-3-memory-address-register-mar" class="nav-link" data-scroll-target="#block-3-memory-address-register-mar"><span class="header-section-number">9.2.4</span> Block 3: Memory Address Register (MAR)</a></li>
+  <li><a href="#block-4-memory-data-register-mdr" id="toc-block-4-memory-data-register-mdr" class="nav-link" data-scroll-target="#block-4-memory-data-register-mdr"><span class="header-section-number">9.2.5</span> Block 4: Memory Data Register (MDR)</a></li>
+  <li><a href="#block-5-instruction-register-ir" id="toc-block-5-instruction-register-ir" class="nav-link" data-scroll-target="#block-5-instruction-register-ir"><span class="header-section-number">9.2.6</span> Block 5: Instruction Register (IR)</a></li>
+  <li><a href="#block-6-instruction-decoder-id" id="toc-block-6-instruction-decoder-id" class="nav-link" data-scroll-target="#block-6-instruction-decoder-id"><span class="header-section-number">9.2.7</span> Block 6: Instruction Decoder (ID)</a></li>
+  <li><a href="#busses" id="toc-busses" class="nav-link" data-scroll-target="#busses"><span class="header-section-number">9.2.8</span> Busses</a></li>
+  <li><a href="#sec-wk8-sect3" id="toc-sec-wk8-sect3" class="nav-link" data-scroll-target="#sec-wk8-sect3"><span class="header-section-number">9.3</span> Fetch-Decode-Execute cycle</a></li>
+  <li><a href="#sec-wk8-add-code" id="toc-sec-wk8-add-code" class="nav-link" data-scroll-target="#sec-wk8-add-code"><span class="header-section-number">9.3.1</span> Recap: Program Instructions</a></li>
+  <li><a href="#fetch-decode-execute-cycle" id="toc-fetch-decode-execute-cycle" class="nav-link" data-scroll-target="#fetch-decode-execute-cycle"><span class="header-section-number">9.3.2</span> Fetch-Decode-Execute Cycle</a></li>
+  <li><a href="#fetch-decode-execute-cycle-algorithm" id="toc-fetch-decode-execute-cycle-algorithm" class="nav-link" data-scroll-target="#fetch-decode-execute-cycle-algorithm"><span class="header-section-number">9.3.3</span> Fetch-Decode-Execute cycle algorithm</a></li>
+  <li><a href="#sec-wk8-sect4" id="toc-sec-wk8-sect4" class="nav-link" data-scroll-target="#sec-wk8-sect4"><span class="header-section-number">9.4</span> An Example Program</a></li>
+  <li><a href="#recall-the-digital-io-program" id="toc-recall-the-digital-io-program" class="nav-link" data-scroll-target="#recall-the-digital-io-program"><span class="header-section-number">9.4.1</span> Recall the digital I/O program…</a></li>
+  <li><a href="#listing-file" id="toc-listing-file" class="nav-link" data-scroll-target="#listing-file"><span class="header-section-number">9.4.2</span> Listing File</a></li>
+  <li><a href="#fetch-1" id="toc-fetch-1" class="nav-link" data-scroll-target="#fetch-1"><span class="header-section-number">9.4.3</span> Fetch</a></li>
+  <li><a href="#decode-1" id="toc-decode-1" class="nav-link" data-scroll-target="#decode-1"><span class="header-section-number">9.4.4</span> Decode</a></li>
+  <li><a href="#execute-1" id="toc-execute-1" class="nav-link" data-scroll-target="#execute-1"><span class="header-section-number">9.4.5</span> Execute</a></li>
+  <li><a href="#assembly-to-machine-code" id="toc-assembly-to-machine-code" class="nav-link" data-scroll-target="#assembly-to-machine-code"><span class="header-section-number">9.4.6</span> Assembly to Machine Code</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a>
+  <ul class="collapse">
+  <li><a href="#on-canvas" id="toc-on-canvas" class="nav-link" data-scroll-target="#on-canvas">On Canvas</a></li>
+  <li><a href="#next-time" id="toc-next-time" class="nav-link" data-scroll-target="#next-time">Next time</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week09/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week09/index.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Ben Clifford </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 19, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="notes">
+<p><a href="../..\slides/lecture09.html">Presentation version</a> of these <a href="#sec-week08-intro">notes</a>.</p>
+</div>
+<p><img src="pictures/week08_chapter_heading.png" class="img-fluid" style="width:100.0%" alt="lecture cover image showing architecture, some gates and an Arduino nano board"></p>
+<section id="sec-wk8-intro" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-wk8-intro">Introduction</h2>
+<div class="incremental">
+<ul class="incremental">
+<li>In <a href="../..\lectures/week02">Introduction to Microcontrollers and Microcontroller Architecture</a>, we discussed some of the core components of a microcontroller’s architecture including the general purpose registers, status register, program counter and stack pointers.</li>
+<li>Aside from the program counter, these are registers which the programmer can directly access and manipulate.</li>
+</ul>
+</div>
+<hr>
+<ul>
+<li>In this section, we will look at some of the other components in the microcontroller CPU including the control unit, clock, memory address register, memory data register, instruction register and decoder.</li>
+</ul>
+<div class="fragment">
+<ul>
+<li>After introducing these components an example program will be demonstrated that is written in C language, showing the translation to assembly language using the listing file, followed by an explanation of how the program is executed through the fetch-decode-execute cycle.</li>
+</ul>
+</div>
+<hr>
+<section id="contents" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="contents">Contents</h3>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img src="pictures/week08_contents_image.png" class="img-fluid" alt="Decorative image used as a slide background."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><a href="#sec-wk8-sect1" class="quarto-xref"><span>Section 9.1</span></a>: <a href="#sec-wk8-sect1">Architecture recap</a></li>
+<li><a href="#sec-wk8-sect2" class="quarto-xref"><span>Section 9.2</span></a>: <a href="#sec-wk8-sect2">Additional components</a></li>
+<li><a href="#sec-wk8-sect3" class="quarto-xref"><span>Section 9.3</span></a>: <a href="#sec-wk8-sect3">Fetch-Decode-Execute cycle</a></li>
+<li><a href="#sec-wk8-sect4" class="quarto-xref"><span>Section 9.4</span></a>: <a href="#sec-wk8-sect4">An Example Program</a></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-wk8-sect1" class="level2 center" data-background-image="pictures/week08_wallpaper.png" data-number="9.1">
+<h2 data-background-image="pictures/week08_wallpaper.png" data-number="9.1" class="anchored" data-anchor-id="sec-wk8-sect1"><span class="header-section-number">9.1</span> Architecture recap</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/week08_wallpaper.png" class="img-fluid" alt="mage of a microcontroller used as chapter headings in slide show."></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+</div>
+<hr>
+<section id="arithmetic-logic-unit-alu" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="arithmetic-logic-unit-alu"><span class="header-section-number">9.1.1</span> Arithmetic Logic Unit (ALU)</h3>
+<div class="notes">
+<p>The Arithmetic Logic Unit (ALU) (<a href="#fig-wk8-alu" class="quarto-xref">Figure&nbsp;<span>9.1</span></a>), is the part of the processor that performs arithmetic and logic operations on data from the storage area.</p>
+<p>Memory is used to store data and information but the real goal of the MCU is computation or manipulating data in a structured and purposeful way, like adding two numbers together. These operations are handled by the ALU which is the numerical and logical brain of the MCU. The Atmel ATmega328 has an 8-bit ALU which takes two 8-bit inputs, an opcode describing the operation to perform and outputs an 8-bit result along with a series of 1-bit flags which we can access through the status register.</p>
+</div>
+<div id="fig-wk8-alu" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The arithmetic logic unit (ALU).">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk8-alu-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/alu.png" class="img-fluid figure-img" style="width:75.0%" alt="The arithmetic logic unit (ALU).">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk8-alu-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.1: The arithmetic logic unit (ALU)
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>First, data are read from storage into the ALU’s data input ports. Once inside the ALU, they’re modified by means of an arithmetic or logic operation (<code>ADD</code>, <code>SUB</code>, <code>AND</code>, <code>OR</code> …), and then they’re written back to storage via the ALU’s output port.</p>
+<p>Depending on the result of the computation, certain flags in the status register will be set or unset.</p>
+<p>To illustrate this, here is the reference manual entry for the <strong>add without carry</strong> operator (<code>ADD</code>)</p>
+<p><img src="pictures/add_op.png" class="img-fluid" alt="Add without carry operator."></p>
+</div>
+<hr>
+</section>
+<section id="the-cpu-core" class="level3" data-number="9.1.2">
+<h3 data-number="9.1.2" class="anchored" data-anchor-id="the-cpu-core"><span class="header-section-number">9.1.2</span> The CPU Core</h3>
+<div class="notes">
+<p>The CPU core of the Atmel ATmega328 microcontroller is illustrated in <a href="#fig-wk8-cpu_core" class="quarto-xref">Figure&nbsp;<span>9.2</span></a>.</p>
+</div>
+<div id="fig-wk8-cpu_core" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The CPU core with program counter, status and control register, general registers, and ALU highlighted.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk8-cpu_core-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/cpu_core.png" class="img-fluid figure-img" alt="The CPU core with program counter, status and control register, general registers, and ALU highlighted.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk8-cpu_core-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.2: The CPU core with program counter, status and control register, general registers, and ALU highlighted.
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>The CPU core of the Atmel ATmega328 microcontroller with <em>program counter</em>, <em>status and control register</em>, <em>32 general registers</em>, and <em>ALU</em> highlighted.</p>
+<p>The highlighted components are:</p>
+<p><strong>General Purpose Registers</strong> – 32 8-bit wide registers which are used by the CPU to hold operands and immediate results of arithmetic and logic operations.</p>
+<p><strong>Program Counter</strong> – a 14-bit wide register that stores the address of the next instruction or operand to be fetched.</p>
+<p><strong>Stack Pointer</strong> – 2 8-bit wide registers that stores the address of the last item in the stack.</p>
+<p><strong>Status and Control Register</strong> – an 8-bit wide register that contains information about the state of the&nbsp;processor based on the execution of the last instruction<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>The stack is an area in SRAM where data/information/MCU state can be temporarily pushed on and popped off - the stack pointer holds the memory address of the top of the stack.</p></li>
+<li><p>The program counter holds the address of the next address to be executed.</p></li>
+<li><p>The general purpose registers are located at the bottom of the data space so can be accessed directly by the ALU. Lower spec microcontrollers/CPUs may only have a single register which is referred to as an accumulator.</p></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-wk8-sect2" class="level2 center" data-background-image="pictures/week08_wallpaper.png" data-number="9.2">
+<h2 data-background-image="pictures/week08_wallpaper.png" data-number="9.2" class="anchored" data-anchor-id="sec-wk8-sect2"><span class="header-section-number">9.2</span> Additional components</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/week08_wallpaper.png" class="img-fluid" alt="Image of a microcontroller used as chapter headings in slide show."></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+</div>
+<hr>
+<section id="simplified-block-diagram-of-the-microcontroller-core" class="level3" data-number="9.2.1">
+<h3 data-number="9.2.1" class="anchored" data-anchor-id="simplified-block-diagram-of-the-microcontroller-core"><span class="header-section-number">9.2.1</span> Simplified block diagram of the microcontroller core</h3>
+<div class="notes">
+<p>For this section we will used the simplified block diagram shown in <a href="#fig-wk8-simplified_bd" class="quarto-xref">Figure&nbsp;<span>9.3</span></a> to represent the microcontroller core. This shows the parts that we have already seen as well as the new ones, highlighted, that we will discuss in the following.</p>
+</div>
+<div id="fig-wk8-simplified_bd" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk8-simplified_bd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/simple_bd.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk8-simplified_bd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.3: Simplified block diagram showing the major components of a microcontroller
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="block-1-clock" class="level3" data-number="9.2.2">
+<h3 data-number="9.2.2" class="anchored" data-anchor-id="block-1-clock"><span class="header-section-number">9.2.2</span> Block 1: Clock</h3>
+<p>The clock generates a signal that oscillates between a high and a low state and acts like a metronome which coordinates/synchronizes the actions of the different microcontroller elements.</p>
+<div class="notes">
+<p>The clock signal typically takes the form of a square wave with a 50% duty cycle<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> and a fixed frequency see <a href="#fig-wk8-clk" class="quarto-xref">Figure&nbsp;<span>9.4</span></a>.</p>
+</div>
+<div class="fragment">
+<div id="fig-wk8-clk" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A typical clock signal. The frequency is 1/T.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk8-clk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/clock.png" class="img-fluid figure-img" alt="A typical clock signal. The frequency is 1/T.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk8-clk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.4: A typical clock signal. The frequency is <span class="math inline">\(f=0.5/T_\mathrm{on}\)</span> if <span class="math inline">\(\mu = 0.5\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="notes">
+<p>In older microcontrollers the clock signal was generated by an external circuit, but modern microcontrollers typically come with an external crystal as well as an internal oscillator.</p>
+<p>At every cycle of the clock, a step of the <em>fetch-decode-execute</em> cycle is performed.</p>
+<p>The ATmega328 is shipped with an internal RC oscillator with a frequency of 8MHz and the Arduino nano board includes a 16MHz <em>external</em> crystal which is typically set to be the default clock<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
+</div>
+<hr>
+<section id="internal-clock" class="level4" data-number="9.2.2.1">
+<h4 data-number="9.2.2.1" class="anchored" data-anchor-id="internal-clock"><span class="header-section-number">9.2.2.1</span> Internal Clock</h4>
+<div class="notes">
+<p>Internal clocks are made from RC oscillators.</p>
+<p>Limited manufacturing abilities mean that there are large differences between individual microcontrollers. These differences are typically <span class="math inline">\(\pm 10\%\)</span>, but clocks can usually be tuned to <span class="math inline">\(\pm 0.5\%\)</span>.</p>
+<p><strong>Advantages</strong></p>
+<ul>
+<li>Cheaper</li>
+<li>Leaves pins that are used for the external clock source, e.g.&nbsp;see atmel_clk_pins`, available for other functions such as I/O</li>
+<li>Simplifies PCB design and routing for high frequency traces.</li>
+</ul>
+</div>
+<div id="fig-wk8-atmel-clk-pins" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Pins reserved for an external clock signal on the Atmel ATmega328 microcontroller.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk8-atmel-clk-pins-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/atmel_clk.png" class="img-fluid figure-img" alt="Pins reserved for an external clock signal on the Atmel ATmega328 microcontroller.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk8-atmel-clk-pins-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.5: Pins reserved for an external clock signal on the Atmel ATmega328 microcontroller.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="external-clock" class="level4" data-number="9.2.2.2">
+<h4 data-number="9.2.2.2" class="anchored" data-anchor-id="external-clock"><span class="header-section-number">9.2.2.2</span> External clock</h4>
+<div class="notes">
+<p>Many components inside the microcontroller will use a scaled version of the clock signal (recall the ADC) and so high clock accuracy is not needed. However, for other applications, such as communication based applications like the CAN bus, USB and Ethernet, high frequency and accurate clock signals are required.</p>
+<p>For these applications, external ceramic resonators or crystals have a much higher accuracy when it comes to frequency as well as stability.</p>
+</div>
+<div id="fig-wk8-crystal-clk" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Images of the crystal oscillators used with microcontrollers.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk8-crystal-clk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/crystal_clk.png" class="img-fluid figure-img" alt="Images of the crystal oscillators used with microcontrollers.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk8-crystal-clk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.6: Examples of the crystal oscillators used with microcontrollers. a) The circuit symbol for a crystal; b) A 16Mhz crystal packaged as a component; c) the external crystal provided with the ATmega328 chip on the Arduino nano board.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="the-atmel-atmega328-clock" class="level4" data-number="9.2.2.3">
+<h4 data-number="9.2.2.3" class="anchored" data-anchor-id="the-atmel-atmega328-clock"><span class="header-section-number">9.2.2.3</span> The Atmel ATmega328 clock</h4>
+<div class="notes">
+<p>A block diagram of the clock circuity is given in <a href="#fig-wk8-atmel328-clk" class="quarto-xref">Figure&nbsp;<span>9.7</span></a>. This is a complex diagram and the details are not too important. What is important is to note is how the clock signal is distributed to all the major subsystems. This is to ensure that all the internal operations that the microcontrollers are carried out in lock-step with the clock signal and in synchronization with each other. The clock sources are shown at the bottom of the diagram and the major blocks which use the clock are at the top. The blocks in the centre of the diagram are concerned with the functions needed to monitor the status of the microcontroller.</p>
+</div>
+<div id="fig-wk8-atmel328-clk" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Clock distribution of the ATmega328.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk8-atmel328-clk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/atmel328_clk.png" class="img-fluid figure-img" alt="Clock distribution of the ATmega328.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk8-atmel328-clk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.7: Clock distribution of the ATmega328 (Reproduced from Figure 8.1 of the Atmel ATmega328 data sheet).
+</figcaption>
+</figure>
+</div>
+<hr>
+<p>The <strong>CKSEL3..0</strong> are special memory locations in flash memory (“fuses”) that are used to set the clock sources as shown in Table 9.1 of the data sheet reproduced below.</p>
+<p><img src="pictures/clksel.png" class="img-fluid" alt="Reproduction of table 9.1 of the Atmel ATmega328 data sheet."></p>
+<hr>
+</section>
+<section id="programmers-registers-for-clock-control" class="level4" data-number="9.2.2.4">
+<h4 data-number="9.2.2.4" class="anchored" data-anchor-id="programmers-registers-for-clock-control"><span class="header-section-number">9.2.2.4</span> Programmer’s registers for clock control</h4>
+<p>There are two registers accessible to the programmer with respect to the clock. These are</p>
+<div class="incremental">
+<ul class="incremental">
+<li><strong><code>OSCCAL</code> - Oscillation Calibration Register</strong> used to trim the calibrated internal RC oscillator to remove process variations from the oscillator frequency.y</li>
+<li><strong><code>CLKPR</code> – Clock Prescale Register</strong> whose bits define the division factor between the selected clock source and the internal system clock. These bits can be set at run-time to vary the clock frequency to suit the application requirements.</li>
+</ul>
+</div>
+<hr>
+</section>
+</section>
+<section id="block-2-control-unit" class="level3" data-number="9.2.3">
+<h3 data-number="9.2.3" class="anchored" data-anchor-id="block-2-control-unit"><span class="header-section-number">9.2.3</span> Block 2: Control Unit</h3>
+<div class="notes">
+<p>The <strong>control unit</strong> coordinates all activities and sends signals through the control bus to all elements of the microcontroller, including the ALU, memory, and input/output, instructing them how to respond to the instructions from the program code it has just read and interpreted from the memory unit.</p>
+</div>
+<div class="fragment">
+<p>The control unit is responsible for</p>
+</div>
+<div class="incremental">
+<ul class="incremental">
+<li>Coordinating and controlling activities of the CPU;</li>
+<li>Managing data flow between other components and the CPU;</li>
+<li>Acknowledging and accepting the next instruction; and</li>
+<li>Storing the resulting data back into a memory unit.</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="block-3-memory-address-register-mar" class="level3" data-number="9.2.4">
+<h3 data-number="9.2.4" class="anchored" data-anchor-id="block-3-memory-address-register-mar"><span class="header-section-number">9.2.4</span> Block 3: Memory Address Register (MAR)</h3>
+<p>During operation the address in the program counter is loaded into the <strong>Memory Address Register</strong> and a request is sent onto the address bus to retrieve the data stored at that memory location.</p>
+<hr>
+</section>
+<section id="block-4-memory-data-register-mdr" class="level3" data-number="9.2.5">
+<h3 data-number="9.2.5" class="anchored" data-anchor-id="block-4-memory-data-register-mdr"><span class="header-section-number">9.2.5</span> Block 4: Memory Data Register (MDR)</h3>
+<p>The data at a particular memory location is loaded from the data bus into the <strong>Memory Data Register</strong> before being passed to the <strong>instruction register</strong> or being operated on.</p>
+<hr>
+</section>
+<section id="block-5-instruction-register-ir" class="level3" data-number="9.2.6">
+<h3 data-number="9.2.6" class="anchored" data-anchor-id="block-5-instruction-register-ir"><span class="header-section-number">9.2.6</span> Block 5: Instruction Register (IR)</h3>
+<p>After fetching an instruction from program memory, the microcontroller stores it in the <strong>instruction register</strong>.</p>
+<hr>
+</section>
+<section id="block-6-instruction-decoder-id" class="level3" data-number="9.2.7">
+<h3 data-number="9.2.7" class="anchored" data-anchor-id="block-6-instruction-decoder-id"><span class="header-section-number">9.2.7</span> Block 6: Instruction Decoder (ID)</h3>
+<div class="incremental">
+<ul class="incremental">
+<li>The <strong>instruction decoder</strong> decodes the instruction opcode from the <strong>instruction register</strong> and generates appropriate control signals to execute the instruction.</li>
+<li>It contains a lookup table featuring a mapping of all binary instructions in the microcontroller’s instruction set architecture.</li>
+<li>Once an instruction arrives at the instruction register it is passed to the decoder. Once decoded the output is passed to the control unit to select the correct hardware for the operation or to get the next word of data from memory.</li>
+</ul>
+</div>
+<div class="notes">
+<p>A summary of some example operations taken from section 5 of the AVR Instruction Set Manual <span class="citation" data-cites="avr_instruction_set">(<a href="../../references.html#ref-avr_instruction_set" role="doc-biblioref">Atmel 2020</a>)</span> are given in <a href="#tbl-wk8-table1" class="quarto-xref">Table&nbsp;<span>9.1</span></a> in the notes.</p>
+<p>The interested reader will find full details at the manual reference quoted in the table.</p>
+<div id="tbl-wk8-table1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-wk8-table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.1: Some examples of instruction decoding
+</figcaption>
+<div aria-describedby="tbl-wk8-table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 13%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 26%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">16 Bit Opcode</th>
+<th style="text-align: left;">Operation</th>
+<th style="text-align: left;">Usage</th>
+<th style="text-align: left;">Syntax</th>
+<th style="text-align: left;">Program Counter (PC)</th>
+<th style="text-align: left;">Manual reference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0001 11rd dddd rrrr</td>
+<td style="text-align: left;">Add with carry (<code>ADC</code>)</td>
+<td style="text-align: left;">Rd &lt;- Rd + Rr + C<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></td>
+<td style="text-align: left;"><code>ADD Rd, Rr</code></td>
+<td style="text-align: left;">PC &lt;- PC + 1</td>
+<td style="text-align: left;">5.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0000 11rd dddd rrrr</td>
+<td style="text-align: left;">Add without carry (<code>ADD</code>)</td>
+<td style="text-align: left;">Rd &lt;- Rd + Rr</td>
+<td style="text-align: left;"><code>ADD Rd, Rr</code></td>
+<td style="text-align: left;">PC &lt;- PC + 1</td>
+<td style="text-align: left;">5.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1001 0110 KKdd KKKK</td>
+<td style="text-align: left;">Add Immedidate to Word (<code>ADIW</code>)</td>
+<td style="text-align: left;">R[d+1]:Rd &lt;- R[d+1]:Rd + K</td>
+<td style="text-align: left;"><code>ADIW Rd+1:Rd,K</code></td>
+<td style="text-align: left;">PC &lt;- PC + 1</td>
+<td style="text-align: left;">5.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0010 00rd dddd rrrr</td>
+<td style="text-align: left;">Logical AND (<code>AND</code>)</td>
+<td style="text-align: left;">Rd &lt;- Rd &amp; Rr</td>
+<td style="text-align: left;"><code>AND Rd, Rr</code></td>
+<td style="text-align: left;">PC &lt;- PC + 1</td>
+<td style="text-align: left;">5.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0111 KKKK dddd KKKK</td>
+<td style="text-align: left;">Logical AND with Immediate (<code>ANDI</code>)</td>
+<td style="text-align: left;">Rd &lt;- Rd &amp; K</td>
+<td style="text-align: left;"><code>ANDI Rd, K</code></td>
+<td style="text-align: left;">PC &lt;- PC + 1</td>
+<td style="text-align: left;">5.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1001 010d dddd 0101</td>
+<td style="text-align: left;">Arithmetic Shift Right (<code>ASR</code>)</td>
+<td style="text-align: left;"><img src="pictures/asr.png" class="img-fluid figure-img"></td>
+<td style="text-align: left;"><code>ASR Rd</code></td>
+<td style="text-align: left;">PC &lt;- PC + 1</td>
+<td style="text-align: left;">5.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1001 0100 1sss 1000</td>
+<td style="text-align: left;">Bit Clear in SREG (<code>BCLR</code>)</td>
+<td style="text-align: left;">SREG(s) &lt;- 0</td>
+<td style="text-align: left;"><code>BCLR s</code></td>
+<td style="text-align: left;">PC &lt;- PC + 1</td>
+<td style="text-align: left;">5.7</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="busses" class="level3" data-number="9.2.8">
+<h3 data-number="9.2.8" class="anchored" data-anchor-id="busses"><span class="header-section-number">9.2.8</span> Busses</h3>
+<div class="notes">
+<p>Inside the microcontroller, components communicate with each other using sets of parallel connectors known as buses. The processor is connected to the main memory by three separate buses as illustrated in <a href="#fig-wk8-busses" class="quarto-xref">Figure&nbsp;<span>9.8</span></a>.</p>
+</div>
+<div id="fig-wk8-busses" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The three busses in the ATmega328 microntroller.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk8-busses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/mc_busses.png" class="img-fluid figure-img" alt="The three busses in the ATmega328 microntroller.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk8-busses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.8: The three busses in the ATmega328 microntroller.
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>The three buses are:</p>
+<ul>
+<li><strong>Address bus</strong>: a unidirectional bus from the processor to the memory or an I/O controller that carries the location of the data to be read from or written to.</li>
+<li><strong>Data bus</strong>: a bi-directional pathway that carries data or instructions between processor components. The width of data bus is key in determining the overall computer performance. The AVR CPU data bus is 8-bits wide but the word size is 16-bits meaning the data bus has to use two cloxk cycles to fetch each byte of a word from the main memory.</li>
+<li><strong>Control bus</strong>: is a bi-directional pathway that carries command, timing and specific status information among components. Examples of control information include:
+<ul>
+<li>Read/write from/to memory</li>
+<li>Read/write from/to I/O port</li>
+<li>Request access to the data bus</li>
+<li>Grant access to the data bus</li>
+<li>Sync clock</li>
+<li>Reset</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="sec-wk8-sect3" class="level2 center" data-background-image="pictures/week08_wallpaper.png" data-number="9.3">
+<h2 data-background-image="pictures/week08_wallpaper.png" data-number="9.3" class="anchored" data-anchor-id="sec-wk8-sect3"><span class="header-section-number">9.3</span> Fetch-Decode-Execute cycle</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/week08_wallpaper.png" class="img-fluid" alt="Image of a microcontroller used as chapter headings in slide show."></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+</div>
+<hr>
+<section id="sec-wk8-add-code" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="sec-wk8-add-code"><span class="header-section-number">9.3.1</span> Recap: Program Instructions</h3>
+<div class="notes">
+<p>The microcontroller program consists of a sequence of instructions, each consisting of an opcode (<code>LDI</code>, <code>ADD</code>, <code>OUT</code>, etc…) defining the operation to be carried out and an operand containing the data or location of the data which the instruction is to operate on.</p>
+</div>
+<div class="fragment">
+<p><strong>High level language</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a>myVariable <span class="op">=</span> <span class="dv">121</span> <span class="op">+</span> <span class="dv">103</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="fragment">
+<p><img src="pictures/arrow.png" class="img-fluid" data-fig-qlt="Arrow pointing downwards"></p>
+<p><strong>Low Level Language</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1"></a>LDI r16<span class="op">,</span> <span class="bn">0b</span><span class="er">01111001</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>LDI r17<span class="op">,</span> <span class="bn">0b</span><span class="er">01100111</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="bu">ADD</span> r16<span class="op">,</span> r17</span>
+<span id="cb2-4"><a href="#cb2-4"></a>STS <span class="bn">0xFF00</span><span class="op">,</span> r16</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="fragment">
+<p><img src="pictures/arrow.png" class="img-fluid" data-fig-qlt="Arrow pointing downwards"></p>
+<p><strong>Machine Code</strong></p>
+<pre><code>1110011100001001
+1110011000010111
+0000111100000001
+1001001100000000
+1111111100000000</code></pre>
+</div>
+<hr>
+</section>
+<section id="fetch-decode-execute-cycle" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="fetch-decode-execute-cycle"><span class="header-section-number">9.3.2</span> Fetch-Decode-Execute Cycle</h3>
+<p>Each instruction is carried out by a sequence of operations, known as the <strong>fetch-decode-execute cycle</strong> illustrated as a flow chart in <a href="#fig-wk8-fetch-decode-execute-cycle" class="quarto-xref">Figure&nbsp;<span>9.9</span></a>.</p>
+<hr>
+<section id="flowchart-of-fetch-decode-execute-cycle" class="level4" data-number="9.3.2.1">
+<h4 data-number="9.3.2.1" class="anchored" data-anchor-id="flowchart-of-fetch-decode-execute-cycle"><span class="header-section-number">9.3.2.1</span> Flowchart of fetch-decode-execute cycle</h4>
+<div id="fig-wk8-fetch-decode-execute-cycle" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A flow chart illustrating the fetch-decode-execute cycle.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk8-fetch-decode-execute-cycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/fetch_decode_execute_cycle.png" class="img-fluid figure-img" style="width:50.0%" alt="A flow chart illustrating the fetch-decode-execute cycle.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk8-fetch-decode-execute-cycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.9: A flow chart illustrating the fetch-decode-execute cycle
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>The fetch-decode-execute cycle follows the following steps</p>
+</div>
+<hr>
+</section>
+<section id="fetch" class="level4" data-number="9.3.2.2">
+<h4 data-number="9.3.2.2" class="anchored" data-anchor-id="fetch"><span class="header-section-number">9.3.2.2</span> Fetch</h4>
+<div class="incremental">
+<ul class="incremental">
+<li><strong>Fetch</strong> the operator code from memory via the data bus and store it in the instruction register.</li>
+</ul>
+<div class="notes">
+<p>This occurs by placing an address on the address bus and then reading the instruction at this address from the data bus.</p>
+</div>
+<ul class="incremental">
+<li>The address of the instruction to be fetched is stored in the program counter which is then loaded into the <strong>Memory Address Register</strong> and a request is sent onto the address bus.</li>
+<li>The program counter is then incremented to point to the next sequential memory address.</li>
+<li>The contents of the memory location are then transferred through the data bus to the <strong>Memory Data Register</strong> and then into the <strong>instruction register</strong> before passing to the decoder.</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="decode" class="level4" data-number="9.3.2.3">
+<h4 data-number="9.3.2.3" class="anchored" data-anchor-id="decode"><span class="header-section-number">9.3.2.3</span> Decode</h4>
+<ul>
+<li><strong>Decode</strong> the operator code within the instruction decoder and determine the nature of the operation specified (load immediately, load a byte from memory, load a word from memory). Fetch further data using the address and data busses as necessary based on the instruction decoded.</li>
+</ul>
+<hr>
+</section>
+<section id="execute" class="level4" data-number="9.3.2.4">
+<h4 data-number="9.3.2.4" class="anchored" data-anchor-id="execute"><span class="header-section-number">9.3.2.4</span> Execute</h4>
+<ul>
+<li><strong>Execute</strong> the instruction on the necessary operands.</li>
+</ul>
+<hr>
+</section>
+<section id="continue" class="level4" data-number="9.3.2.5">
+<h4 data-number="9.3.2.5" class="anchored" data-anchor-id="continue"><span class="header-section-number">9.3.2.5</span> Continue</h4>
+<ul>
+<li>The fetch-decode-execute is now complete and starts again for the next code memory location indicated by the program counter.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="fetch-decode-execute-cycle-algorithm" class="level3" data-number="9.3.3">
+<h3 data-number="9.3.3" class="anchored" data-anchor-id="fetch-decode-execute-cycle-algorithm"><span class="header-section-number">9.3.3</span> Fetch-Decode-Execute cycle algorithm</h3>
+<p>The process is illustrated as an algorithm below</p>
+<div class="fragment">
+<p>Step 1:</p>
+<pre><code>MAR &lt;- (PC)</code></pre>
+<div class="notes">
+<p>The address in the program counter (PC) is transferred to the memory address register (MAR).</p>
+</div>
+</div>
+<div class="fragment">
+<p>Step 2:</p>
+<pre><code>(PC) &lt;- (PC) + 1</code></pre>
+<div class="notes">
+<p>The program counter is incremented to point to the next instruction.</p>
+</div>
+</div>
+<div class="fragment">
+<p>Step 3:</p>
+<pre><code>MDR &lt;- (MAR)</code></pre>
+<div class="notes">
+<p>The contents of the location specified by the memory address register (MAR) are transferred to the memory data register (MDR).</p>
+</div>
+</div>
+<div class="fragment">
+<p>Step 4:</p>
+<pre><code>IR &lt;- (MDR)</code></pre>
+<div class="notes">
+<p>The contents of the memory data register (MDR) are loaded to the instruction register (IR) and then decoded.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="sec-wk8-sect4" class="level2 center" data-background-image="pictures/week08_wallpaper.png" data-number="9.4">
+<h2 data-background-image="pictures/week08_wallpaper.png" data-number="9.4" class="anchored" data-anchor-id="sec-wk8-sect4"><span class="header-section-number">9.4</span> An Example Program</h2>
+</section>
+<div class="notes">
+<p><a href="pictures/week08_wallpaper.png" data-fig-alt="Image of a microcontroller used as chapter headings in slide show."></a></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+</div>
+<hr>
+<section id="recall-the-digital-io-program" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="recall-the-digital-io-program"><span class="header-section-number">9.4.1</span> Recall the digital I/O program…</h3>
+<div id="lst-wk8-add-code" class="c listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk8-add-code-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;9.1: Digital I/O program in C
+</figcaption>
+<div aria-describedby="lst-wk8-add-code-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#include </span><span class="im">&lt;stdint.h&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co">//I/O and ADC Register definitions taken from datasheet</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="pp">#define PORTD </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x2B</span><span class="op">))</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="pp">#define DDRD </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x2A</span><span class="op">))</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="pp">#define PIND </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x29</span><span class="op">))</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="pp">#define PORTB </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x25</span><span class="op">))</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="pp">#define DDRB </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x24</span><span class="op">))</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="pp">#define PINB </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x23</span><span class="op">))</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="op">{</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>    <span class="co">//Set Data Direction Registers</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a>    DDRD <span class="op">=</span> DDRD <span class="op">&amp;</span> <span class="bn">0b11110011</span><span class="op">;</span> <span class="co">//setup bits 2 and 3 of port D as inputs</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a>    DDRB <span class="op">=</span> DDRB <span class="op">|</span> <span class="bn">0b00000011</span><span class="op">;</span> <span class="co">//setup bits 0 and 1 of port B as outputs</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a></span>
+<span id="cb8-18"><a href="#cb8-18"></a>    PORTB <span class="op">=</span> PORTB <span class="op">&amp;</span> <span class="bn">0b11111100</span><span class="op">;</span> <span class="co">//both pins B0 (D8) and B1 (D9) start low</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>    </span>
+<span id="cb8-20"><a href="#cb8-20"></a>    PORTD <span class="op">=</span> PORTD <span class="op">|</span> <span class="bn">0b00001100</span><span class="op">;</span> <span class="co">// Enable the pull up resistor for bits 2 and 3 of port D</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a>    </span>
+<span id="cb8-22"><a href="#cb8-22"></a>    <span class="cf">for</span><span class="op">(;;)</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a>    <span class="op">{</span></span>
+<span id="cb8-24"><a href="#cb8-24"></a>        <span class="cf">if</span><span class="op">((</span>PIND <span class="op">&amp;</span> <span class="bn">0b00000100</span><span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb8-25"><a href="#cb8-25"></a>        <span class="op">{</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a>            PORTB <span class="op">=</span> PORTB <span class="op">|</span> <span class="bn">0b00000001</span><span class="op">;</span> <span class="co">//sets port B, bit 0 to logic 1/high, switches the LED connected to D8 on</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a>        <span class="op">}</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a>        <span class="cf">else</span> <span class="cf">if</span> <span class="op">((</span>PIND <span class="op">&amp;</span> <span class="bn">0b00001000</span><span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb8-29"><a href="#cb8-29"></a>        <span class="op">{</span></span>
+<span id="cb8-30"><a href="#cb8-30"></a>            PORTB <span class="op">=</span> PORTB <span class="op">|</span> <span class="bn">0b00000010</span><span class="op">;</span> <span class="co">//sets port B, bit 1 to logic 1/high, switches the LED connected to D9 on</span></span>
+<span id="cb8-31"><a href="#cb8-31"></a>        <span class="op">}</span></span>
+<span id="cb8-32"><a href="#cb8-32"></a>        <span class="cf">else</span></span>
+<span id="cb8-33"><a href="#cb8-33"></a>        <span class="op">{</span></span>
+<span id="cb8-34"><a href="#cb8-34"></a>            PORTB <span class="op">=</span> PORTB <span class="op">&amp;</span> <span class="bn">0b11111100</span><span class="op">;</span> <span class="co">//sets bits 0-5 of port B to logic 0/low, switches off both the LED's</span></span>
+<span id="cb8-35"><a href="#cb8-35"></a>        <span class="op">}</span></span>
+<span id="cb8-36"><a href="#cb8-36"></a>    <span class="op">}</span></span>
+<span id="cb8-37"><a href="#cb8-37"></a>    </span>
+<span id="cb8-38"><a href="#cb8-38"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<p>Code: <a href="https://gist.github.com/cpjobling/07585093f8eafe69a4eeff1186110883">main.c</a></p>
+<hr>
+</section>
+<section id="listing-file" class="level3" data-number="9.4.2">
+<h3 data-number="9.4.2" class="anchored" data-anchor-id="listing-file"><span class="header-section-number">9.4.2</span> Listing File</h3>
+<div class="notes">
+<p>This is the listing file (refer to <a href="#lst-wk8-assembly" class="quarto-xref">Listing&nbsp;<span>9.2</span></a>) generated by the assembler which shows each line of C code and what it has been translated to in assembly language along with the memory address the instruction will be stored at<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.</p>
+</div>
+<div id="lst-wk8-assembly" class="listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk8-assembly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;9.2: Listing file for example program
+</figcaption>
+<div aria-describedby="lst-wk8-assembly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<pre><code>00000080 &lt;main&gt;:
+#define PINB (*(volatile uint8_t *)(0x23))
+
+int main(void)
+{
+    //Set Data Direction Registers
+    DDRD = DDRD &amp; 0b11110011; //setup bits 2 and 3 of port D as inputs
+  80:   8a b1           in  r24, 0x0a   ; 10
+  82:   83 7f           andi    r24, 0xF3   ; 243
+  84:   8a b9           out 0x0a, r24   ; 10
+    DDRB = DDRB | 0b00000011; //setup bits 0 and 1 of port B as outputs
+  86:   84 b1           in  r24, 0x04   ; 4
+  88:   83 60           ori r24, 0x03   ; 3
+  8a:   84 b9           out 0x04, r24   ; 4
+
+    PORTB = PORTB &amp; 0b11111100; //both pins B0 (D8) and B1 (D9) start low
+  8c:   85 b1           in  r24, 0x05   ; 5
+  8e:   8c 7f           andi    r24, 0xFC   ; 252
+  90:   85 b9           out 0x05, r24   ; 5
+    
+    PORTD = PORTD | 0b00001100; // Enable the pull up resistor for bits 2 and 3 of port D
+  92:   8b b1           in  r24, 0x0b   ; 11
+  94:   8c 60           ori r24, 0x0C   ; 12
+  96:   8b b9           out 0x0b, r24   ; 11
+    
+    for(;;)
+    {
+        if((PIND &amp; 0b00000100) == 0)
+  98:   4a 99           sbic    0x09, 2 ; 9
+  9a:   02 c0           rjmp    .+4         ; 0xa0 &lt;main+0x20&gt;
+        {
+            PORTB = PORTB | 0b00000001; //sets port B, bit 0 to logic 1/high, switches the LED connected to D8 on
+  9c:   28 9a           sbi 0x05, 0 ; 5
+  9e:   fc cf           rjmp    .-8         ; 0x98 &lt;main+0x18&gt;
+        }
+        else if ((PIND &amp; 0b00001000) == 0)
+  a0:   4b 99           sbic    0x09, 3 ; 9
+  a2:   02 c0           rjmp    .+4         ; 0xa8 &lt;main+0x28&gt;
+        {
+            PORTB = PORTB | 0b00000010; //sets port B, bit 1 to logic 1/high, switches the LED connected to D9 on
+  a4:   29 9a           sbi 0x05, 1 ; 5
+  a6:   f8 cf           rjmp    .-16        ; 0x98 &lt;main+0x18&gt;
+        }
+        else
+        {
+            PORTB = PORTB &amp; 0b11111100; //sets bits 0-5 of port B to logic 0/low, switches off both the LED's
+  a8:   85 b1           in  r24, 0x05   ; 5
+  aa:   8c 7f           andi    r24, 0xFC   ; 252
+  ac:   85 b9           out 0x05, r24   ; 5
+  ae:   f4 cf           rjmp    .-24        ; 0x98 &lt;main+0x18&gt;
+
+000000b0 &lt;_exit&gt;:
+  b0:   f8 94           cli
+
+000000b2 &lt;__stop_program&gt;:
+  b2:   ff cf           rjmp    .-2         ; 0xb2 &lt;__stop_program&gt;</code></pre>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="fetch-1" class="level3" data-number="9.4.3">
+<h3 data-number="9.4.3" class="anchored" data-anchor-id="fetch-1"><span class="header-section-number">9.4.3</span> Fetch</h3>
+<p><img src="pictures/fetch_example.png" class="img-fluid" alt="The fetch operation as a video."></p>
+<div class="notes">
+<p><strong>Fetch operation described</strong></p>
+<ol type="1">
+<li>The PC is set to $0040.</li>
+<li>The contents of the PC is copied to the MAR and transferred via the address bus to the memory controller.</li>
+<li>The value of PC is incremented.</li>
+<li>The contents of the memory location specified by the MAR are transferred via the data bus to the MDR</li>
+<li>The contents of the MDR are placed into the IR.</li>
+</ol>
+</div>
+<hr>
+</section>
+<section id="decode-1" class="level3" data-number="9.4.4">
+<h3 data-number="9.4.4" class="anchored" data-anchor-id="decode-1"><span class="header-section-number">9.4.4</span> Decode</h3>
+<p><img src="pictures/decode_example.png" class="img-fluid" alt="The decode operation as a video."></p>
+<div class="notes">
+<p><strong>Decode operation described</strong></p>
+<p>The program instruction at line 40 is b1 8a = 1011 0001 1000 1010.</p>
+<p>The most significant 5 bits 10110 correspond to the <code>IN</code> opcode <span class="citation" data-cites="avr_instruction_set">(<a href="../../references.html#ref-avr_instruction_set" role="doc-biblioref">Atmel 2020, sec. 5.61</a>)</span>.</p>
+<p><img src="pictures/in_opcode.png" class="img-fluid" alt="Documentation for the IN opcode."></p>
+<p>From the documentation the remaining bits are distributed as per the table below:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>opcode</th>
+<th>AA</th>
+<th>ddddd</th>
+<th>AAAA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10110</td>
+<td>00</td>
+<td>11000</td>
+<td>1010</td>
+</tr>
+</tbody>
+</table>
+<p>So</p>
+<p>AAAAAA = 00 1010 (0x0A) and ddddd = 11000 (24).</p>
+<p>Disassembling the instruction gives:</p>
+<pre><code>in r24, 0x0a</code></pre>
+<p>which in words is <em>read I/O register 0x0A into register 24</em>.</p>
+</div>
+<hr>
+</section>
+<section id="execute-1" class="level3" data-number="9.4.5">
+<h3 data-number="9.4.5" class="anchored" data-anchor-id="execute-1"><span class="header-section-number">9.4.5</span> Execute</h3>
+<p><img src="pictures/execute_example.png" class="img-fluid" alt="The execute operation as a video."></p>
+<div class="notes">
+<p><strong>Execute operation described</strong></p>
+<ol type="1">
+<li>MAR set to I/O register $000A (DDRD) and transferred via the address bus to the memory controller.</li>
+<li>The contents of the memory location specified by the MAR are transferred via the data bus to the MDR.</li>
+<li>The contents of the MDR are copied to R24</li>
+</ol>
+</div>
+<hr>
+</section>
+<section id="assembly-to-machine-code" class="level3" data-number="9.4.6">
+<h3 data-number="9.4.6" class="anchored" data-anchor-id="assembly-to-machine-code"><span class="header-section-number">9.4.6</span> Assembly to Machine Code</h3>
+<div class="notes">
+<p>The assembly/machine code instructions equivalent to the program given in <a href="#sec-wk8-add-code" class="quarto-xref"><span>Section 9.3.1</span></a> is tabulated in <a href="#tbl-wk8-table2" class="quarto-xref">Table&nbsp;<span>9.2</span></a>. Refer also to <a href="../..\lectures/week07/index.html#wk7-assembler">Introduction to Assembly Language</a>.</p>
+</div>
+<div id="tbl-wk8-table2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-wk8-table2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.2: Assembly to machine code
+</figcaption>
+<div aria-describedby="tbl-wk8-table2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 35%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Assembler</th>
+<th style="text-align: left;">Machine Code</th>
+<th style="text-align: left;">Documentation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>ldi r16, 0b01111001</code></td>
+<td style="text-align: left;">1110 0111 0000 1001</td>
+<td style="text-align: left;"><img src="pictures/ldi_opcode.png" class="img-fluid figure-img"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>ldi r17, 0b01100111</code></td>
+<td style="text-align: left;">1110 0110 0001 0111</td>
+<td style="text-align: left;">See cell above</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>add r16, r17</code></td>
+<td style="text-align: left;">0000 1111 0000 0001</td>
+<td style="text-align: left;"><img src="pictures/add_opcode.png" class="img-fluid figure-img"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>sts 0xFF00, r16</code></td>
+<td style="text-align: left;">1001 0011 0000 0000 1111 1111 0000 0000</td>
+<td style="text-align: left;"><img src="pictures/sts_opcode.png" class="img-fluid figure-img"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="summary" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="summary">Summary</h2>
+<p>In this section we have:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Recapped the core components of the AVR CPU including the ALU, general purpose registers, program counter, stack pointer and status register as well as their function in the microcontroller.</li>
+<li>Looked at the function of some of the other components within the CPU including the clock, memory address register, memory data register, instruction register and decoder.</li>
+<li>Looked at an example of what happens during program execution through the fetch-decode-execute cycle.</li>
+</ul>
+</div>
+<hr>
+<section id="on-canvas" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="on-canvas">On Canvas</h3>
+<p>This week on the canvas course pages, you will find a <a href="https://canvas.swansea.ac.uk/courses/44971/assignments/52902">short quiz</a> to test your knowledge on these topics.</p>
+<hr>
+</section>
+<section id="next-time" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="next-time">Next time</h3>
+<ul>
+<li><a href="../..\lectures/week09">Addressing Modes</a></li>
+</ul>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-avr_instruction_set" class="csl-entry" role="listitem">
+Atmel. 2020. <em>AVR(r) Instruction Set Manual</em> (version DS40002198A). Microchip; <a href="
+                  https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ReferenceManuals/AVR-InstructionSet-Manual-DS40002198.pdf
+                  " class="uri">
+                  https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ReferenceManuals/AVR-InstructionSet-Manual-DS40002198.pdf
+</a>.
+</div>
+</div>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>The status and control register also contains bits that can change the operation of the microcontroller. For example the <em>global interrupt enable</em> bit is set if interrupts have been enabled. Interrupts will be discussed in EG-252 next year.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>The duty cycle is <span class="math inline">\(\mu=T_\mathrm{on}/\left(T_\mathrm{on}+T_\mathrm{off}\right)\)</span> and <span class="math inline">\(\mu = 0.5\)</span> (50%) if <span class="math inline">\(T_\mathrm{on}=T_\mathrm{off}\)</span>. That is for half of a cycle (i.e.&nbsp;for <span class="math inline">\(T_\mathrm{on}\)</span>s) it is in a high state and for the other half of the cycle (for <span class="math inline">\(T_\mathrm{off}\)</span>s) it is in a low state.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>If the frequency is <span class="math inline">\(x\)</span>MHz, then the microcontroller can execute <span class="math inline">\(x\)</span> million instructions a second and each instruction takes 1/x microseconds to execute. Therefore, for the ATmega328 with internal clock the execution speed is 0.125<span class="math inline">\(\mu\)</span>s per instruction. For the ATmega328 on the Arduino nano it is half this.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>The carry flag C comes from the status register.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>This file is not completely accurate as the assembler used has assumed the memory space is 8-bits wide where as it is actually 16-bits wide. This means each memory address shown should be divided by 2.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+<p>Copyright © 2021-2025 Swansea University. All rights reserved.</p></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jahangerh\.github\.io\/eg-151-textbook");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/week08/index.html" class="pagination-link" aria-label="Introduction to Assembly Language">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../lectures/week10/index.html" class="pagination-link" aria-label="Addressing Modes">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week09/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

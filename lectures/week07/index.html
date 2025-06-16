@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.30">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ben Clifford">
+<meta name="dcterms.date" content="2025-11-05">
+
+<title>7&nbsp; Interfacing to Analogue I/O with C – EG-151 Microcontrollers 2025-2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../lectures/week08/index.html" rel="next">
+<link href="../../lectures/week06/index.html" rel="prev">
+<link href="../../logo.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-662ae1889177880cb371f83234c0a158.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-de0027c6417e353ce4980619e2136061.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="application/json" class="js-hypothesis-config">
+{
+  "theme": "clean",
+  "openSidebar": false
+}
+</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week07/index.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">EG-151 Microcontrollers 2025-2026</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/JahangerH/eg-151-textbook/tree/main/website/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Course Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_aims.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Aims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_delivery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Delivery Method</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lectures/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontrollers Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers—Module Staff</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Microcontrollers and Microcontroller Architecture</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Introduction to Programming and Program Development</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Introduction to Programming with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week07/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lab_intro/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Laboratory Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Assessment of the Laboratory Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_work.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Laboratory Work in the Department of Electronic and Electrical Engineering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_instruments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Laboratory Instruments</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Laboratory Safety</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/experiment0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Experiment: to construct an oscillator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Simulation Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Questions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/construction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Construction Exercise - Continuity Tester</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/soldering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Safe Soldering</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontroller Programming Laboratory</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/get_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Experiment 1: Binary Counter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Experiment 2: Digital Input</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Experiment 3: Analogue to Digital Conversion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Experiment 4: Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Experiment 5: LCD Display Panel</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mini Projects</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/voltmeter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Voltmeter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/range_finder.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Ultrasonic Range Finder</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/clock_timer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Clock Time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/weather_station.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Weather Station</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/appendix_a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Other Data Representations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/programming_in_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Programming in C – from nothing to software</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-wk6-intro" id="toc-sec-wk6-intro" class="nav-link active" data-scroll-target="#sec-wk6-intro">Introduction</a></li>
+  <li><a href="#lecture-topics" id="toc-lecture-topics" class="nav-link" data-scroll-target="#lecture-topics">Lecture topics</a>
+  <ul class="collapse">
+  <li><a href="#outline" id="toc-outline" class="nav-link" data-scroll-target="#outline">Outline</a></li>
+  </ul></li>
+  <li><a href="#sec-wk6-sect1" id="toc-sec-wk6-sect1" class="nav-link" data-scroll-target="#sec-wk6-sect1"><span class="header-section-number">7.1</span> What are analogue signals?</a></li>
+  <li><a href="#analogue-signals" id="toc-analogue-signals" class="nav-link" data-scroll-target="#analogue-signals"><span class="header-section-number">7.1.1</span> Analogue signals</a></li>
+  <li><a href="#sampling-and-quantization" id="toc-sampling-and-quantization" class="nav-link" data-scroll-target="#sampling-and-quantization"><span class="header-section-number">7.1.2</span> Sampling and quantization</a></li>
+  <li><a href="#adc-principles" id="toc-adc-principles" class="nav-link" data-scroll-target="#adc-principles"><span class="header-section-number">7.1.3</span> ADC Principles</a></li>
+  <li><a href="#adc-sampling-rate" id="toc-adc-sampling-rate" class="nav-link" data-scroll-target="#adc-sampling-rate"><span class="header-section-number">7.1.4</span> ADC Sampling Rate</a></li>
+  <li><a href="#adc-resolution" id="toc-adc-resolution" class="nav-link" data-scroll-target="#adc-resolution"><span class="header-section-number">7.1.5</span> ADC Resolution</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#sec-wk6-sect2" id="toc-sec-wk6-sect2" class="nav-link" data-scroll-target="#sec-wk6-sect2"><span class="header-section-number">7.2</span> ADC Architecture</a>
+  <ul class="collapse">
+  <li><a href="#adc-components" id="toc-adc-components" class="nav-link" data-scroll-target="#adc-components"><span class="header-section-number">7.2.1</span> ADC Components</a></li>
+  <li><a href="#architectures" id="toc-architectures" class="nav-link" data-scroll-target="#architectures"><span class="header-section-number">7.2.2</span> Architectures</a></li>
+  <li><a href="#sar-based-adc-architecture" id="toc-sar-based-adc-architecture" class="nav-link" data-scroll-target="#sar-based-adc-architecture"><span class="header-section-number">7.2.3</span> SAR based ADC Architecture</a></li>
+  </ul></li>
+  <li><a href="#sec-wk6-sect3" id="toc-sec-wk6-sect3" class="nav-link" data-scroll-target="#sec-wk6-sect3"><span class="header-section-number">7.3</span> The Atmel ATmega328 Analog-digital-converter</a></li>
+  <li><a href="#the-atmel-atmega328-adc" id="toc-the-atmel-atmega328-adc" class="nav-link" data-scroll-target="#the-atmel-atmega328-adc"><span class="header-section-number">7.3.1</span> The Atmel ATMega328 ADC</a></li>
+  <li><a href="#sec-wk6-sect4" id="toc-sec-wk6-sect4" class="nav-link" data-scroll-target="#sec-wk6-sect4"><span class="header-section-number">7.4</span> Analogue I/O Example program</a></li>
+  <li><a href="#single-conversion-example" id="toc-single-conversion-example" class="nav-link" data-scroll-target="#single-conversion-example"><span class="header-section-number">7.4.1</span> Single Conversion Example</a></li>
+  <li><a href="#example-code---aligning-port-names-to-the-io-memory-map" id="toc-example-code---aligning-port-names-to-the-io-memory-map" class="nav-link" data-scroll-target="#example-code---aligning-port-names-to-the-io-memory-map"><span class="header-section-number">7.4.2</span> Example code - aligning port names to the I/O memory map</a></li>
+  <li><a href="#example---the-main-function" id="toc-example---the-main-function" class="nav-link" data-scroll-target="#example---the-main-function"><span class="header-section-number">7.4.3</span> Example - the main function</a></li>
+  <li><a href="#example---set-up-io-using-the-registers" id="toc-example---set-up-io-using-the-registers" class="nav-link" data-scroll-target="#example---set-up-io-using-the-registers"><span class="header-section-number">7.4.4</span> Example - set up I/O using the registers</a></li>
+  <li><a href="#example---the-processing-loop" id="toc-example---the-processing-loop" class="nav-link" data-scroll-target="#example---the-processing-loop"><span class="header-section-number">7.4.5</span> Example - the processing loop</a></li>
+  <li><a href="#example---the-full-program" id="toc-example---the-full-program" class="nav-link" data-scroll-target="#example---the-full-program"><span class="header-section-number">7.4.6</span> Example - the full program</a></li>
+  <li><a href="#simulation-of-the-full-program" id="toc-simulation-of-the-full-program" class="nav-link" data-scroll-target="#simulation-of-the-full-program"><span class="header-section-number">7.4.7</span> Simulation of the full program</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a>
+  <ul class="collapse">
+  <li><a href="#on-canvas" id="toc-on-canvas" class="nav-link" data-scroll-target="#on-canvas">On Canvas</a></li>
+  <li><a href="#any-questions" id="toc-any-questions" class="nav-link" data-scroll-target="#any-questions">Any Questions?</a></li>
+  <li><a href="#next-time" id="toc-next-time" class="nav-link" data-scroll-target="#next-time">Next time</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week07/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week07/index.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Ben Clifford </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 5, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="notes">
+<p><a href="../..\slides/lecture07.html">Presentation version</a> of these <a href="#sec-week06-intro">notes</a>.</p>
+</div>
+<p><img src="pictures/week06_chapter_heading.png" class="img-fluid" style="width:100.0%" alt="lecture cover image showing architecture, some gates and an Arduino nano board"></p>
+<section id="sec-wk6-intro" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-wk6-intro">Introduction</h2>
+<p>C is a high-level structured programming language which is often used for writing microcontroller applications. This lecture looks at how I/O operations are performed on analogue inputs.</p>
+</section>
+<section id="lecture-topics" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="lecture-topics">Lecture topics</h2>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img src="pictures/week06_contents_image.png" class="img-fluid" alt="Decorative image used as a slide background."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><a href="#sec-wk6-sect1" class="quarto-xref"><span>Section 7.1</span></a>: <a href="#sec-wk6-sect1">What are analogue signals?</a></li>
+<li><a href="#sec-wk6-sect2" class="quarto-xref"><span>Section 7.2</span></a>: <a href="#sec-wk6-sect2">ADC Architecture</a></li>
+<li><a href="#sec-wk6-sect3" class="quarto-xref"><span>Section 7.3</span></a>: <a href="#sec-wk6-sect3">The Atmel ATmega328 Analog-digital-converter</a></li>
+<li><a href="#sec-wk6-sect4" class="quarto-xref"><span>Section 7.4</span></a>: <a href="#sec-wk6-sect4">Analogue I/O Example program</a></li>
+</ul>
+</div>
+</div>
+<hr>
+<section id="outline" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="outline">Outline</h3>
+<p>In this lecture we will be looking at how we can read analogue signals into a microcontroller using an analogue to digital converter (ADC).</p>
+<div class="incremental">
+<ul class="incremental">
+<li>We begin by introducing analogue signals and the fundamental principals of an ADC.</li>
+<li>We move on to look at the ADC contained on the Atmel ATmega328 microcontroller, focussing on the key registers and how to use them.</li>
+<li>We conclude with an example program for the Atmel ATmega328 microcontroller which reads the voltage from a potentiometer and turns on some LEDs based on the voltage.</li>
+</ul>
+</div>
+</section>
+</section>
+<section id="sec-wk6-sect1" class="level2 center" data-background-image="pictures/waves_wallpaper.jpg" data-number="7.1">
+<h2 data-background-image="pictures/waves_wallpaper.jpg" data-number="7.1" class="anchored" data-anchor-id="sec-wk6-sect1"><span class="header-section-number">7.1</span> What are analogue signals?</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/waves_wallpaper.jpg" class="img-fluid" alt="Decorative image of some analogue waveforms."></p>
+<p><a href="https://paperpcb.dernulleffekt.de/doku.php?id=analog_computer:confetti703_multiplier">This image</a> by Unknown Author <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC-BY-SA-NC</a>.</p>
+</div>
+<hr>
+<section id="analogue-signals" class="level3" data-number="7.1.1">
+<h3 data-number="7.1.1" class="anchored" data-anchor-id="analogue-signals"><span class="header-section-number">7.1.1</span> Analogue signals</h3>
+<p>Analogue signals are those that are both continuous in time and continuous in amplitude i.e.&nbsp;they are continuous signals.</p>
+<p>In the real world, most measurable parameters are actually analogue. They include such signals as temperature, humidity, light, sound, etc.</p>
+<hr>
+<section id="an-analogue-sensor" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="an-analogue-sensor">An analogue sensor</h4>
+<p>An analogue sensor for measuring light intensity is shown in <a href="#fig-wk7-analogue-sensor" class="quarto-xref">Figure&nbsp;<span>7.1</span></a> along with a calibration graph that would be typically supplied in the data sheet for such a sensor.</p>
+<div id="fig-wk7-analogue-sensor" class="quarto-float quarto-figure quarto-figure-center anchored" alt="photograph of a light sensor and its calibration data.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk7-analogue-sensor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/photo_sensor.png" class="img-fluid figure-img" alt="photograph of a light sensor and its calibration data.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk7-analogue-sensor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.1: A photograph of a light sensor and its calibration data
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="sampling-and-quantization" class="level3" data-number="7.1.2">
+<h3 data-number="7.1.2" class="anchored" data-anchor-id="sampling-and-quantization"><span class="header-section-number">7.1.2</span> Sampling and quantization</h3>
+<p>Since microcontrollers can only handle 0s and 1s (digital signals) we need a way of converting analogue signals to digital signals. This is done using an <strong>analogue-to-digital</strong> converter or ADC.</p>
+<div class="fragment">
+<p>An ADC converts a <strong>continuous-time</strong> and <strong>continuous-amplitude</strong> analogue signal to a <strong>discrete-time and discrete-amplitude</strong> digital signal through the process called <strong>sampling and quantization</strong> illustrated in <a href="#fig-wk6-sampling" class="quarto-xref">Figure&nbsp;<span>7.2</span></a>.</p>
+</div>
+<hr>
+<section id="sampling-and-quantization-of-an-analogue-signal" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="sampling-and-quantization-of-an-analogue-signal">Sampling and quantization of an analogue signal</h4>
+<div id="fig-wk6-sampling" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Sampling and quantization of an analogue signal.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-sampling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/Sampling.png" class="img-fluid figure-img" alt="Sampling and quantization of an analogue signal.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-sampling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.2: Sampling and quantization of an analogue signal
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="adc-principles" class="level3" data-number="7.1.3">
+<h3 data-number="7.1.3" class="anchored" data-anchor-id="adc-principles"><span class="header-section-number">7.1.3</span> ADC Principles</h3>
+<p>An analogue signal is continuous in time and amplitude and to convert it to a digital signal it is necessary to <strong>periodically sample the analogue signal</strong>. The rate at which the signal is sampled is referred to as the <strong>sampling rate</strong>.</p>
+<div class="fragment">
+<p>Each time the signal is sampled the analogue value must be represented in one of several discrete <em>bins</em> (digital values). The number of discrete bins available is called the <strong>resolution</strong>.</p>
+</div>
+<div class="fragment">
+<p>Both the sampling rate and the conversion resolution need to be sufficiently high to create an accurate digital reconstruction of the analogue signal.</p>
+</div>
+<hr>
+</section>
+<section id="adc-sampling-rate" class="level3" data-number="7.1.4">
+<h3 data-number="7.1.4" class="anchored" data-anchor-id="adc-sampling-rate"><span class="header-section-number">7.1.4</span> ADC Sampling Rate</h3>
+<p>The Nyquist–Shannon sampling theorem implies that to get an accurate reproduction of the original signal, the sampling rate must be higher than twice the highest frequency of the signal. Lower than this and the reproduced signal will be distorted, and data lost.</p>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This will be covered in more detail in EG-247 Digital Signal Processing in year 2</p>
+</div>
+</div>
+</div>
+<hr>
+<section id="example" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="example">Example</h4>
+<p>Consider the sine wave governed by the equation <span class="math inline">\(x(t) = sin(t)\)</span>. The period is <span class="math inline">\(2\pi\)</span> (approx. 6.3 seconds) so the frequency is 0.16 Hz (<a href="#fig-wk6-sinewave" class="quarto-xref">Figure&nbsp;<span>7.3</span></a>).</p>
+<div id="fig-wk6-sinewave" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Analogue signal x(t) = sin(t) - a sine wave.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-sinewave-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/sinewave.png" class="img-fluid figure-img" alt="Analogue signal x(t) = sin(t) - a sine wave.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-sinewave-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.3: Analogue signal <span class="math inline">\(x(t) = \sin(t)\)</span> - a sine wave.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="sampled-sine-wave" class="level5">
+<h5 class="anchored" data-anchor-id="sampled-sine-wave">Sampled sine wave</h5>
+<p>If we sample this at 0.5 Hz (once every 2 seconds), which is over 3 times the original frequency, we get the orange trace <a href="#fig-wk6-sampled-wave" class="quarto-xref">Figure&nbsp;<span>7.4</span></a>. From this it would be enough to accurately recreate the blue trace.</p>
+<div id="fig-wk6-sampled-wave" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Sine wave x(t) = sin(t) sampled at 0.5 Hz.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-sampled-wave-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/sampled_wave.png" class="img-fluid figure-img" alt="Sine wave x(t) = sin(t) sampled at 0.5 Hz.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-sampled-wave-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.4: Sine wave <span class="math inline">\(x(t) = \sin(t)\)</span> sampled at 0.5 Hz.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="adc-resolution" class="level3" data-number="7.1.5">
+<h3 data-number="7.1.5" class="anchored" data-anchor-id="adc-resolution"><span class="header-section-number">7.1.5</span> ADC Resolution</h3>
+<p>As well as the sampling rate, the resolution of the converter is crucial to getting an accurate representation of the input signal. The resolution indicates the number of discrete values that can be used over the total range of analogue values.</p>
+<hr>
+<section id="a-2-bit-adc" class="level4" data-number="7.1.5.1">
+<h4 data-number="7.1.5.1" class="anchored" data-anchor-id="a-2-bit-adc"><span class="header-section-number">7.1.5.1</span> A 2-bit ADC</h4>
+<p>As an example a 2-bit ADC has <span class="math inline">\(2^2 = 4\)</span> quantization levels (<a href="#fig-wk6-2bit" class="quarto-xref">Figure&nbsp;<span>7.5</span></a>).</p>
+<div id="fig-wk6-2bit" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustration of the resolution of a 2 bit ADC.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-2bit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/2bitadc.png" class="img-fluid figure-img" alt="Illustration of the resolution of a 2 bit ADC.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-2bit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.5: Illustration of the resolution of a 2 bit ADC
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="a-3-bit-adc-has-23-8-quantization-levels-fig-wk6-3bit." class="level4" data-number="7.1.5.2">
+<h4 data-number="7.1.5.2" class="anchored" data-anchor-id="a-3-bit-adc-has-23-8-quantization-levels-fig-wk6-3bit."><span class="header-section-number">7.1.5.2</span> A 3-bit ADC has <span class="math inline">\(2^3 = 8\)</span> quantization levels (<a href="#fig-wk6-3bit" class="quarto-xref">Figure&nbsp;<span>7.6</span></a>).</h4>
+<div id="fig-wk6-3bit" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustration of the resolution of a 3 bit ADC.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-3bit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/3bitadc.png" class="img-fluid figure-img" alt="Illustration of the resolution of a 3 bit ADC.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-3bit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.6: Illustration of the resolution of a 3 bit ADC
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="resolution-of-a-3-bit-adc" class="level4" data-number="7.1.5.3">
+<h4 data-number="7.1.5.3" class="anchored" data-anchor-id="resolution-of-a-3-bit-adc"><span class="header-section-number">7.1.5.3</span> Resolution of a 3-bit ADC</h4>
+<p>To calculate the resolution of an ADC we use <a href="#eq-adc-res" class="quarto-xref">Equation&nbsp;<span>7.1</span></a><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<p><span id="eq-adc-res"><span class="math display">\[
+\mathrm{Digital\ Output} = \left\lfloor\frac{\left(2^N-1\right)\times\mathrm{Analogue\ Input\ Voltage}}{\mathrm{Reference\ Voltage}}\right\rfloor
+\tag{7.1}\]</span></span></p>
+<hr>
+<p>The graph in <a href="#fig-wk6-resolution" class="quarto-xref">Figure&nbsp;<span>7.7</span></a> shows the values (<em>bins</em>) that are available for a three bit ADC.</p>
+<div id="fig-wk6-resolution" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The resolution of a 3 bit ADC.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-resolution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/3bitresolution.png" class="img-fluid figure-img" alt="The resolution of a 3 bit ADC.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-resolution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.7: The resolution of a 3 bit ADC
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="examples" class="level3 unnumbered center">
+<h3 class="unnumbered anchored" data-anchor-id="examples">Examples</h3>
+</section>
+<hr>
+<section id="example-1" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="example-1">Example 1</h4>
+<p>Let’s say that we have a <strong>10-bit ADC</strong> and the reference voltage is <strong>5V</strong>.</p>
+<div class="fragment">
+<p>If our input is <strong>2.2V</strong> the the digital output will be:</p>
+<p><span class="math display">\[\begin{align}
+\mathrm{Digital\ Ouput} &amp;= \left\lfloor \frac{1023 \times 2.2}{5}\right\rfloor \\
+&amp;= \lfloor 450.12 \rfloor = 450_{10}\\
+&amp;= 10\ 1100\ 0010_2
+\end{align}\]</span></p>
+</div>
+<div class="notes">
+<p>Notice in the first example when the resolution is 10-bit the answer consists of 10 bits not 12 or 16.</p>
+</div>
+<hr>
+</section>
+<section id="example-2" class="level4 unnumbered">
+<h4 class="unnumbered anchored" data-anchor-id="example-2">Example 2</h4>
+<p>Let’s say that we have a <strong>6-bit ADC</strong> and the reference voltage is <strong>3.3</strong>.</p>
+<div class="fragment">
+<p>If our input is <strong>1V</strong> the the digital output will be:</p>
+<p><span class="math display">\[\begin{align}
+\mathrm{Digital\ Ouput} &amp;= \left\lfloor \frac{63 \times 1}{3.3}\right\rfloor \\
+&amp;= \lfloor 19.09 \rfloor = 19_{10}\\
+&amp;= 01\ 0011_2
+\end{align}\]</span></p>
+</div>
+<hr>
+</section>
+<section id="illustrating-the-sampling-theorem" class="level4 center" data-number="7.1.5.4">
+<h4 data-number="7.1.5.4" class="anchored" data-anchor-id="illustrating-the-sampling-theorem"><span class="header-section-number">7.1.5.4</span> Illustrating the sampling theorem</h4>
+</section>
+<hr>
+<section id="violation-of-the-sampling-theorem" class="level5">
+<h5 class="anchored" data-anchor-id="violation-of-the-sampling-theorem">Violation of the sampling theorem</h5>
+<div class="notes">
+<p>Consider the signal with frequency <span class="math inline">\(F_c = 1\)</span>Hz, sampling frequency of <span class="math inline">\(F_s = 1\)</span>Hz, and resolution = 3 bits. The sampled signal is illustrated in <a href="#fig-wk6-violation" class="quarto-xref">Figure&nbsp;<span>7.8</span></a>. The Nyquist-Shannon sampling theorem has clearly been violated and the original signal cannot be reconstructed from the sampled signal.</p>
+</div>
+<div id="fig-wk6-violation" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustration of the violation of the sampling thereom - signal cannot be reconstructed from sampled signal.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-violation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/violation.png" class="img-fluid figure-img" alt="Illustration of the violation of the sampling thereom - signal cannot be reconstructed from sampled signal.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-violation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.8: Violation of the sampling thereom: signal cannot be reconstructed from sampled signal
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="sampling-at-twice-the-signal-frequency" class="level5">
+<h5 class="anchored" data-anchor-id="sampling-at-twice-the-signal-frequency">Sampling at twice the signal frequency</h5>
+<div class="notes">
+<p>Consider the signal with frequency <span class="math inline">\(F_c = 1\)</span>Hz, sampling frequency of <span class="math inline">\(F_s = 2\)</span>Hz (the so-called Nyquist frequency), and resolution = 3 bits. The sampled signal is illustrated in <a href="#fig-wk6-nyquist" class="quarto-xref">Figure&nbsp;<span>7.9</span></a>. The reconstructed signal is on the border of acceptable. In practice, we need to sample at a higher frequency than <span class="math inline">\(F_s = 2F_c\)</span>.</p>
+</div>
+<div id="fig-wk6-nyquist" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustration of a signal sampled at the Nyquist frequency. Signal is just about reconstructable from the sampled data.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-nyquist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/nyquist.png" class="img-fluid figure-img" alt="Illustration of a signal sampled at the Nyquist frequency. Signal is just about reconstructable from the sampled data.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-nyquist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.9: Signal sampled at the Nyquist frequency and 3-bit resolution. Signal is just about reconstructable from the sampled data.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="illustrating-sampling-and-quantization" class="level4 center" data-number="7.1.5.5">
+<h4 data-number="7.1.5.5" class="anchored" data-anchor-id="illustrating-sampling-and-quantization"><span class="header-section-number">7.1.5.5</span> Illustrating sampling and quantization</h4>
+</section>
+<section id="sampling-at-five-times-the-signal-frequency" class="level5">
+<h5 class="anchored" data-anchor-id="sampling-at-five-times-the-signal-frequency">Sampling at five times the signal frequency</h5>
+<div class="notes">
+<p>Consider the signal with frequency <span class="math inline">\(F_c = 1\)</span>Hz, sampling frequency of <span class="math inline">\(F_s = 5\)</span>Hz, and resolution = 3 bits. The sampled signal is illustrated in <a href="#fig-wk6-5fs" class="quarto-xref">Figure&nbsp;<span>7.10</span></a>. The reconstructed signal (in the bottom trace) is starting to look like a sine wave.</p>
+</div>
+<div id="fig-wk6-5fs" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustration of a signal sampled at the 5 x Nyquist frequency.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-5fs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/5fs.png" class="img-fluid figure-img" alt="Illustration of a signal sampled at the 5 x Nyquist frequency.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-5fs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.10: Signal sampled at the <span class="math inline">\(Fs = 5 F_c\)</span> and 3-bit resolution.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="sampling-at-ten-times-the-signal-frequency" class="level5">
+<h5 class="anchored" data-anchor-id="sampling-at-ten-times-the-signal-frequency">Sampling at ten times the signal frequency</h5>
+<div class="notes">
+<p>Consider the signal with frequency <span class="math inline">\(F_c = 1\)</span>Hz, sampling frequency of <span class="math inline">\(F_s = 10\)</span>Hz, and resolution = 3 bits. The sampled signal is illustrated in <a href="#fig-wk6-10fs" class="quarto-xref">Figure&nbsp;<span>7.11</span></a>. The reconstructed signal now starting to look like a sine wave. In general, the faster the sampling frequency compared to the frequency of the analogue signal, the better the approximation.</p>
+</div>
+<div id="fig-wk6-10fs" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustration of a signal sampled at the 5 x Nyquist frequency.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-10fs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/10fs.png" class="img-fluid figure-img" alt="Illustration of a signal sampled at the 5 x Nyquist frequency.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-10fs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.11: Signal sampled at the <span class="math inline">\(Fs = 10 F_c\)</span> and 3-bit resolution.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="sec-wk6-sect2" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="sec-wk6-sect2"><span class="header-section-number">7.2</span> ADC Architecture</h2>
+<div id="fig-wk6-atmel-adc" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The architecture of the ADC system in the Atmel ATmega328 Processor.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-atmel-adc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/adc_arch.png" class="img-fluid figure-img" alt="The architecture of the ADC system in the Atmel ATmega328 Processor.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-atmel-adc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.12: The architecture of the ADC system in the Atmel ATmega328 Processor (source <a href="https://ww1.microchip.com/downloads/en/DeviceDoc/ATmega48A-PA-88A-PA-168A-PA-328-P-DS-DS40002061A.pdf">ATmega48A-PA-88A-PA-168A-PA-328-P-DS-DS40002061B</a>, Page 247)
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="adc-components" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="adc-components"><span class="header-section-number">7.2.1</span> ADC Components</h3>
+<p>The architecture of the Atmel ATmega328 is shown in <a href="#fig-wk6-atmel-adc" class="quarto-xref">Figure&nbsp;<span>7.12</span></a>. It contains the following major components:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Multiplexer<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></li>
+<li>Voltage Reference</li>
+<li>Digital to Analogue Converter (DAC)</li>
+<li>Sample and Hold Circuit</li>
+<li>Control and Result Registers</li>
+</ul>
+</div>
+<div class="notes">
+<p>The most important components are described in more detail in the following sections.</p>
+</div>
+<hr>
+</section>
+<section id="architectures" class="level3" data-number="7.2.2">
+<h3 data-number="7.2.2" class="anchored" data-anchor-id="architectures"><span class="header-section-number">7.2.2</span> Architectures</h3>
+<p>There are several achitectures for ADCs summarized as:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Sigma-Delta (<span class="math inline">\(\Sigma-\Delta\)</span>)</li>
+<li>Successive Approximation Register (SAR)</li>
+<li>Pipelined</li>
+<li>Flash</li>
+</ul>
+</div>
+<div class="fragment">
+<p>Each has their own advantages and disadvantages in terms of price, conversion speed, noise and complexity as summarized in <a href="#fig-wk6-adc_archs" class="quarto-xref">Figure&nbsp;<span>7.13</span></a>.</p>
+</div>
+<hr>
+<section id="adc-architecture-vs-resolution-and-sample-rate" class="level4" data-number="7.2.2.1">
+<h4 data-number="7.2.2.1" class="anchored" data-anchor-id="adc-architecture-vs-resolution-and-sample-rate"><span class="header-section-number">7.2.2.1</span> ADC Architecture vs Resolution and Sample Rate</h4>
+<div id="fig-wk6-adc_archs" class="quarto-float quarto-figure quarto-figure-center anchored" alt="ADC Architecture vs Resolution and Sample Rate.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-adc_archs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/adc_archs.png" class="img-fluid figure-img" alt="ADC Architecture vs Resolution and Sample Rate.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-adc_archs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.13: ADC Architecture vs Resolution and Sample Rate (Source <a href="https://scholarworks.calstate.edu/downloads/v979v314q">calstate.edu</a>)
+</figcaption>
+</figure>
+</div>
+<div class="fragment">
+<p>Most general-purpose microcontrollers contain SAR-based architecture ADCs.</p>
+</div>
+<hr>
+</section>
+</section>
+<section id="sar-based-adc-architecture" class="level3" data-number="7.2.3">
+<h3 data-number="7.2.3" class="anchored" data-anchor-id="sar-based-adc-architecture"><span class="header-section-number">7.2.3</span> SAR based ADC Architecture</h3>
+<div class="notes">
+<p>Successive-approximation-register (SAR) ADCs are the most common architecture for medium-to-high-resolution applications with sample rates under 5 megasamples per second.</p>
+<p>The SAR converter is essentially a binary search algorithm which compares the input to the ADC with the output from a digital to analogue converter (DAC) until the input matches the DAC output and the device is able to output the corresponding binary value.</p>
+<p>While the internal circuitry of the ADC may be running at several megahertz, the ADC sample rate is a fraction of that number due to the multiple step successive-approximation algorithm needed to convert the measured input to a binary number.</p>
+<p>The SAR converter is at the heart of the ATmega328 microcontroller and is highlighted in <a href="#fig-wk6-sar" class="quarto-xref">Figure&nbsp;<span>7.14</span></a>.</p>
+</div>
+<div id="fig-wk6-sar" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Schematic diagram of the Atmel ATMega328 ADC system with the SAR highlighted.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-sar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/sar_converter.png" class="img-fluid figure-img" alt="Schematic diagram of the Atmel ATMega328 ADC system with the SAR highlighted.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-sar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.14: Schematic diagram of the Atmel ATMega328 ADC system with the SAR highlighted.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="sar-based-adc-operation" class="level4" data-number="7.2.3.1">
+<h4 data-number="7.2.3.1" class="anchored" data-anchor-id="sar-based-adc-operation"><span class="header-section-number">7.2.3.1</span> SAR based ADC Operation</h4>
+<div class="notes">
+<p>Consider the schematic diagram shown in <a href="#fig-wk6-sar-converter" class="quarto-xref">Figure&nbsp;<span>7.15</span></a>.</p>
+</div>
+<div id="fig-wk6-sar-converter" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-sar-converter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/sar.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-sar-converter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.15: Schematic diagram of the hardware used to achieve SAR conversion (image source: Analog Devices<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>).
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="sar-operation" class="level4" data-number="7.2.3.2">
+<h4 data-number="7.2.3.2" class="anchored" data-anchor-id="sar-operation"><span class="header-section-number">7.2.3.2</span> SAR operation</h4>
+<div class="incremental">
+<ul class="incremental">
+<li>The analogue input signal is held by a track/hold circuit and fed as <span class="math inline">\(V_\mathrm{IN}\)</span> into a comparator.</li>
+<li>To implement the binary search algorithm, the <span class="math inline">\(N\)</span>-bit register is first set to mid-scale (that is the MSB is set to 1 and all other bits set to 0) so that the voltage at <span class="math inline">\(V_\mathrm{DAC} = V_\mathrm{REF}/2\)</span>.</li>
+<li>A comparison is then performed to determine if <span class="math inline">\(V_\mathrm{IN} \le  V_\mathrm{DAC}\)</span>.
+<ul class="incremental">
+<li>If <span class="math inline">\(V_\mathrm{IN} &gt;  V_\mathrm{DAC}\)</span>, the comparator output will be logic high (or 1), and the MSB of the <span class="math inline">\(N\)</span>-bit register remains at 1.</li>
+<li>If <span class="math inline">\(V_\mathrm{IN} &lt;  V_\mathrm{DAC}\)</span>, the comparator output is a logic low (0) and the MSB of the <span class="math inline">\(N\)</span>-register is cleared to logic 0.</li>
+</ul></li>
+<li>The SAR control logic then moves to the next bit along<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>, forces that bit high, and repeats the comparison. The sequence continues all the way down to the LSB (bit 0).</li>
+<li>Once the input has been compared with the full <span class="math inline">\(N\)</span>-bit register the conversion is complete and the <span class="math inline">\(N\)</span>-bit digital word is sent to the ADC output register.</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="bit-sar-based-adc-example" class="level4" data-number="7.2.3.3">
+<h4 data-number="7.2.3.3" class="anchored" data-anchor-id="bit-sar-based-adc-example"><span class="header-section-number">7.2.3.3</span> 4-bit SAR based ADC Example</h4>
+<div id="fig-wk6-sar-example" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Example of the successive approximation method in action.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-sar-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/sar_operation.png" class="img-fluid figure-img" alt="Example of the successive approximation method in action.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-sar-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.16: Example of the successive approximation method in action: a 4 bit ADC converting a signal for which <span class="math inline">\(V_\mathrm{IN}\)</span> is in “bin” 5.
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>Consider <a href="#fig-wk6-sar-example" class="quarto-xref">Figure&nbsp;<span>7.16</span></a>:</p>
+<ol type="1">
+<li>Bit 3 is set high (compare signal is <span class="math inline">\(1000_2\)</span>)
+<ul>
+<li><span class="math inline">\(V_\mathrm{IN} &lt; V_\mathrm{DAC}\)</span> so the comparator output is low (0).</li>
+</ul></li>
+<li>Bit 3 is set low and bit 2 is set high (compare signal is now <span class="math inline">\(0100_2\)</span>).
+<ul>
+<li><span class="math inline">\(V_\mathrm{IN} &gt; V_\mathrm{DAC}\)</span> so the comparator output is high (1).</li>
+</ul></li>
+<li>Bit 2 remains high and now Bit 1 is set high too (compare signal is <span class="math inline">\(0110_2\)</span>).
+<ul>
+<li><span class="math inline">\(V_\mathrm{IN} &lt; V_\mathrm{DAC}\)</span> so the comparator output is low (0).</li>
+</ul></li>
+<li>Bit 1 is set low and bit 0 is set high (compare signal is <span class="math inline">\(0101_2\)</span>)
+<ul>
+<li><span class="math inline">\(V_\mathrm{IN} &gt; V_\mathrm{DAC}\)</span> so the comparator output is high (1).</li>
+</ul></li>
+</ol>
+<p>The final output of the conversion is <span class="math inline">\(0101_2 = 5/16 V_\mathrm{REF} = 0.3125 V_\mathrm{REF}\)</span>.</p>
+</div>
+</section>
+</section>
+</section>
+<section id="sec-wk6-sect3" class="level2 center" data-background-image="pictures/week6_arduino_nano_wallpaper.jpg" data-number="7.3">
+<h2 data-background-image="pictures/week6_arduino_nano_wallpaper.jpg" data-number="7.3" class="anchored" data-anchor-id="sec-wk6-sect3"><span class="header-section-number">7.3</span> The Atmel ATmega328 Analog-digital-converter</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/week6_arduino_nano_wallpaper.jpg" class="img-fluid" alt="Decorative section background - showing an Arduino nano microcontroller and an LED light strip."></p>
+<p>Image source: <a href="https://www.flickr.com/photos/netlcom/36486445205/">This Photo</a> by Unknown Author is licensed under <a href="https://creativecommons.org/licenses/by-nc/3.0/">CC BY-NC</a></p>
+</div>
+<hr>
+<section id="the-atmel-atmega328-adc" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="the-atmel-atmega328-adc"><span class="header-section-number">7.3.1</span> The Atmel ATMega328 ADC</h3>
+<p>The Atmel ATMega328 features a <strong>10-bit successive approximation ADC</strong>.</p>
+<p>The ADC is connected to an 8-channel <strong>Analog Multiplexer</strong> which allows eight single-ended voltage inputs (referenced to GND) constructed from the pins of Port C.</p>
+<hr>
+<section id="technical-specifications" class="level4" data-number="7.3.1.1">
+<h4 data-number="7.3.1.1" class="anchored" data-anchor-id="technical-specifications"><span class="header-section-number">7.3.1.1</span> Technical specifications</h4>
+<p>The ADC provides:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>10-bit Resolution</li>
+<li>13 - 260μs Conversion Time</li>
+<li>Up to 76.9kSPS<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> (Up to 15kSPS at Maximum Resolution)</li>
+<li>9 Multiplexed Single Ended Input Channels</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="hardware-registers-used" class="level4" data-number="7.3.1.2">
+<h4 data-number="7.3.1.2" class="anchored" data-anchor-id="hardware-registers-used"><span class="header-section-number">7.3.1.2</span> Hardware registers used</h4>
+<div class="incremental">
+<ul class="incremental">
+<li><code>ADMUX</code> - ADC Multiplexer Selection Register.</li>
+<li><code>ADCSRA</code> - ADC Status and Control Register A.</li>
+<li><code>ADCSRB</code> - ADC Status and Control Register B.</li>
+<li><code>ADCL</code> and <code>ADCH</code> - The ADC Output Registers.</li>
+<li><code>DIDR0</code> - Digital Input Disable Register 0.</li>
+</ul>
+</div>
+<div class="fragment">
+<p>These registers are described in the following sections.</p>
+</div>
+<hr>
+<section id="admux-adc-multiplexer-selection" class="level5">
+<h5 class="anchored" data-anchor-id="admux-adc-multiplexer-selection">ADMUX – ADC Multiplexer Selection</h5>
+<p>The <code>ADMUX</code> is an 8-bit register arranged as shown in <a href="#fig-wk6-admux" class="quarto-xref">Figure&nbsp;<span>7.17</span></a>.</p>
+<div id="fig-wk6-admux" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The ADMUX Register.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-admux-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/admux.png" class="img-fluid figure-img" alt="The ADMUX Register.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-admux-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.17: The ACD Multplexer Selection Register <code>ADMUX</code> (Source: Atmel Documentation).
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="reference-selection-bits" class="level5">
+<h5 class="anchored" data-anchor-id="reference-selection-bits">Reference selection bits</h5>
+<p><img src="pictures/admux-bits76.png" class="img-fluid" alt="The ADMUX Register with bits 7 and 6 highlighted."></p>
+<p>Bits 7 and 6—<code>REFS1</code> and <code>REFS0</code>—select the reference voltage for the ADC<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</p>
+<div class="notes">
+<p>The settings for the reference selection bits are tabulated in <a href="#tbl-wk6-table1" class="quarto-xref">Table&nbsp;<span>7.1</span></a>.</p>
+<div id="tbl-wk6-table1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-wk6-table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7.1: The settings for the reference selection bits of the <code>ADMUX</code> register.
+</figcaption>
+<div aria-describedby="tbl-wk6-table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 15%">
+<col style="width: 65%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">REFS1</th>
+<th style="text-align: left;">REFS0</th>
+<th style="text-align: left;">Voltage Reference Selection</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">AREF, Internal <span class="math inline">\(V_\mathrm{REF}\)</span> turned off.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">AVCC with external capacitor on <code>AREF</code>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Reserved</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Internal 1.1V reference with external capacitor at <code>AREF</code> pin.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="bit-5-adlar-adc-left-adjust-result" class="level5">
+<h5 class="anchored" data-anchor-id="bit-5-adlar-adc-left-adjust-result">Bit 5 – <code>ADLAR</code>: ADC Left Adjust Result</h5>
+<p><img src="pictures/admux-bit5.png" class="img-fluid" alt="The ADMUX Register with bit5 highlighted."></p>
+<p><code>ADLAR</code> bit (bit 5) affects the presentation of the ADC conversion result in the <strong>ADC Data Register</strong>.</p>
+<p>We write 1 to <code>ADLAR</code> to <em>left adjust</em> the result.</p>
+<p>Otherwise, the result is <em>right adjusted</em>.</p>
+<div class="notes">
+<p><em>We will revisit this in a couple of slides when we discuss the results registers</em>.</p>
+</div>
+<hr>
+</section>
+<section id="bits-30-mux30-analog-channel-selection-bits" class="level5">
+<h5 class="anchored" data-anchor-id="bits-30-mux30-analog-channel-selection-bits">Bits 3:0 – <code>MUX[3:0]</code>: Analog Channel Selection Bits</h5>
+<p><img src="pictures/admux-mux.png" class="img-fluid" alt="The ADMUX Register with bit5 highlighted."></p>
+<p>The value of these bits selects which analogue inputs are connected to the ADC (see <a href="#fig-wk6-admux-mux" class="quarto-xref">Figure&nbsp;<span>7.18</span></a> and <a href="#tbl-wk6-table2" class="quarto-xref">Table&nbsp;<span>7.2</span></a>).</p>
+<hr>
+<div id="fig-wk6-admux-mux" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The pins on the Atmel ATmega328 that may be multiplexed to act as ADC inputs.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-admux-mux-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/mux_pins.png" class="img-fluid figure-img" alt="The pins on the Atmel ATmega328 that may be multiplexed to act as ADC inputs.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-admux-mux-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.18: The pins on the Atmel ATmega328 that may be multiplexed to act as ADC inputs
+</figcaption>
+</figure>
+</div>
+<hr>
+<div id="tbl-wk6-table2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-wk6-table2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7.2: ADC multiplexer bit settings for the ADMUX register
+</figcaption>
+<div aria-describedby="tbl-wk6-table2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">MUX3:0</th>
+<th style="text-align: left;">Input Selected</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(0000\)</span></td>
+<td style="text-align: left;">ADC0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(0001\)</span></td>
+<td style="text-align: left;">ADC1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(0010\)</span></td>
+<td style="text-align: left;">ADC2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(0011\)</span></td>
+<td style="text-align: left;">ADC3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(0100\)</span></td>
+<td style="text-align: left;">ADC4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(0101\)</span></td>
+<td style="text-align: left;">ADC5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(0110\)</span></td>
+<td style="text-align: left;">ADC6 - Not used on the Arduino nano board</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(0111\)</span></td>
+<td style="text-align: left;">ADC7 - Not used on the Arduino nano board</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(1000\)</span></td>
+<td style="text-align: left;">ADC8 - Used for internal temperature sensor.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(1001\)</span></td>
+<td style="text-align: left;">Reserved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(1010\)</span></td>
+<td style="text-align: left;">Reserved</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(1011\)</span></td>
+<td style="text-align: left;">Reserved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(1100\)</span></td>
+<td style="text-align: left;">Reserved</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(1101\)</span></td>
+<td style="text-align: left;">Reserved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(1110\)</span></td>
+<td style="text-align: left;">1.1V (<span class="math inline">\(V_\mathrm{BG}\)</span>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(1111\)</span></td>
+<td style="text-align: left;">GND</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="adcsra---adc-control-and-status-register-a" class="level5">
+<h5 class="anchored" data-anchor-id="adcsra---adc-control-and-status-register-a"><code>ADCSRA</code> - ADC Control and Status Register A</h5>
+<section id="bit-7---aden-adc-enable" class="level6">
+<h6 class="anchored" data-anchor-id="bit-7---aden-adc-enable">Bit 7 - <code>ADEN</code>: ADC Enable</h6>
+<p><img src="pictures/adcsra7.png" class="img-fluid" alt="ADCSRCA with bit 7 highlighted."></p>
+<p>Writing 1 to bit 7 of the <code>ADCSRA</code> register enables the ADC. Writing 0 to this bit turns the ADC off.</p>
+<hr>
+</section>
+<section id="bit-6---adsc-adc-start-conversion" class="level6">
+<h6 class="anchored" data-anchor-id="bit-6---adsc-adc-start-conversion">Bit 6 - <code>ADSC</code>: ADC Start Conversion</h6>
+<p><img src="pictures/adcsra6.png" class="img-fluid" alt="ADCSRCA with bit 6 highlighted."></p>
+<div class="incremental">
+<ul class="incremental">
+<li>In <em>Single Conversion Mode</em>, writing 1 to bit 6 of the <code>ADCSRA</code> register starts the conversion.</li>
+<li>In <em>Free Running Mode</em>, writing 1 to this bit starts the first conversion.</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="bit-5---adate-adc-start-conversion" class="level6">
+<h6 class="anchored" data-anchor-id="bit-5---adate-adc-start-conversion">Bit 5 - <code>ADATE</code>: ADC Start Conversion</h6>
+<p><img src="pictures/adcsra5.png" class="img-fluid" alt="ADCSRCA with bit 5 highlighted."></p>
+<p>When 1 is written to bit 5 of the <code>ADCSRA</code> register, the ADC will start a conversion on a positive edge of the selected trigger signal<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></p>
+<hr>
+</section>
+<section id="bit-4---adif-adc-interrupt-flag" class="level6">
+<h6 class="anchored" data-anchor-id="bit-4---adif-adc-interrupt-flag">Bit 4 - <code>ADIF</code>: ADC Interrupt Flag</h6>
+<p><img src="pictures/adcsra4.png" class="img-fluid" alt="ADCSRCA with bit 4 highlighted."></p>
+<p>This bit is set when an ADC conversion completes, and the data registers are updated. The <em>ADC Conversion Complete Interrupt</em> is executed if the <code>ADIE</code> bit and the I-bit in the status register are set.</p>
+<hr>
+</section>
+<section id="bit-3---adie-adc-interrupt-enable" class="level6">
+<h6 class="anchored" data-anchor-id="bit-3---adie-adc-interrupt-enable">Bit 3 - <code>ADIE</code>: ADC Interrupt Enable</h6>
+<p><img src="pictures/adcsra3.png" class="img-fluid" alt="ADCSRCA with bit 3 highlighted."></p>
+<p>Writing 1 to bit30 of the <code>ADCSRA</code> register, when the I-bit in the status register is set, activates the <em>ADC Conversion Complete Interrupt</em></p>
+<hr>
+</section>
+</section>
+<section id="bits-2-0---adps20-adc-interrupt-enable" class="level5">
+<h5 class="anchored" data-anchor-id="bits-2-0---adps20-adc-interrupt-enable">Bits 2-0 - <code>ADPS[2:0]</code>: ADC Interrupt Enable</h5>
+<p><img src="pictures/adcsra2-0.png" class="img-fluid" alt="ADCSRCA with bit2 2-0 highlighted."></p>
+<p>Bits 2-0 of <code>ADCSRA</code> determine the division factor between the system clock frequency and the input clock to the ADC. That is they set the sample rate for free-running mode. The prescaler settings are tabulated in <a href="#tbl-wk7-table3" class="quarto-xref">Table&nbsp;<span>7.3</span></a>.</p>
+<hr>
+<div id="tbl-wk7-table3" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-wk7-table3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7.3: Clock Division Factor selected by Prescaler Select Bits 2-0
+</figcaption>
+<div aria-describedby="tbl-wk7-table3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th><code>ADPS2</code></th>
+<th><code>ADPS1</code></th>
+<th><code>ADPS0</code></th>
+<th style="text-align: right;">Division Factor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td style="text-align: right;">32</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td style="text-align: right;">64</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td style="text-align: right;">128</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="adcsrb---adc-control-and-status-register-b" class="level5">
+<h5 class="anchored" data-anchor-id="adcsrb---adc-control-and-status-register-b">ADCSRB - ADC Control and Status Register B</h5>
+<section id="bit-6---acme-analogue-comparator-multiplexer-enable" class="level6">
+<h6 class="anchored" data-anchor-id="bit-6---acme-analogue-comparator-multiplexer-enable">Bit 6 - <code>ACME</code>: Analogue comparator multiplexer enable</h6>
+<p><img src="pictures/adcsrb6.png" class="img-fluid" alt="ADCSRB with bit 6 highlighted."></p>
+<p>When logic 1 is written to bit 6 of <code>ADCSRB</code> the ADC is switched off, the ADC multiplexer selects the negative input to the <em>Analog Comparator</em>. When 0 is written to this bit, <code>AIN1</code> is applied to the negative input of the Analog Comparator.</p>
+<div class="notes">
+<p>Note: The Analog Comparator compares the input values on the positive pin <code>AIN0</code> and negative pin <code>AIN1</code>. When the voltage on the positive pin AIN0 is higher than the voltage on the negative pin <code>AIN1</code>, the Analog Comparator output, <code>ACO</code>, is set.</p>
+</div>
+<hr>
+</section>
+<section id="bits-20---adt20-adc-autotrigger-source" class="level6">
+<h6 class="anchored" data-anchor-id="bits-20---adt20-adc-autotrigger-source">Bits 2:0 - <code>ADT[2:0]</code>: ADC Autotrigger source</h6>
+<p><img src="pictures/adcsrb6.png" class="img-fluid" alt="ADCSRB with bit 6 highlighted."></p>
+<p>If logic 1 is written to the <code>ADATE</code> bit in the <code>ADCSRA</code> register, the value of the <code>ADTS</code> bits selects which source will trigger an ADC conversion. The trigger source settings are tabulated in <a href="#tbl-wk7-table4" class="quarto-xref">Table&nbsp;<span>7.4</span></a>.</p>
+<hr>
+<div id="tbl-wk7-table4" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-wk7-table4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7.4: ADC Trigger Source.
+</figcaption>
+<div aria-describedby="tbl-wk7-table4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th><code>ADTS2</code></th>
+<th><code>ADTS1</code></th>
+<th><code>ADTS0</code></th>
+<th style="text-align: left;">Trigger Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td style="text-align: left;">Free Running Mode</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td style="text-align: left;">Analogue Comparitor</td>
+</tr>
+<tr class="odd">
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td style="text-align: left;">External Interrupt Request 0</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td style="text-align: left;">Timer/Counter 0 Compare Match A</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td style="text-align: left;">Timer/Counter 0 Overflow</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td style="text-align: left;">Timer/Counter 0 Compare Match B</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td style="text-align: left;">Timer/Counter 1 Overflow</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td style="text-align: left;">Timer/Counter 1 Capture Event</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="adcl-and-adch---the-adc-data-registers" class="level5">
+<h5 class="anchored" data-anchor-id="adcl-and-adch---the-adc-data-registers">ADCL and ADCH - The ADC Data Registers</h5>
+<p>The ADC Data Registers are illustrated in <a href="#fig-wk6-adc-data" class="quarto-xref">Figure&nbsp;<span>7.19</span></a>.</p>
+<div id="fig-wk6-adc-data" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The ADC Data Registers.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-adc-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/adc_results.png" class="img-fluid figure-img" alt="The ADC Data Registers.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-adc-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.19: The ADC Data Registers <code>ADCH</code> and <code>ADCL</code> when (a) ADLAR = 0 and (b) when ADLAR = 1.
+</figcaption>
+</figure>
+</div>
+<p>When an ADC conversion is complete, the result is put in these two registers<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>.</p>
+<p>When <code>ADCL</code> is read, the ADC Data Register is not updated until <code>ADCH</code> is read.</p>
+<p>If the result is left adjusted and no more than 8-bit precision is required, it is sufficient to read <code>ADCH</code>. Otherwise, <code>ADCL</code> must be read first, then <code>ADCH</code>.</p>
+<hr>
+</section>
+<section id="didr0---digital-input-disable-register-0" class="level5">
+<h5 class="anchored" data-anchor-id="didr0---digital-input-disable-register-0"><code>DIDR0</code> - Digital Input Disable Register 0</h5>
+<section id="bits-50---adc5dadc0d-adc50-digital-input-disable" class="level6">
+<h6 class="anchored" data-anchor-id="bits-50---adc5dadc0d-adc50-digital-input-disable">Bits 5:0 - ADC5D…ADC0D: ADC5…0 Digital Input Disable</h6>
+<p><img src="pictures/didr0.png" class="img-fluid" alt="Register DIDR0 with bits 0-5 highlighted."></p>
+<p>When logic 1 is written to one of these bits, the digital input buffer on the corresponding ADC pin is disabled. (i.e.&nbsp;the corresponding PIN register bit will always read zero).</p>
+<p>When an analog signal is applied to the ADC5…0 pin and the digital input from this pin is not needed, logic 1 should be written to this bit to reduce power consumption in the digital input buffer.</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="setting-up-the-adc" class="level4" data-number="7.3.1.3">
+<h4 data-number="7.3.1.3" class="anchored" data-anchor-id="setting-up-the-adc"><span class="header-section-number">7.3.1.3</span> Setting up the ADC</h4>
+<div class="notes">
+<p>The following steps are illustrated in flow-chart form in <a href="#fig-wk6-flc1" class="quarto-xref">Figure&nbsp;<span>7.20</span></a>.</p>
+</div>
+<div id="fig-wk6-flc1" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A flow chart of the ADC initialization steps.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-flc1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/flc1.png" class="img-fluid figure-img" style="width:30.0%" alt="A flow chart of the ADC initialization steps.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-flc1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.20: A flow chart of the ADC initialization steps
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>In words, the operations to be completed are:</p>
+<ol type="1">
+<li><strong>Define</strong> convenient <strong>names</strong> for the required registers.</li>
+<li>Set the <strong>data direction</strong> of the relevant pins to input (<code>DDRxn</code>)</li>
+<li>Set the corresponding pin in the <strong>input disable register</strong> to 1 to disable the input buffer (<code>DIDR0</code>)</li>
+<li>Select the <strong>reference voltage</strong>, <strong>result alignment</strong> and <strong>input channel</strong> (<code>ADMUX</code>)</li>
+<li>Select the <strong>ADC prescaler value</strong> in the A control and status register (<code>ADCSRA</code>)</li>
+<li>Write a <strong>1 to the <code>ADEN</code> bit</strong> of the A control and status register to enable the ADC (<code>ADCSRA</code>)</li>
+</ol>
+</div>
+<hr>
+<div class="notes">
+<p>The <strong>main code</strong> is illustrated in the flowchart shown in <a href="#fig-wk6-flc2" class="quarto-xref">Figure&nbsp;<span>7.21</span></a>.</p>
+</div>
+<div id="fig-wk6-flc2" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A flow chart of the ADC operation loop.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-flc2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/flc2.png" class="img-fluid figure-img" style="width:25.0%" alt="A flow chart of the ADC operation loop.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-flc2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.21: A flow chart of the ADC operation loop
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>In words, the operations to be completed are:</p>
+<ol type="1">
+<li>Within the infinite for loop, <strong>Write a 1 to the <code>ADSC</code> bit</strong> of the A control and status register each time you want to start a conversion (`ADCSRA``)</li>
+<li>Monitor for the <strong><code>ADSC</code> bit going low</strong> (or the <code>ADIF</code> bit going high) of the A control and status register.</li>
+<li>Read the converted value from the result registers (<code>ADCH</code> and <code>ADCL</code>).</li>
+<li>Do something with the ADC result.</li>
+</ol>
+<p>We illustrate this in <a href="#sec-wk6-sect4" class="quarto-xref"><span>Section 7.4</span></a>.</p>
+</div>
+</section>
+</section>
+<section id="sec-wk6-sect4" class="level2 center" data-background-image="pictures/adc_board_wallpaper.png" data-number="7.4">
+<h2 data-background-image="pictures/adc_board_wallpaper.png" data-number="7.4" class="anchored" data-anchor-id="sec-wk6-sect4"><span class="header-section-number">7.4</span> Analogue I/O Example program</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/adc_board_wallpaper.png" class="img-fluid" alt="Decorative image showing a protopype ADC application for the Arduino nano."></p>
+</div>
+<hr>
+<section id="single-conversion-example" class="level3" data-number="7.4.1">
+<h3 data-number="7.4.1" class="anchored" data-anchor-id="single-conversion-example"><span class="header-section-number">7.4.1</span> Single Conversion Example</h3>
+<div id="fig-wk6-adc_board" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The prototype board showing the finished Arduino nano application with ADC and digital outputs.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk6-adc_board-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/adc_board.jpg" class="img-fluid figure-img" alt="The prototype board showing the finished Arduino nano application with ADC and digital outputs.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk6-adc_board-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.22: The prototype board showing the finished Arduino nano application with ADC and digital outputs.
+</figcaption>
+</figure>
+</div>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>The centre tap of the blue potentiometer shown in <a href="#fig-wk6-adc_board" class="quarto-xref">Figure&nbsp;<span>7.22</span></a> is connected to the analogue input <code>A0</code> which represents Port C Bit 0 on the ATmega328 microcontroller.</li>
+<li>As the voltage at the input changes, the value is reflected on the 6 LEDs.</li>
+<li>What does the code for this look like without using the predefined Arduino function – <code>analogRead</code>?</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="example-code---aligning-port-names-to-the-io-memory-map" class="level3" data-number="7.4.2">
+<h3 data-number="7.4.2" class="anchored" data-anchor-id="example-code---aligning-port-names-to-the-io-memory-map"><span class="header-section-number">7.4.2</span> Example code - aligning port names to the I/O memory map</h3>
+<p>We showed how we use the <code>#define</code> function to map our program variables to the I/O memory map shown in <a href="../..\lectures/week05/#sec-wk5-align-to-io-mem-map">Example code - aligning port names to the I/O memory map</a>. We use the same technique to map the digital and analogue registers to programmer friendly names:</p>
+<hr>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">//I/O and ADC Register definitions taken from datasheet</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="pp">#define PORTB  </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x25</span><span class="op">))</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="pp">#define DDRB   </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x24</span><span class="op">))</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="pp">#define PINB   </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x23</span><span class="op">))</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="pp">#define ADMUX  </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x7C</span><span class="op">))</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="pp">#define ADCSRA </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x7A</span><span class="op">))</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="pp">#define ADCRSB </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x7B</span><span class="op">))</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="pp">#define ADCH   </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x79</span><span class="op">))</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="pp">#define ADCL   </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x78</span><span class="op">))</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="pp">#define DIDR0  </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x7E</span><span class="op">))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+<p>We now define some unsigned integers as either 8 or 16 bits:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Variable type: <code>uint16_t</code></li>
+<li>first variable name: <code>adc_result</code></li>
+<li>High and low byte of <code>adc_result</code>: <code>adc_result_high</code>, <code>adc_result_low</code></li>
+<li>second variable name: <code>previous_result</code></li>
+<li>Initial value of <code>previous_result = 0;</code>”</li>
+</ul>
+</div>
+<div class="fragment">
+<p>The definitions are:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">uint16_t</span> adc_result<span class="op">,</span> previous_result <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="dt">uint8_t</span>  adc_result_low<span class="op">,</span> adc_result_high<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+</section>
+<section id="example---the-main-function" class="level3" data-number="7.4.3">
+<h3 data-number="7.4.3" class="anchored" data-anchor-id="example---the-main-function"><span class="header-section-number">7.4.3</span> Example - the main function</h3>
+<p>We discussed this in <a href="../..\lectures/week05/#sec-wk5-main-c">Example Code - the main function</a>.</p>
+<hr>
+</section>
+<section id="example---set-up-io-using-the-registers" class="level3" data-number="7.4.4">
+<h3 data-number="7.4.4" class="anchored" data-anchor-id="example---set-up-io-using-the-registers"><span class="header-section-number">7.4.4</span> Example - set up I/O using the registers</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">// Set Data Direction Registers</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>DDRB <span class="op">=</span> DDRB <span class="op">|</span> <span class="bn">0b00111111</span><span class="op">;</span> <span class="co">// Setup bits 0 - 5 of port B as outputs</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">// Turn all LEDs off</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>PORTB <span class="op">=</span> PORTB <span class="op">&amp;</span> <span class="bn">0b11000000</span><span class="op">;</span> <span class="co">// Pins B0 (D8) - B5 (D13) start low</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>    </span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">// Set up ADC on pin A0</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>DIDR0 <span class="op">=</span> DIDR0 <span class="op">|</span> <span class="bn">0b00000001</span><span class="op">;</span> <span class="co">//Disable pin A0 as a digital input</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>    </span>
+<span id="cb3-10"><a href="#cb3-10"></a>ADMUX <span class="op">=</span> <span class="bn">0b01000000</span><span class="op">;</span> <span class="co">// Select reference voltage, right adjusted result and select channel ADC0 - A0</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a>ADCSRA <span class="op">=</span> ADCSRA <span class="op">|</span> <span class="bn">0b00000111</span><span class="op">;</span> <span class="co">// Select ADC Prescaler</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a></span>
+<span id="cb3-14"><a href="#cb3-14"></a>ADCSRA <span class="op">=</span> ADCSRA <span class="op">|</span> <span class="bn">0b10000000</span><span class="op">;</span> <span class="co">// Enable ADC</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="example---the-processing-loop" class="level3" data-number="7.4.5">
+<h3 data-number="7.4.5" class="anchored" data-anchor-id="example---the-processing-loop"><span class="header-section-number">7.4.5</span> Example - the processing loop</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="cf">for</span><span class="op">(;;)</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>    ADCSRA <span class="op">=</span> ADCSRA <span class="op">|</span> <span class="bn">0b01000000</span><span class="op">;</span>         <span class="co">//start conversion by writing 1 to the ADSC bit</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>        </span>
+<span id="cb4-5"><a href="#cb4-5"></a>    <span class="cf">while</span><span class="op">((</span>ADCSRA <span class="op">&amp;</span> <span class="bn">0b01000000</span><span class="op">)</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span> <span class="op">}</span> <span class="co">//wait until the ADSC bit changes to 0</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a>    adc_result_low  <span class="op">=</span> ADCL<span class="op">;</span>     <span class="co">//read the low byte of the result into adc_result_low</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>    adc_result_high <span class="op">=</span> ADCH<span class="op">;</span>     <span class="co">//read the high byte of the result into adc_result_high</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>    <span class="co">/* shift whole 8 bits of ADC high byte into most significant byte of ADC result and </span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="co">       add in ADC low byte using bitwise OR. */</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>    adc_result <span class="op">=</span> <span class="op">(</span>adc_result_high<span class="op">&lt;&lt;</span><span class="dv">8</span><span class="op">)</span> <span class="op">|</span> adc_result_low<span class="op">;</span> </span>
+<span id="cb4-12"><a href="#cb4-12"></a></span>
+<span id="cb4-13"><a href="#cb4-13"></a>    <span class="co">// do somethinhg interesting with the ADC readings</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a></span>
+<span id="cb4-15"><a href="#cb4-15"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="example---the-full-program" class="level3" data-number="7.4.6">
+<h3 data-number="7.4.6" class="anchored" data-anchor-id="example---the-full-program"><span class="header-section-number">7.4.6</span> Example - the full program</h3>
+<p>The full program is available as a GitHub gist: <a href="https://gist.github.com/cpjobling/db5e3e157b6e6153f7cb75157dae1e94">main.c</a>. You will need a fully featured IDE, such as Microchip Studio, to compile and upload the code to the Ardino nano board.</p>
+</section>
+<section id="simulation-of-the-full-program" class="level3" data-number="7.4.7">
+<h3 data-number="7.4.7" class="anchored" data-anchor-id="simulation-of-the-full-program"><span class="header-section-number">7.4.7</span> Simulation of the full program</h3>
+<blockquote class="blockquote">
+<p>Wokwi is an online Electronics simulator. You can use it to simulate Arduino, ESP32, STM32, and many other popular boards, parts and sensors. – <a href="https://docs.wokwi.com/?utm_source=wokwi">Welcome to Wokwi!</a></p>
+</blockquote>
+<p>My 2024-2025 EG-353 Individual Engineering Project student, Yousef Alsayegh, has created Wokwi simulations of Ben Clifford’s demonstration programs. Here is the simulation of this week’s simulation <a href="https://wokwi.com/projects/413612952684749825">Week 6: Interfacing to analogue I/O with C</a>. You can run the simulation and play with the code.</p>
+</section>
+<section id="summary" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="summary">Summary</h2>
+<p>In this section we have:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Discussed the differences between analogue and digital signals and the challenges in working with them.</li>
+<li>Explored analogue to digital conversion looking at the architectures and focusing on SAR based ADCs.</li>
+<li>Continued looking at I/O operations on the Atmel ATmega328 microcontroller focusing on analogue signals and using the ADC registers.</li>
+</ul>
+</div>
+<hr>
+<section id="on-canvas" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="on-canvas">On Canvas</h3>
+<p>This week on the <a href="https://canvas.swansea.ac.uk/courses/44971/pages/example-program-analogue-to-digital-conversion-with-registers?module_item_id=2258104">canvas course pages</a>, you will find the sample program from today’s lecture, look through this and ensure you are confident in how it works and how the registers are set for analogue inputs and how masks are used for the digital outputs to the LEDS.</p>
+<p>There is also a short quiz to test your knowledge on these topics.</p>
+<hr>
+</section>
+<section id="any-questions" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="any-questions">Any Questions?</h3>
+<p>Please use the <a href="https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656">Course Question Board</a> on Canvas or take advantage of the lecturers’ office hours.</p>
+<hr>
+</section>
+<section id="next-time" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="next-time">Next time</h3>
+<ul>
+<li><a href="../..\lectures/week07">Introduction to Assembly Language</a></li>
+</ul>
+
+
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Note the symbols <span class="math inline">\(\lfloor \ldots \rfloor\)</span> are called <em>floor</em>. They round a decimal number to the next lowest integer value. That is the decimal part is simply eliminated. Thus quantization is always going to choose the bin that is the closest to the truncated part of the decimal number.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>The multiplexer allows multiple inputs to share one set of ADC hardware.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><a href="https://www.analog.com/en/technical-articles/successive-approximation-registers-sar-and-flash-adcs.html">Understanding SAR ADCs: Their Architecture and Comparison with Other ADCs</a>, Analog Devices.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>The “next bit along” will be the MSB-<span class="math inline">\(1^\mathrm{th}\)</span> bit. That is, for a 12-bit ADC, MSB is bit 11, and the next bit along will be bit 10. If the previous comparison produced a 1, the binary value we are testing is now <span class="math inline">\(2^{11} + 2^{10} = 2048 + 1024 = 3072\)</span>. If the comparison at the previous step was 0, the binary value we are testing is now <span class="math inline">\(2^{10} = 1024\)</span>. The corresponding values of <span class="math inline">\(V_\mathrm{DAC}\)</span> will now be either <span class="math inline">\(3072/4096 V_\mathrm{REF} = 0.75 V_\mathrm{REF}\)</span> or <span class="math inline">\(1024/4096 V_\mathrm{REF} = 0.25 V_\mathrm{REF}\)</span>. This process continues until all bits have been considered.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>SPS = Samples per second.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>The internal voltage reference options may not be used if an external reference voltage is being applied to the <em>AREF</em> pin of the microcontroller chip.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>This bit is used for clock-based ADC operation when you need a controlled and predictable sampling rate.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Recall that the ADC has a precision of up to 10 bits so two data registers are required. Register <code>ADCL</code> contains the least significant 8 bits, bits [0-7] and <code>ACDH</code> contains the most significant bits bit 8 and bit 9.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+<p>Copyright © 2021-2025 Swansea University. All rights reserved.</p></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jahangerh\.github\.io\/eg-151-textbook");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/week06/index.html" class="pagination-link" aria-label="Interfacing to digital I/O with C">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../lectures/week08/index.html" class="pagination-link" aria-label="Introduction to Assembly Language">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week07/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

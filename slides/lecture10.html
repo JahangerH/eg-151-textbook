@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="lecture10_files/libs/clipboard/clipboard.min.js"></script>
+<script src="lecture10_files/libs/quarto-html/tabby.min.js"></script>
+<script src="lecture10_files/libs/quarto-html/popper.min.js"></script>
+<script src="lecture10_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="lecture10_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="lecture10_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="lecture10_files/libs/quarto-html/quarto-syntax-highlighting-dark-e2182856f2c32102dd26b05a5ef16cb5.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.30">
+
+  <meta name="dcterms.date" content="2025-11-26">
+  <title>Addressing Modes</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lecture10_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="lecture10_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+      }
+    pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+    div.sourceCode
+      { color: #e1e4e8; background-color: #24292e; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #e1e4e8; } /* Normal */
+    code span.al { color: #ff5555; font-weight: bold; } /* Alert */
+    code span.an { color: #6a737d; } /* Annotation */
+    code span.at { color: #f97583; } /* Attribute */
+    code span.bn { color: #79b8ff; } /* BaseN */
+    code span.bu { color: #f97583; } /* BuiltIn */
+    code span.cf { color: #f97583; } /* ControlFlow */
+    code span.ch { color: #9ecbff; } /* Char */
+    code span.cn { color: #79b8ff; } /* Constant */
+    code span.co { color: #6a737d; } /* Comment */
+    code span.cv { color: #6a737d; } /* CommentVar */
+    code span.do { color: #6a737d; } /* Documentation */
+    code span.dt { color: #f97583; } /* DataType */
+    code span.dv { color: #79b8ff; } /* DecVal */
+    code span.er { color: #ff5555; text-decoration: underline; } /* Error */
+    code span.ex { color: #f97583; font-weight: bold; } /* Extension */
+    code span.fl { color: #79b8ff; } /* Float */
+    code span.fu { color: #b392f0; } /* Function */
+    code span.im { color: #9ecbff; } /* Import */
+    code span.in { color: #6a737d; } /* Information */
+    code span.kw { color: #f97583; } /* Keyword */
+    code span.op { color: #e1e4e8; } /* Operator */
+    code span.ot { color: #b392f0; } /* Other */
+    code span.pp { color: #f97583; } /* Preprocessor */
+    code span.re { color: #6a737d; } /* RegionMarker */
+    code span.sc { color: #79b8ff; } /* SpecialChar */
+    code span.ss { color: #9ecbff; } /* SpecialString */
+    code span.st { color: #9ecbff; } /* String */
+    code span.va { color: #ffab70; } /* Variable */
+    code span.vs { color: #9ecbff; } /* VerbatimString */
+    code span.wa { color: #ff5555; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="lecture10_files/libs/revealjs/dist/theme/quarto-091ebfb71d12db7fc524ec91495e1509.css">
+  <link href="lecture10_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="lecture10_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="lecture10_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="lecture10_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="lecture10_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="lecture10_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-dark">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="pictures/image1.png" data-background-opacity="0.9" data-background-size="contain" class="quarto-title-block center">
+  <h1 class="title">Addressing Modes</h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Ben Clifford 
+</div>
+        <p class="quarto-title-affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+    </div>
+</div>
+
+  <p class="date">11/26/2025</p>
+</section>
+<section class="slide level2">
+
+<p>../website/lectures/week09/index.qmd</p>
+<aside class="notes">
+<p><a href=".\slides/lecture10.html">Presentation version</a> of these <a href="#/sec-week09-intro">notes</a>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+<img data-src="pictures/week09_chapter_heading.png" style="width:100.0%" alt="lecture cover image showing architecture, some gates and an Arduino nano board" class="r-stretch"></section>
+<section id="sec-wk9-intro" class="slide level2 unnumbered">
+<h2>Introduction</h2>
+<p>In this week’s lecture, you will learn more about assembly language and the diverse ways to access data dependent on what it is and where it is stored.</p>
+<p>This is based around a concept known as <em>addressing modes</em>.</p>
+<aside class="notes">
+<p>There are different ways in which an operand may be specified in an instruction depending on what it is and where it is located. Some operations require no operands and the data to be operated on is implied, in other cases operands can be constants, variables, arrays and memory locations all of which are accessed differently.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 class="unnumbered" id="topics-discussed">Topics discussed</h3>
+<p>In this section we will review a number of different addressing modes relevant to the Atmel ATMega328 Microcontroller including, inherent, immediate, direct, indirect and relative.</p>
+</section>
+<section class="slide level2">
+
+<h3 class="unnumbered" id="contents">Contents</h3>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img data-src="pictures/week09_contents_image.png" alt="Decorative image used as a slide background."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><a href="#/sec-wk9-sect1" class="quarto-xref">Section&nbsp;1</a>: <a href="#/sec-wk9-sect1">What is an addressing mode?</a></li>
+<li><a href="#/sec-wk9-sect2" class="quarto-xref">Section&nbsp;2</a>: <a href="#/sec-wk9-sect2">Addressing modes on the Atmel ATmega328</a></li>
+</ul>
+</div></div>
+</section>
+<section id="sec-wk9-sect1" class="slide level2">
+<h2>What is an addressing mode?</h2>
+<ul>
+<li class="fragment">An addressing mode is a way in which an operand is specified in an instruction and defines how the CPU finds it.</li>
+<li class="fragment">There are different ways in which an operand may be specified in an instruction depending on what it is and where it is located.</li>
+<li class="fragment">Some operations require no operands and the data to be operated on is <em>implied</em>, in other cases operands can be constants, variables, arrays and memory locations – this is where addressing modes are used.</li>
+</ul>
+<aside class="notes">
+<p>The six addressing modes found in the AVR architecture used by the Atmel ATmega328 family of processors are summarised in <a href="#/fig-wk9-addressing_modes" class="quarto-xref">Figure&nbsp;1</a>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/addressing_modes.png" alt="The six addressing modes of an AVR processor - inherent, immediate, extended, direct, relative and indexed." class="r-stretch quarto-figure-center" id="fig-wk9-addressing_modes"><p class="caption">
+Figure&nbsp;1: The six addressing modes of an AVR processor.
+</p></section>
+<section class="slide level2">
+
+<ul>
+<li>The memory address where data is stored is called the <em>effective address</em> of the operand and the addressing mode refers to the way in which the operand is specified and how the CPU accesses it.</li>
+</ul>
+<aside class="notes">
+<p><strong>Addressing modes</strong>&nbsp;are an aspect of the&nbsp;<em>instruction set architecture</em>&nbsp;in most&nbsp;<em>central processing unit</em>&nbsp;(CPU) designs. The various addressing modes that are defined in a given instruction set architecture define how the&nbsp;<em>machine language&nbsp;instructions</em>&nbsp;in that architecture identify the <em>operand</em>(s) of each instruction. An addressing mode specifies how to calculate the effective&nbsp;<em>memory address</em>&nbsp;of an operand by using information held in&nbsp;<em>registers</em>&nbsp;and/or constants contained within a machine instruction or elsewhere.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="sec-wk9-sect2" class="slide level2">
+<h2>Addressing modes on the Atmel ATmega328</h2>
+<p>The AVR<sup>®</sup> Enhanced RISC microcontroller supports powerful and efficient addressing modes for access to the program memory (Flash) and Data memory (SRAM, Register file, I/O Memory, and Extended I/O Memory).</p>
+</section>
+<section class="slide level2">
+
+<p>The Atmel ATmega328 microcontroller makes use of the following addressing modes:</p>
+<ul>
+<li class="fragment"><a href="#/sec-wk9-ia" class="quarto-xref">Section&nbsp;2.1</a>: <a href="#/sec-wk9-ia">Inherent/Implied Addressing</a></li>
+<li class="fragment"><a href="#/sec-wk9-rda" class="quarto-xref">Section&nbsp;2.2</a>: <a href="#/sec-wk9-rda">Register Direct (single and two-register) Addressing</a></li>
+<li class="fragment"><a href="#/sec-wk9-ioda" class="quarto-xref">Section&nbsp;2.3</a>: <a href="#/sec-wk9-ioda">I/O Direct Addressing</a></li>
+<li class="fragment"><a href="#/sec-wk9-dda" class="quarto-xref">Section&nbsp;2.4</a>: <a href="#/sec-wk9-dda">Data Direct Addressing</a></li>
+<li class="fragment"><a href="#/sec-wk9-ima" class="quarto-xref">Section&nbsp;2.5</a>: <a href="#/sec-wk9-ima">Immediate Addressing</a></li>
+<li class="fragment"><a href="#/sec-wk9-dia" class="quarto-xref">Section&nbsp;2.6</a>: <a href="#/sec-wk9-dia">Data Indirect Addressing</a></li>
+<li class="fragment"><a href="#/sec-wk9-ra" class="quarto-xref">Section&nbsp;2.7</a>: <a href="#/sec-wk9-ra">Relative Addressing</a></li>
+<li class="fragment">Program Addressing (Not covered)</li>
+</ul>
+<aside class="notes">
+<p>Apart from <em>program addressing</em>, we will discuss each of these addressing modes in the following.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="sec-wk9-ia">Inherent Addressing Mode</h3>
+<div class="fragment">
+<p>For instructions that use <strong>inherent addressing</strong>, sometimes called <em>implicit</em> or <em>implied</em> addressing, the operands are not explicitly specified but are implied by the instruction<a href="#/footnotes" class="footnote-ref" id="fnref1" role="doc-noteref" data-footnote-href="#/fn1" onclick=""><sup>1</sup></a>.</p>
+</div>
+<aside></aside></section>
+<section class="slide level2">
+
+<h4 class="unnumbered" id="examples-of-inherent-addressing">Examples of inherent addressing</h4>
+<div id="lst-wk9-inherent-addressing" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|1|2|3">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-inherent-addressing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;1: Examples of inherent addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-inherent-addressing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb1" data-code-line-numbers="|1|2|3"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href=""></a>SEN    <span class="co">; Set Negative Flag in Status Register (SREG)</span></span>
+<span id="cb1-2"><a href=""></a>CLN    <span class="co">; Clear Nagative Flag in Status Register (SREG)</span></span>
+<span id="cb1-3"><a href=""></a><span class="bu">NOP</span>    <span class="co">; No Operation (do nothing for one clock cycle)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</section>
+<section class="slide level2">
+
+<aside class="notes">
+<p>Since no additional clock cycles are required to fetch and move data around, this is the <strong>simplest and fastest addressing mode</strong>.</p>
+<p>Some of the AVR instructions that use inherent addressing are listed in <a href="#/tbl-wk9-table1" class="quarto-xref">Table&nbsp;1</a>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="tbl-wk9-table1" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-wk9-table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: AVR instructions that use inherent addressing
+</figcaption>
+<div aria-describedby="tbl-wk9-table1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Mnemonic</th>
+<th style="text-align: center;">Operands</th>
+<th style="text-align: left;">Decription</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>CLZ</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Clear <em>Zero Flag</em> in SREG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SEI</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Global Interrupt Enable</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>CLI</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Global Interrupt Disable</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SES</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Set <em>Sign</em> Bit in SREG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>CLS</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Clear <em>Sign</em> Bit in SREG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SEV</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Set Two’s <em>Complement Overflow</em> bit in SREG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>CLV</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Clear <em>Two’s Complement Overflow</em> bit in SREG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SET</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Set <em>T</em> bit in SREG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>CLT</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Clear <em>T</em> bit in SREG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SEH</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Set <em>Half Carry Flag</em> in SREG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>CLH</code></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: left;">Clear <em>Half Carry Flag</em> in SREG</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Microcontrollers that have single accumulators in place of a bank of general-purpose registers often have more instructions that use inherent addressing such as <code>CLRA</code>, <code>DECA</code>, <code>INCA</code>.</p>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="sec-wk9-rda">Register Direct Addressing</h3>
+<div class="fragment">
+<p>For these operators, the operands are contained in registers in the <em>register file</em>. There are single register operators which operates on and returns the result to the destination register, known as <code>Rd</code><a href="#/footnotes" class="footnote-ref" id="fnref2" role="doc-noteref" data-footnote-href="#/fn2" onclick=""><sup>2</sup></a>.</p>
+</div>
+<aside class="notes">
+<p>Because the microcontroller can access the register file faster than memory, they are also fast instructions.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside></aside></section>
+<section class="slide level2">
+
+<h4 id="single-register-addressing-rd">Single Register Addressing (<code>Rd</code>)</h4>
+<div class="fragment">
+<p>For instructions that use <strong>single direct register addressing</strong>, the operand is contained in the destination register Rd as illustrated in <a href="#/fig-wk9-srda" class="quarto-xref">Figure&nbsp;2</a>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/srda.png" alt="Illustrating single register direct addressing." class="r-stretch quarto-figure-center" id="fig-wk9-srda"><p class="caption">
+Figure&nbsp;2: Illustrating single register direct addressing: <code>d</code> is the register number and <code>Rd</code> is source of the operand and the destination of the result.
+</p></section>
+<section class="slide level2">
+
+<h5 class="unnumbered" id="examples">Examples</h5>
+<div id="lst-wk9-register-direct-addressing" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|1|2|3">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-register-direct-addressing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;2: Examples of single register direct addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-register-direct-addressing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb2" data-code-line-numbers="|1|2|3"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href=""></a><span class="bu">DEC</span> R16     <span class="co">;Decrement R16</span></span>
+<span id="cb2-2"><a href=""></a><span class="bu">INC</span> R17     <span class="co">;Increment R17</span></span>
+<span id="cb2-3"><a href=""></a>CLR R16     <span class="co">;Clear R16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Remember the operand represents the data so this addressing mode is accessing or acting on the data using only one of the general purpose registers but does not include any write back to SRAM/EEPROM.</p>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h4 id="two-register-addressing-rd-rr">Two Register Addressing (<code>Rd</code>, <code>Rr</code>)</h4>
+<div class="fragment">
+<p>For instructions that use <strong>direct register addressing with two registers</strong>, the operand is <em>contained</em> in the source and destination registers <code>Rr</code><a href="#/footnotes" class="footnote-ref" id="fnref3" role="doc-noteref" data-footnote-href="#/fn3" onclick=""><sup>3</sup></a> and <code>Rd</code> respectively. As a result of these operations is that the data in <code>Rd</code> is overwritten. This is illustrated in <a href="#/fig-wk9-rda-with-2-regs" class="quarto-xref">Figure&nbsp;3</a>.</p>
+</div>
+<aside></aside></section>
+<section class="slide level2">
+
+
+<img data-src="pictures/srda2.png" alt="Illustrating direct register addressing with two registers." class="r-stretch quarto-figure-center" id="fig-wk9-rda-with-2-regs"><p class="caption">
+Figure&nbsp;3: Illustrating register direct addressing with two registers: d is the source of the first operand, <code>r</code> is the source of the second operand. The result overwrites the data in register <code>d</code>.
+</p></section>
+<section class="slide level2">
+
+<h5 class="unnumbered" id="examples-1">Examples</h5>
+<div id="lst-wk9-rda-with-2-regs" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|1|2|3">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-rda-with-2-regs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;3: Examples of direct register addressing with two registers.
+</figcaption>
+<div aria-describedby="lst-wk9-rda-with-2-regs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb3" data-code-line-numbers="|1|2|3"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href=""></a><span class="bu">ADD</span> R16<span class="op">,</span> R17  <span class="co">;Add the contents of R16 and R17. Return sum to R17.</span></span>
+<span id="cb3-2"><a href=""></a>CP R16<span class="op">,</span> R17   <span class="co">;Compare the values of R16 and R17 - sets the Z, N flags in SR</span></span>
+<span id="cb3-3"><a href=""></a><span class="bu">MOV</span> R16<span class="op">,</span> R17  <span class="co">;Copy contents of R16 into R17</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>As with the previous addressing mode, this one is accessing or acting on the data in two of the general purpose registers and although it overwrites the data in Rd is also does not include any write back to SRAM/EEPROM.</p>
+<p>Note that the result of <code>CP</code> is the sign of R16 - R17. If the difference is zero the <code>Z</code> flag is set in the status register. If the difference is a negative number, the <code>S</code> (sign) flag will be set. If the difference is positive, no flags are set. Carry and half-carry flags are also set as appropriate. The <code>CP</code> operation is typically followed by one of the branch operations <code>BEQ</code> (branch if equal to zero), <code>BLT</code> (branch if less than zero), <code>BGT</code> (branch if greater than zero), etc. The operation <code>CP</code> plus branch is typically used in the compilation of logical comparisons in C’s <code>if</code>, <code>else if</code>, <code>while</code>, and <code>for</code> statements.</p>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="sec-wk9-ioda">I/O Direct Addressing</h3>
+<div class="fragment">
+<p>Within the user data space there are 64 I/O registers as well as 160 Extended I/O registers. The <strong>first 64</strong> of these can be accessed using instructions <strong>such as <code>IN</code> and <code>OUT</code> using I/O direct addressing mode</strong>. In I/O direct addressing mode the operands contain the <strong>address A of one of the lower 64 I/O locations</strong> and a source (<code>Rr</code>) or destination register (<code>Rd</code>). This is illustrated in <a href="#/fig-wk9-io-addr" class="quarto-xref">Figure&nbsp;4</a>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/io_addr.png" alt="Illustrating I/O direct register addressing - one of the operands comes from one of the I/O registers." class="r-stretch quarto-figure-center" id="fig-wk9-io-addr"><p class="caption">
+Figure&nbsp;4: Illustrating I/O direct addressing: the source (or destination) will be from an I/O register. The destination (or source) will be one of the general purpose registers.
+</p></section>
+<section class="slide level2">
+
+<h5 id="exampleswk9note1">Examples<a href="#/footnotes" class="footnote-ref" id="fnref4" role="doc-noteref" data-footnote-href="#/fn4" onclick=""><sup>4</sup></a></h5>
+<div id="lst-wk9-io-addr" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-io-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;4: Examples of I/O direct addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-io-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb4" data-code-line-numbers="|1|2"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href=""></a><span class="bu">IN</span> R16<span class="op">,</span> PIND     <span class="co">;Load (input) the contents of PIND into R16</span></span>
+<span id="cb4-2"><a href=""></a><span class="bu">OUT</span> PORTC<span class="op">,</span> R17   <span class="co">;Store (output) the contents of R17 to PORTC</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Be aware that loading and storing data to these registers using instructions such as <code>LD</code> and <code>ST</code> must address these registers differently and does not use I/O direct addressing mode.</p>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside></aside></section>
+<section class="slide level2">
+
+<h3 id="sec-wk9-dda">Data Direct Addressing</h3>
+<div class="fragment">
+<p>Instructions that use <strong>direct data addressing</strong> are <strong>two words</strong> (32-bits) in length, the first operand, <code>Rr</code>/<code>Rd</code> is one of the general-purpose registers and the second is 16-bit Data Address contained in the 16 LSBs of the two-word instruction. This is illustrated in <a href="#/fig-wk9-dd-addr" class="quarto-xref">Figure&nbsp;5</a>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/dd_addr.png" alt="Illustrating data direct addressing with a general purpose register and data stored in memory." class="r-stretch quarto-figure-center" id="fig-wk9-dd-addr"><p class="caption">
+Figure&nbsp;5: Illustrating data direct addressing: the source (or destination) will be in memory. The destination (or source) will be one of the general purpose registers.
+</p></section>
+<section class="slide level2">
+
+<h5 class="unnumbered" id="examples-2">Examples</h5>
+<div id="lst-wk9-dd-addr" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-dd-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;5: Examples of direct data addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-dd-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb5" data-code-line-numbers="|1|2"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href=""></a><span class="bu">LDS</span> R16<span class="op">,</span> <span class="bn">0x0100</span>   <span class="co">;Load the contents of data space address hex 0100 into R16</span></span>
+<span id="cb5-2"><a href=""></a>STS <span class="bn">0x0101</span><span class="op">,</span> R17   <span class="co">;Store the contents of R17 to data space address hex 0101</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sec-wk9-ima">Immediate Addressing</h3>
+<div class="fragment">
+<p>With instructions that use <strong>immediate addressing</strong> the actual data to be used is included within the instruction itself as a constant value<a href="#/footnotes" class="footnote-ref" id="fnref5" role="doc-noteref" data-footnote-href="#/fn5" onclick=""><sup>5</sup></a>. This is illustrated in <a href="#/fig-wk9-imm-addr" class="quarto-xref">Figure&nbsp;6</a>.</p>
+</div>
+<aside></aside></section>
+<section class="slide level2">
+
+
+<img data-src="pictures/imm_addr.png" alt="llustrating immediate addressing in which the operand is a number in the instruction." class="r-stretch quarto-figure-center" id="fig-wk9-imm-addr"><p class="caption">
+Figure&nbsp;6: Illustrating immediate addressing: the destination will be an one of the general purpose registers. The source will be a data value given in the instruction.
+</p></section>
+<section class="slide level2">
+
+<h5 class="unnumbered" id="examples-3">Examples</h5>
+<div id="lst-wk9-imm-addr" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-imm-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;6: Examples of immediate addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-imm-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb6" data-code-line-numbers="|1|2"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href=""></a>LDI R16<span class="op">,</span> <span class="bn">0x5B</span>   <span class="co">;Load the hex value 5B into R16</span></span>
+<span id="cb6-2"><a href=""></a>SUBI R17<span class="op">,</span> <span class="dv">24</span>    <span class="co">;Subtract the decimal value 24 from the contents of R17</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Since the instruction already contains the data, this is a fast addressing mode and only takes one clock cycle to complete.</p>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h4 class="unnumbered" id="immediate-vs-data-direct-addressing">Immediate vs Data Direct Addressing</h4>
+<div class="fragment">
+<p>Instructions that use immediate addressing, take one clock-cycle to complete.</p>
+</div>
+<div class="fragment">
+<p>For example <code>LDI</code> - load immediate:</p>
+<p><img data-src="pictures/wk9_ldi.png" alt="Manual page for the LDI command."></p>
+</div>
+</section>
+<section class="slide level2">
+
+<p>Instructions that use register or data direct addressing, take two clock-cycles to complete.</p>
+<div class="fragment">
+<p>For example <code>LDS</code> - load from store needs to load the operator and decode the register address, then load data from the data space into the register.</p>
+<p><img data-src="pictures/wk9_lds.png" alt="Manual page for the LDS command."></p>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="sec-wk9-dia">Data Indirect Addressing</h3>
+<div class="fragment">
+<p>With instructions that use <strong>indirect data addressing</strong> the operand address is the contents of one of the X- Y- Z-pointer registers. This is illustrated in <a href="#/fig-wk9-id-addr" class="quarto-xref">Figure&nbsp;7</a>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/id_addr.png" alt="Illustrating indirect direct addressing in which the registers provide the address of the operand." class="r-stretch quarto-figure-center" id="fig-wk9-id-addr"><p class="caption">
+Figure&nbsp;7: Illustrating indirect data addressing in which two registers provide the address in memory of the operand.
+</p></section>
+<section class="slide level2">
+
+<h5 class="unnumbered" id="examples-4">Examples</h5>
+<div id="lst-wk9-id-addr" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|1|2|4">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-id-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;7: Examples of indirect data addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-id-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb7" data-code-line-numbers="|1|2|4"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href=""></a><span class="bu">LDS</span> R26<span class="op">,</span> <span class="bn">0x00</span></span>
+<span id="cb7-2"><a href=""></a><span class="bu">LDS</span> R27<span class="op">,</span> <span class="bn">0x10</span> </span>
+<span id="cb7-3"><a href=""></a></span>
+<span id="cb7-4"><a href=""></a>LD R18<span class="op">,</span> X      <span class="co">;Load R18 with data stored at the address in the X- pointer register</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>This mode allows the address to be a run time computed value, whereas the direct address must be computed at compile time/assembly time/load time.</p>
+<p>This has several important use cases including setting up storage for arrays or other structures in memory.</p>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h4 id="indirect-data-addressing-with-displacement">Indirect Data Addressing with Displacement</h4>
+<div class="fragment">
+<p>As with indirect data addressing, the microcontroller makes use of the Y and/or Z pointers with an additional displacement to access data stored in the data space.</p>
+</div>
+<div class="fragment">
+<p>This is the best way to access an array of data and is illustrated in <a href="#/fig-wk9-id-addr-2" class="quarto-xref">Figure&nbsp;8</a>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/id_addr_2.png" alt="Illustrating indirect direct addressing with displacement." class="r-stretch quarto-figure-center" id="fig-wk9-id-addr-2"><p class="caption">
+Figure&nbsp;8: Illustrating indirect direct addressing with displacement.
+</p></section>
+<section class="slide level2">
+
+<h5 class="unnumbered" id="examples-5">Examples</h5>
+<div id="lst-wk9-id-addr-2" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|1|2|4">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-id-addr-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;8: Examples of indirect data addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-id-addr-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb8" data-code-line-numbers="|1|2|4"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href=""></a><span class="bu">LDS</span> R28<span class="op">,</span> <span class="bn">0x00</span></span>
+<span id="cb8-2"><a href=""></a><span class="bu">LDS</span> R29<span class="op">,</span> <span class="bn">0x10</span> </span>
+<span id="cb8-3"><a href=""></a></span>
+<span id="cb8-4"><a href=""></a>LD R18<span class="op">,</span> Y <span class="op">+</span> <span class="dv">1</span>      <span class="co">;Load R18 with data stored at the address in the Y- pointer register with a displacement of 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>This mode allows the address to be a run time computed value, whereas the direct address must be computed at compile time/assembly time/load time.</p>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h4 id="indirect-data-addressing-with-incrementdecrement">Indirect Data Addressing with Increment/Decrement</h4>
+<div class="fragment">
+<p>Indirect Data Addressing mode also supports <em>Post-increment</em> and <em>Pre-decrement addressing</em>.</p>
+</div>
+<ul>
+<li class="fragment">With <em>Data Indirect Addressing with Post-increment</em>, the X-, Y-, or the Z-pointer is incremented after the operation.</li>
+<li class="fragment">The operand address is the content of the X-, Y-, or the Z-pointer before incrementing.</li>
+<li class="fragment">With <em>Data Indirect Addressing with Pre-decrement</em>, the X,- Y-, or the Z-pointer is decremented before the operation.</li>
+<li class="fragment">The operand address is the decremented contents of the X-, Y-, or the Z-pointer.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h5 class="unnumbered" id="examples-6">Examples</h5>
+<div id="lst-wk9-id-addr-3" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-id-addr-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;9: Examples of indirect data addressing with increment/decrement.
+</figcaption>
+<div aria-describedby="lst-wk9-id-addr-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb9" data-code-line-numbers="|1|2"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href=""></a>LD R16<span class="op">,</span> Z<span class="op">+</span> <span class="co">;Load R16 with data stored at the current address in the Z pointer register then increment the Z register</span></span>
+<span id="cb9-2"><a href=""></a>LD R16<span class="op">,</span> <span class="op">-</span>Z <span class="co">;Load R16 with data stored at the current address in the Z pointer register - 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>This mode is useful for iterating through arrays of or sequentially stored linked data.</p>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="sec-wk9-ra">Relative Addressing</h3>
+<div class="fragment">
+<p>With relative program memory addressing the operand contains a signed 12-bit offset value which during execution is added to the program counter to change the flow of the program.</p>
+</div>
+<div class="fragment">
+<p>The destination of the branch (effective address) instruction is calculated by adding the signed byte following the opcode (-2048 to +2047) to the PC content. This is illustrated in <a href="#/fig-wk9-rel-addr" class="quarto-xref">Figure&nbsp;9</a>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/rel_addr.png" alt="Illustrating relative addressing which adjusts the program counter and is typically used for branching." class="r-stretch quarto-figure-center" id="fig-wk9-rel-addr"><p class="caption">
+Figure&nbsp;9: Illustrating relative addressing which adjusts the program counter and is typically used for branching.
+</p></section>
+<section class="slide level2">
+
+<h5 class="unnumbered" id="examples-7">Examples</h5>
+<div id="lst-wk9-rel-addr" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|1|2">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk9-rel-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;10: Examples of relative addressing.
+</figcaption>
+<div aria-describedby="lst-wk9-rel-addr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb10" data-code-line-numbers="|1|2"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href=""></a>RJMP Label  <span class="co">;Jump to the address specified by label</span></span>
+<span id="cb10-2"><a href=""></a>RCALL Label <span class="co">;relative call to an address (subroutine)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<aside class="notes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>This addressing mode is used by instructions such as RJMP to modify the flow of a program, this typically is used in conjunction with test conditions or at the end of the code to make it loop back to the start.</p>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h4 id="relative-addressing-example">Relative Addressing Example</h4>
+
+<img data-src="pictures/rad_example.png" class="r-stretch quarto-figure-center" id="fig-wk9-rad-example"><p class="caption">
+Figure&nbsp;10: An example to illustrate relative addressing
+</p></section>
+<section class="slide level2">
+
+<div id="lst-using-bit-manipulation" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|3|13">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-using-bit-manipulation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;11: Assembly code for the example of relative addressing.
+</figcaption>
+<div aria-describedby="lst-using-bit-manipulation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb11" data-code-line-numbers="|3|13"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href=""></a><span class="fu">LOOP:</span></span>
+<span id="cb11-2"><a href=""></a>    SBIC PIND<span class="op">,</span> <span class="dv">2</span></span>
+<span id="cb11-3"><a href=""></a>    RJMP LED1</span>
+<span id="cb11-4"><a href=""></a></span>
+<span id="cb11-5"><a href=""></a>    SBIC PINC<span class="op">,</span> <span class="dv">3</span></span>
+<span id="cb11-6"><a href=""></a>    RJMP LED2</span>
+<span id="cb11-7"><a href=""></a></span>
+<span id="cb11-8"><a href=""></a>    <span class="bu">IN</span> R16<span class="op">,</span> PORTB</span>
+<span id="cb11-9"><a href=""></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11111100</span></span>
+<span id="cb11-10"><a href=""></a>    <span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb11-11"><a href=""></a>    RJMP LOOP</span>
+<span id="cb11-12"><a href=""></a></span>
+<span id="cb11-13"><a href=""></a><span class="fu">LED1:</span></span>
+<span id="cb11-14"><a href=""></a>    SBI PORTB<span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb11-15"><a href=""></a>    RJMP LOOP</span>
+<span id="cb11-16"><a href=""></a></span>
+<span id="cb11-17"><a href=""></a><span class="fu">LED2:</span> </span>
+<span id="cb11-18"><a href=""></a>    SBI PORTB<span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb11-19"><a href=""></a>    RJMP LOOP</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</section>
+<section class="slide level2">
+
+<pre><code>RJMP LED1 -&gt; 1100 kkkk kkkk kkkk</code></pre>
+<div class="fragment">
+<p>is</p>
+<pre><code>C006 = 1100 0000 0000 0110 -&gt; RJMP +6</code></pre>
+</div>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/rel_addr_3.png" alt="The program counter jumps 6 memory locations forward." class="r-stretch quarto-figure-center" id="fig-wk9-rel-addr_3"><p class="caption">
+Figure&nbsp;11: The program counter jumps 6 memory locations forward.
+</p></section>
+<section id="summary" class="slide level2 unnumbered">
+<h2>Summary</h2>
+<p>In this section have reviewed different addressing modes supported by the AVR instruction set commenting on use cases and speed (in clock cycles) of their operation.</p>
+</section>
+<section class="slide level2">
+
+<h3 class="unnumbered" id="on-canvas">On Canvas</h3>
+<p>You should review Section 3 of the AVR instructions set manual <span class="citation" data-cites="avr_instruction_set">(<strong>avr_instruction_set?</strong>)</span> on program and data addressing modes. There is a short quiz covering the content of this chapter.</p>
+</section>
+<section class="slide level2">
+
+<h3 class="unnumbered" id="next-time---class-test">Next Time - Class Test!</h3>
+<div class="fragment">
+<p>In preparation for the class test next week, you should review all the content covered in these lecture notes, self-directed study material and the lab classes.</p>
+</div>
+<div class="fragment">
+<p>Note that the class test is closed-book but you have will access to the reference manuals mentioned in these notes.</p>
+</div>
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document smaller scrollable" role="doc-endnotes"><h2>Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>In inherent addressing the effective address that the operation acts on is the register itself.</p></li>
+<li id="fn2"><p>The <code>d</code> in <code>Rd</code> is a number in the range 0-31.</p></li>
+<li id="fn3"><p>The <code>r</code> in <code>Rr</code> is also a number in the range 0-31.</p></li>
+<li id="fn4"><p>Note: in these examples, the labels <code>PIND</code> and <code>PORTC</code> must have already been defined.</p></li>
+<li id="fn5"><p>the value of the second operand of an operator with immediate addressing will be hard coded into the code and cannot be changed during the running of a program.</p></li>
+</ol>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="lecture10_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="lecture10_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="lecture10_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="lecture10_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="lecture10_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="lecture10_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="lecture10_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="lecture10_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="lecture10_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="lecture10_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="lecture10_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+            let selectedAnnoteEl;
+            const selectorForAnnotation = ( cell, annotation) => {
+              let cellAttr = 'data-code-cell="' + cell + '"';
+              let lineAttr = 'data-code-annotation="' +  annotation + '"';
+              const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+              return selector;
+            }
+            const selectCodeLines = (annoteEl) => {
+              const doc = window.document;
+              const targetCell = annoteEl.getAttribute("data-target-cell");
+              const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+              const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+              const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+              const lineIds = lines.map((line) => {
+                return targetCell + "-" + line;
+              })
+              let top = null;
+              let height = null;
+              let parent = null;
+              if (lineIds.length > 0) {
+                  //compute the position of the single el (top and bottom and make a div)
+                  const el = window.document.getElementById(lineIds[0]);
+                  top = el.offsetTop;
+                  height = el.offsetHeight;
+                  parent = el.parentElement.parentElement;
+                if (lineIds.length > 1) {
+                  const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+                  const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+                  height = bottom - top;
+                }
+                if (top !== null && height !== null && parent !== null) {
+                  // cook up a div (if necessary) and position it 
+                  let div = window.document.getElementById("code-annotation-line-highlight");
+                  if (div === null) {
+                    div = window.document.createElement("div");
+                    div.setAttribute("id", "code-annotation-line-highlight");
+                    div.style.position = 'absolute';
+                    parent.appendChild(div);
+                  }
+                  div.style.top = top - 2 + "px";
+                  div.style.height = height + 4 + "px";
+                  div.style.left = 0;
+                  let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+                  if (gutterDiv === null) {
+                    gutterDiv = window.document.createElement("div");
+                    gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                    gutterDiv.style.position = 'absolute';
+                    const codeCell = window.document.getElementById(targetCell);
+                    const gutter = codeCell.querySelector('.code-annotation-gutter');
+                    gutter.appendChild(gutterDiv);
+                  }
+                  gutterDiv.style.top = top - 2 + "px";
+                  gutterDiv.style.height = height + 4 + "px";
+                }
+                selectedAnnoteEl = annoteEl;
+              }
+            };
+            const unselectCodeLines = () => {
+              const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+              elementsIds.forEach((elId) => {
+                const div = window.document.getElementById(elId);
+                if (div) {
+                  div.remove();
+                }
+              });
+              selectedAnnoteEl = undefined;
+            };
+              // Handle positioning of the toggle
+          window.addEventListener(
+            "resize",
+            throttle(() => {
+              elRect = undefined;
+              if (selectedAnnoteEl) {
+                selectCodeLines(selectedAnnoteEl);
+              }
+            }, 10)
+          );
+          function throttle(fn, ms) {
+          let throttle = false;
+          let timer;
+            return (...args) => {
+              if(!throttle) { // first call gets through
+                  fn.apply(this, args);
+                  throttle = true;
+              } else { // all the others get throttled
+                  if(timer) clearTimeout(timer); // cancel #2
+                  timer = setTimeout(() => {
+                    fn.apply(this, args);
+                    timer = throttle = false;
+                  }, ms);
+              }
+            };
+          }
+            const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+            for (let i=0; i<annoteTargets.length; i++) {
+              const annoteTarget = annoteTargets[i];
+              const targetCell = annoteTarget.getAttribute("data-target-cell");
+              const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+              const contentFn = () => {
+                const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+                if (content) {
+                  const tipContent = content.cloneNode(true);
+                  tipContent.classList.add("code-annotation-tip-content");
+                  return tipContent.outerHTML;
+                }
+              }
+              const config = {
+                allowHTML: true,
+                content: contentFn,
+                onShow: (instance) => {
+                  selectCodeLines(instance.reference);
+                  instance.reference.classList.add('code-annotation-active');
+                  window.tippy.hideAll();
+                },
+                onHide: (instance) => {
+                  unselectCodeLines();
+                  instance.reference.classList.remove('code-annotation-active');
+                },
+                maxWidth: 300,
+                delay: [50, 0],
+                duration: [200, 0],
+                offset: [5, 10],
+                arrow: true,
+                appendTo: function(el) {
+                  return el.parentElement.parentElement.parentElement;
+                },
+                interactive: true,
+                interactiveBorder: 10,
+                theme: 'light-border',
+                placement: 'right',
+                popperOptions: {
+                  modifiers: [
+                  {
+                    name: 'flip',
+                    options: {
+                      flipVariations: false, // true by default
+                      allowedAutoPlacements: ['right'],
+                      fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+                    },
+                  },
+                  {
+                    name: 'preventOverflow',
+                    options: {
+                      mainAxis: false,
+                      altAxis: false
+                    }
+                  }
+                  ]        
+                }      
+              };
+              window.tippy(annoteTarget, config); 
+            }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

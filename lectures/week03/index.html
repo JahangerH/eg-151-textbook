@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.30">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ben Clifford">
+<meta name="dcterms.date" content="2025-10-08">
+
+<title>3&nbsp; Architecture of the Atmel ATmega 328 Microcontroller – EG-151 Microcontrollers 2025-2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../lectures/week04/index.html" rel="next">
+<link href="../../lectures/week02/index.html" rel="prev">
+<link href="../../logo.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-662ae1889177880cb371f83234c0a158.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-de0027c6417e353ce4980619e2136061.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="application/json" class="js-hypothesis-config">
+{
+  "theme": "clean",
+  "openSidebar": false
+}
+</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week03/index.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">EG-151 Microcontrollers 2025-2026</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/JahangerH/eg-151-textbook/tree/main/website/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Course Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_aims.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Aims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_delivery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Delivery Method</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lectures/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontrollers Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers—Module Staff</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Microcontrollers and Microcontroller Architecture</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week03/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Introduction to Programming and Program Development</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Introduction to Programming with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lab_intro/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Laboratory Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Assessment of the Laboratory Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_work.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Laboratory Work in the Department of Electronic and Electrical Engineering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_instruments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Laboratory Instruments</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Laboratory Safety</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/experiment0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Experiment: to construct an oscillator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Simulation Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Questions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/construction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Construction Exercise - Continuity Tester</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/soldering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Safe Soldering</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontroller Programming Laboratory</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/get_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Experiment 1: Binary Counter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Experiment 2: Digital Input</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Experiment 3: Analogue to Digital Conversion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Experiment 4: Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Experiment 5: LCD Display Panel</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mini Projects</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/voltmeter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Voltmeter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/range_finder.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Ultrasonic Range Finder</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/clock_timer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Clock Time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/weather_station.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Weather Station</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/appendix_a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Other Data Representations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/programming_in_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Programming in C – from nothing to software</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-week02" id="toc-sec-week02" class="nav-link active" data-scroll-target="#sec-week02">Introduction</a></li>
+  <li><a href="#lecture-topics" id="toc-lecture-topics" class="nav-link" data-scroll-target="#lecture-topics">Lecture Topics</a></li>
+  <li><a href="#sec-week02-intro" id="toc-sec-week02-intro" class="nav-link" data-scroll-target="#sec-week02-intro"><span class="header-section-number">3.1</span> Introducing the Atmel ATmega 328 MCU</a>
+  <ul class="collapse">
+  <li><a href="#architecture-of-the-atmel-atmega-328-mcu" id="toc-architecture-of-the-atmel-atmega-328-mcu" class="nav-link" data-scroll-target="#architecture-of-the-atmel-atmega-328-mcu">Architecture of the Atmel ATmega 328 MCU</a></li>
+  </ul></li>
+  <li><a href="#sec-week02-status-register" id="toc-sec-week02-status-register" class="nav-link" data-scroll-target="#sec-week02-status-register"><span class="header-section-number">3.2</span> The Status Register</a></li>
+  <li><a href="#what-is-the-status-register" id="toc-what-is-the-status-register" class="nav-link" data-scroll-target="#what-is-the-status-register"><span class="header-section-number">3.2.1</span> What is the status register?</a></li>
+  <li><a href="#status-register-flags" id="toc-status-register-flags" class="nav-link" data-scroll-target="#status-register-flags"><span class="header-section-number">3.2.2</span> Status Register Flags</a></li>
+  <li><a href="#status-register-example" id="toc-status-register-example" class="nav-link" data-scroll-target="#status-register-example"><span class="header-section-number">3.2.3</span> Status Register Example</a></li>
+  <li><a href="#sec-week2-sr-examples" id="toc-sec-week2-sr-examples" class="nav-link" data-scroll-target="#sec-week2-sr-examples"><span class="header-section-number">3.2.4</span> Status Register Demonstration</a></li>
+  <li><a href="#sec-week02-program-counter" id="toc-sec-week02-program-counter" class="nav-link" data-scroll-target="#sec-week02-program-counter"><span class="header-section-number">3.3</span> The Program Counter</a></li>
+  <li><a href="#what-is-the-program-counter" id="toc-what-is-the-program-counter" class="nav-link" data-scroll-target="#what-is-the-program-counter"><span class="header-section-number">3.3.1</span> What is The Program Counter?</a></li>
+  <li><a href="#example-of-a-program" id="toc-example-of-a-program" class="nav-link" data-scroll-target="#example-of-a-program"><span class="header-section-number">3.3.2</span> Example of a program</a></li>
+  <li><a href="#organisation-of-program-memory" id="toc-organisation-of-program-memory" class="nav-link" data-scroll-target="#organisation-of-program-memory"><span class="header-section-number">3.3.3</span> Organisation of program memory</a></li>
+  <li><a href="#program-counter-demonstration" id="toc-program-counter-demonstration" class="nav-link" data-scroll-target="#program-counter-demonstration"><span class="header-section-number">3.3.5</span> Program Counter Demonstration</a></li>
+  <li><a href="#sec-week02-stack-pointer" id="toc-sec-week02-stack-pointer" class="nav-link" data-scroll-target="#sec-week02-stack-pointer"><span class="header-section-number">3.4</span> The Stack Pointer</a></li>
+  <li><a href="#the-stack" id="toc-the-stack" class="nav-link" data-scroll-target="#the-stack"><span class="header-section-number">3.4.1</span> The Stack</a></li>
+  <li><a href="#what-is-the-stack-pointer" id="toc-what-is-the-stack-pointer" class="nav-link" data-scroll-target="#what-is-the-stack-pointer"><span class="header-section-number">3.4.2</span> What is the stack pointer?</a></li>
+  <li><a href="#stack-pointer-demonstration" id="toc-stack-pointer-demonstration" class="nav-link" data-scroll-target="#stack-pointer-demonstration"><span class="header-section-number">3.4.3</span> Stack Pointer Demonstration</a></li>
+  <li><a href="#sec-week02-io" id="toc-sec-week02-io" class="nav-link" data-scroll-target="#sec-week02-io"><span class="header-section-number">3.5</span> Introduction to Microcontroller I/O</a></li>
+  <li><a href="#io-on-the-atmega328" id="toc-io-on-the-atmega328" class="nav-link" data-scroll-target="#io-on-the-atmega328"><span class="header-section-number">3.5.1</span> I/O on the ATmega328</a></li>
+  <li><a href="#mcu-inputs" id="toc-mcu-inputs" class="nav-link" data-scroll-target="#mcu-inputs"><span class="header-section-number">3.5.2</span> MCU Inputs</a></li>
+  <li><a href="#pull-ups" id="toc-pull-ups" class="nav-link" data-scroll-target="#pull-ups"><span class="header-section-number">3.5.3</span> Pull Ups</a></li>
+  <li><a href="#ports-as-general-digital-io" id="toc-ports-as-general-digital-io" class="nav-link" data-scroll-target="#ports-as-general-digital-io"><span class="header-section-number">3.5.4</span> Ports as General Digital I/O</a></li>
+  <li><a href="#configuring-a-pin" id="toc-configuring-a-pin" class="nav-link" data-scroll-target="#configuring-a-pin"><span class="header-section-number">3.5.5</span> Configuring a pin</a></li>
+  <li><a href="#configuring-a-pin---data-direction" id="toc-configuring-a-pin---data-direction" class="nav-link" data-scroll-target="#configuring-a-pin---data-direction"><span class="header-section-number">3.5.6</span> Configuring a Pin - Data Direction</a></li>
+  <li><a href="#writing-to-a-pin---output" id="toc-writing-to-a-pin---output" class="nav-link" data-scroll-target="#writing-to-a-pin---output"><span class="header-section-number">3.5.7</span> Writing to a Pin - Output</a></li>
+  <li><a href="#reading-from-a-pin---input" id="toc-reading-from-a-pin---input" class="nav-link" data-scroll-target="#reading-from-a-pin---input"><span class="header-section-number">3.5.8</span> Reading from a Pin - Input</a></li>
+  <li><a href="#configuring-a-pin---pull-up-enable" id="toc-configuring-a-pin---pull-up-enable" class="nav-link" data-scroll-target="#configuring-a-pin---pull-up-enable"><span class="header-section-number">3.5.9</span> Configuring a Pin - Pull Up Enable</a></li>
+  <li><a href="#basic-io-demonstration" id="toc-basic-io-demonstration" class="nav-link" data-scroll-target="#basic-io-demonstration"><span class="header-section-number">3.5.10</span> Basic I/O Demonstration</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a>
+  <ul class="collapse">
+  <li><a href="#on-canvas" id="toc-on-canvas" class="nav-link" data-scroll-target="#on-canvas">On Canvas</a></li>
+  <li><a href="#any-questions" id="toc-any-questions" class="nav-link" data-scroll-target="#any-questions">Any Questions?</a></li>
+  <li><a href="#next-time" id="toc-next-time" class="nav-link" data-scroll-target="#next-time">Next time</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week03/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week03/index.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Ben Clifford </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 8, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="notes">
+<p><a href="../..\slides/lecture03.html">Presentation version</a> of these <a href="#sec-week02">notes</a>.</p>
+</div>
+<p><img src="pictures/week02_chapter_heading.png" class="img-fluid" style="width:100.0%" alt="lecture cover image showing architecture, some gates and an Arduino nano board"></p>
+<section id="sec-week02" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-week02">Introduction</h2>
+<p>In <a href="../..\lectures/week1">Introduction to Microcontrollers and Microcontroller Architecture</a> we described what a microcontroller is and looked at how one can be described by considering its architecture. We finished the lecture looking at <a href="../..\lectures/week01/#sec-atmel-atmega328">The Atmel ATmega 328 Microcontroller</a> which provides an overview of the AVR core architecture and we introduced the general purpose registers and the ALU.</p>
+</section>
+<section id="lecture-topics" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="lecture-topics">Lecture Topics</h2>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img src="pictures/week02_contents_image.png" class="img-fluid" style="width:100.0%" data-img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><a href="#sec-week02-intro" class="quarto-xref"><span>Section 3.1</span></a>: <a href="#sec-week02-intro">Introducing the Atmel ATmega 328 MCU</a></li>
+<li><a href="#sec-week02-status-register" class="quarto-xref"><span>Section 3.2</span></a>: <a href="#sec-week02-status-register">The Status Register</a></li>
+<li><a href="#sec-week02-program-counter" class="quarto-xref"><span>Section 3.3</span></a>: <a href="#sec-week02-program-counter">The Program Counter</a></li>
+<li><a href="#sec-week02-stack-pointer" class="quarto-xref"><span>Section 3.4</span></a>: <a href="#sec-week02-stack-pointer">The Stack Pointer</a></li>
+<li><a href="#sec-week02-io" class="quarto-xref"><span>Section 3.5</span></a>: <a href="#sec-week02-io">Introduction to Microcontroller I/O</a></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="sec-week02-intro" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="sec-week02-intro"><span class="header-section-number">3.1</span> Introducing the Atmel ATmega 328 MCU</h2>
+<section id="architecture-of-the-atmel-atmega-328-mcu" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="architecture-of-the-atmel-atmega-328-mcu">Architecture of the Atmel ATmega 328 MCU</h3>
+<div id="fig-week02-atmel-arch" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The architecture of the Atmel ATMega328 Microcontroller">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-atmel-arch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/atmel_arch.png" class="img-fluid figure-img" alt="The architecture of the Atmel ATMega328 Microcontroller">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-atmel-arch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.1: The architecture of the Atmel ATMega328 Microcontroller
+</figcaption>
+</figure>
+</div>
+<hr>
+<p>Referring to <a href="#fig-week02-atmel-arch" class="quarto-xref">Figure&nbsp;<span>3.1</span></a>, we note that</p>
+<div class="incremental">
+<ul class="incremental">
+<li>This is an 8-bit CMOS microcontroller based on the AVR enhanced <strong>RISC architecture</strong> with 131 instructions</li>
+<li>It has 2KB of Internal SRAM, 32 KB of Flash Memory and 1 KB of EEPROM</li>
+<li>It has <strong>32 General Purpose Registers</strong></li>
+<li>It can achieve up to 20 MIPS at 20 MHz (maximum clock frequency)</li>
+<li>There are <strong>8 Analog I/O Pins</strong> connected to 10-bit ADC</li>
+<li>There are <strong>22 Digital I/O Pins</strong> (6 capable of PWM)</li>
+<li>The AVR core uses a <strong>Harvard memory architecture</strong> – with separate memories and buses for program and data.</li>
+</ul>
+</div>
+</section>
+</section>
+<section id="sec-week02-status-register" class="level2 center" data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background" data-number="3.2">
+<h2 data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background" data-number="3.2" class="anchored" data-anchor-id="sec-week02-status-register"><span class="header-section-number">3.2</span> The Status Register</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/wallpaper.png" class="img-fluid" alt="decorative image used for slide background"></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+</div>
+<hr>
+<section id="what-is-the-status-register" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="what-is-the-status-register"><span class="header-section-number">3.2.1</span> What is the status register?</h3>
+<div class="fragment">
+<div id="fig-week02-sreg" class="quarto-float quarto-figure quarto-figure-center anchored" alt="SREG - The AVR Status Register">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-sreg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/sreg.png" class="img-fluid figure-img" alt="SREG - The AVR Status Register">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-sreg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.2: SREG - The AVR Status Register
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="incremental">
+<ul class="incremental">
+<li>An 8-bit register containing flags that contain information about the result of the most recently executed instruction and the current <strong>state of the&nbsp;processor</strong> (<a href="#fig-week02-sreg" class="quarto-xref">Figure&nbsp;<span>3.2</span></a>).</li>
+<li>The status register is updated after all ALU instructions as specified by the instruction set reference.</li>
+</ul>
+</div>
+<hr>
+<section id="example---effect-on-sreg-of-adc-instruction" class="level4" data-number="3.2.1.1">
+<h4 data-number="3.2.1.1" class="anchored" data-anchor-id="example---effect-on-sreg-of-adc-instruction"><span class="header-section-number">3.2.1.1</span> Example - Effect on SREG of <code>ADC</code> instruction</h4>
+<div id="fig-week02-sreg-setting" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Example instruction showing how the status register is affected by the `ADC` (add with carry) instruction.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-sreg-setting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/AVR-instruction.png" class="img-fluid figure-img" alt="Example instruction showing how the status register is affected by the `ADC` (add with carry) instruction.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-sreg-setting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.3: Example instruction showing how the status register is affected by the <code>ADC</code> (add with carry) instruction <span class="citation" data-cites="avr_instruction_set">(<a href="../../references.html#ref-avr_instruction_set" role="doc-biblioref">Atmel 2020, 24</a>)</span>
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="status-register-flags" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="status-register-flags"><span class="header-section-number">3.2.2</span> Status Register Flags</h3>
+<table class="caption-top table">
+<caption>Status Register Flags</caption>
+<colgroup>
+<col style="width: 10%">
+<col style="width: 30%">
+<col style="width: 60%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Bit</th>
+<th>Flag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bit 0</td>
+<td><strong>Carry Flag (C)</strong></td>
+<td>The carry flag is set when the execution of the previous arithmetic or logic instruction produced a carry out of bit-7 or required a borrow.</td>
+</tr>
+<tr class="even">
+<td>Bit 1</td>
+<td><strong>Zero Flag (Z)</strong></td>
+<td>The zero flag is set when the result of the previous arithmetic or logic instruction resulted in a zero</td>
+</tr>
+<tr class="odd">
+<td>Bit 2</td>
+<td><strong>Negative Flag (N)</strong></td>
+<td>The negative flag is set when the result of the previous arithmetic or logic instruction is negative</td>
+</tr>
+<tr class="even">
+<td>Bit 3</td>
+<td><strong>Two’s Complement Overflow Flag (V)</strong></td>
+<td>The Two’s Complement Overflow Flag V supports two’s complement arithmetic. +ve + +ve = -ve or -ve + -ve = +ve</td>
+</tr>
+<tr class="odd">
+<td>Bit 4</td>
+<td><strong>Sign Bit (S)</strong></td>
+<td>The S-bit is always an exclusive or between the Negative Flag and the Two’s Complement Overflow Flag.</td>
+</tr>
+<tr class="even">
+<td>Bit 5</td>
+<td><strong>Half Carry Flag (H)</strong></td>
+<td>The half carry flag is set when the execution of the previous arithmetic or logic instruction produced a carry out of bit-3 or required a borrow from bit-4.</td>
+</tr>
+<tr class="odd">
+<td>Bit 6</td>
+<td><strong>Bit Copy Storage (T)</strong></td>
+<td>A bit from a register in the Register File can be copied into T by the BST instruction, and a bit in T can be copied into a bit in a register in the Register File by the BLD instruction.</td>
+</tr>
+<tr class="even">
+<td>Bit 7</td>
+<td><strong>Global Interrupt Enable (I)</strong></td>
+<td>The Global Interrupt Enable bit is set to enable interrupts. The individual interrupt enable control is then performed in separate control registers.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="status-register-example" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="status-register-example"><span class="header-section-number">3.2.3</span> Status Register Example</h3>
+<div id="fig-example-of-sr-working" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-example-of-sr-working-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/sreg-example.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-example-of-sr-working-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.4: An example of how the status register works
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="sec-week2-sr-examples" class="level3" data-number="3.2.4">
+<h3 data-number="3.2.4" class="anchored" data-anchor-id="sec-week2-sr-examples"><span class="header-section-number">3.2.4</span> Status Register Demonstration</h3>
+<div class="columns">
+<div class="column">
+<p>Code to be executed</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1"></a>LDI R16<span class="op">,</span> Addend</span>
+<span id="cb1-2"><a href="#cb1-2"></a>LDI R17<span class="op">,</span> Augend</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="bu">ADD</span> R16<span class="op">,</span> R17</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="pictures/status-reg.png" class="img-fluid figure-img"></p>
+<figcaption>Status register</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Record status of SREG at line 3.</p>
+<hr>
+<section id="examples" class="level4 center unnumbered">
+<h4 class="center unnumbered anchored" data-anchor-id="examples">Examples</h4>
+<hr>
+<p><span class="math display">\[
+\begin{array}{lrr}
+\mathrm{Addend} &amp; 0\,1\,1\,0\,1\,1\,1\,0 &amp; 110_{10}\\
+\mathrm{Augend} &amp; 1\,1\,1\,0\,0\,0\,1\,1 &amp; 227_{10}\\
+\hline
+\mathrm{Sum} &amp; &amp;
+\end{array}
+\]</span></p>
+<hr>
+<p><span class="math display">\[
+\begin{array}{lrr}
+\mathrm{Addend} &amp; 0\,0\,1\,1\,0\,1\,1\,1 &amp; 55_{10}\\
+\mathrm{Augend} &amp; 0\,1\,0\,1\,0\,0\,0\,0 &amp; 80_{10}\\
+\hline
+\mathrm{Sum} &amp; &amp;
+\end{array}
+\]</span></p>
+<hr>
+<p><span class="math display">\[
+\begin{array}{lrr}
+\mathrm{Addend} &amp; 1\,0\,0\,0\,0\,0\,0\,0 &amp; 128_{10}\\
+\mathrm{Augend} &amp; 1\,0\,0\,0\,0\,0\,0\,0 &amp; 128_{10}\\
+\hline
+\mathrm{Sum} &amp; &amp;
+\end{array}
+\]</span></p>
+</section>
+</section>
+<section id="sec-week02-program-counter" class="level2 center" data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background" data-number="3.3">
+<h2 data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background" data-number="3.3" class="anchored" data-anchor-id="sec-week02-program-counter"><span class="header-section-number">3.3</span> The Program Counter</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/wallpaper.png" class="img-fluid" alt="decorative image used for slide background"></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+</div>
+<hr>
+<section id="what-is-the-program-counter" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="what-is-the-program-counter"><span class="header-section-number">3.3.1</span> What is The Program Counter?</h3>
+<div class="incremental">
+<ul class="incremental">
+<li>A program is a sequence of instructions written in a particular order to perform a specific task</li>
+<li>The instructions of the program are stored sequentially in non-volatile memory.</li>
+<li>The program counter is a register which holds the address of the next instruction to be executed</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="example-of-a-program" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="example-of-a-program"><span class="header-section-number">3.3.2</span> Example of a program</h3>
+<p><a href="#fig-week02-a-program" class="quarto-xref">Figure&nbsp;<span>3.5</span></a> illustrates a simple program to add two numbers.</p>
+<div id="fig-week02-a-program" class="quarto-float quarto-figure quarto-figure-center anchored" alt="An example program showing three instructions located at memory locations 0 through 2.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-a-program-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/pc_example.png" class="img-fluid figure-img" alt="An example program showing three instructions located at memory locations 0 through 2.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-a-program-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.5: An example program showing three instructions located at memory locations 0 through 2.
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>It is written in assembly code for the Atmel ATmega328 MCU. Each instruction is a programmer-friendly rendition of an 16- or 32-bit binary code that is stored at the memory locations shown.</p>
+</div>
+<hr>
+</section>
+<section id="organisation-of-program-memory" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="organisation-of-program-memory"><span class="header-section-number">3.3.3</span> Organisation of program memory</h3>
+<div class="incremental">
+<ul class="incremental">
+<li>The ATmega328 microcontroller has a 32 Kbyte flash memory which is organised into 256 pages each containing 64 Words of program.</li>
+<li>The program counter is 14-bits and can access each of these memory locations <code>0x0000</code> – <code>0x3FFE</code></li>
+<li>The remaining addresses <code>0x3FFF</code> – <code>0x7FA5</code> (the boot flash section) are reserved for the bootloader</li>
+</ul>
+</div>
+<hr>
+<p><a href="#fig-week02-prog-mem" class="quarto-xref">Figure&nbsp;<span>3.6</span></a> illustrates the organisation of the program memory for the ATmega328.</p>
+<div id="fig-week02-prog-mem" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The program memory of the ATmega328 microcontroller.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-prog-mem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/prog_mem.png" class="img-fluid figure-img" alt="The program memory of the ATmega328 microcontroller.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-prog-mem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.6: The program memory of the ATmega328 microcontroller
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>Remember a word is 16 bits</p>
+<p>64 (words) = 128 bytes</p>
+<p>256 (pages) each of 128 bytes = 32 KB (or decimal 32768 / binary 32678)</p>
+</div>
+<hr>
+<p><a href="#fig-week02-prog-counter" class="quarto-xref">Figure&nbsp;<span>3.7</span></a> shows how the program counter is used to access the next instruction.</p>
+<div id="fig-week02-prog-counter" class="quarto-float quarto-figure quarto-figure-center anchored" alt="How the program counter is used to access instructions within the available pages of program memory.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-prog-counter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/prog_counter.png" class="img-fluid figure-img" alt="How the program counter is used to access instructions within the available pages of program memory.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-prog-counter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.7: How the program counter is used to access instructions within the available pages of program memory
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>The Least significant six bits address the instruction words within a given page. Note: <span class="math inline">\(2^6 = 64\)</span> words which is <span class="math inline">\(128\)</span> bytes.</p>
+<p>The 8 most significant bits address the <em>page</em> in program memory in which the instruction word is to be found. Note: <span class="math inline">\(2^8 = 256\)</span> and that <span class="math inline">\(256 \times 64 \times 2 = 32,768\)</span> bytes.</p>
+<section id="the-bootloader" class="level3" data-number="3.3.4">
+<h3 data-number="3.3.4" class="anchored" data-anchor-id="the-bootloader"><span class="header-section-number">3.3.4</span> The Bootloader</h3>
+<p>In short, microcontrollers are usually programmed through a programmer (specialist piece of hardware) unless you have a piece of firmware in your microcontroller that allows installing new firmware without the need of an external programmer. This small piece of firmware is called a bootloader and can allow the program to be rewritten by the microcontroller itself e.g.&nbsp;via an over-the-air (OTA) updates.</p>
+<p>The bootloader also contains the reset routine (power-on-reset)</p>
+<p>During reset, all I/O Registers are set to their initial values, and the program starts execution from the Reset Vector. For the ATmega168A/168PA/328/328P family of microcontrollers, the instruction placed at the Reset Vector must be a JMP – Absolute Jump – instruction to the reset handling routine.</p>
+</section>
+</div>
+<hr>
+</section>
+<section id="program-counter-demonstration" class="level3" data-number="3.3.5">
+<h3 data-number="3.3.5" class="anchored" data-anchor-id="program-counter-demonstration"><span class="header-section-number">3.3.5</span> Program Counter Demonstration</h3>
+<div id="tbl-counter-example" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-counter-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3.1: A selection of instructions and the number of 16-bit words they need for storage.
+</figcaption>
+<div aria-describedby="tbl-counter-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Instruction</th>
+<th style="text-align: left;">Number of words</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>ADD</code></td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>LDI</code></td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>LDS</code></td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>STS</code></td>
+<td style="text-align: left;">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>When executing these instructions, the program counter advances by the number of words in each instruction. We will demonstrate this later.</p>
+<div class="notes">
+<p>Consider the instructions <code>LDI</code> (load immediate) and <code>LDS</code> (load from store).</p>
+<p>Refering to the data manual <span class="citation" data-cites="avr_instruction_set">(<a href="../../references.html#ref-avr_instruction_set" role="doc-biblioref">Atmel 2020</a>)</span> we see that the LDI instruction is a one word instruction (<a href="#fig-ldi-instruction" class="quarto-xref">Figure&nbsp;<span>3.8</span></a>) taking the opcode and the 8-bit data value. We also see that the <code>LDS</code> instruction (<a href="#fig-lds-instruction" class="quarto-xref">Figure&nbsp;<span>3.9</span></a>) is a two word instruction: taking a 16 bit memory address as its operand.</p>
+</div>
+<hr>
+<section id="ldi-instruction" class="level4" data-number="3.3.5.1">
+<h4 data-number="3.3.5.1" class="anchored" data-anchor-id="ldi-instruction"><span class="header-section-number">3.3.5.1</span> <code>LDI</code> instruction</h4>
+<div id="fig-ldi-instruction" class="quarto-float quarto-figure quarto-figure-center anchored" alt="An extract from the Atmel ATmega328 data manual for the LDI instruction.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ldi-instruction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/wk2_ldi_instruction.png" class="img-fluid figure-img" alt="An extract from the Atmel ATmega328 data manual for the LDI instruction.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ldi-instruction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.8: The <code>LDI</code> instruction: takes a four bit opcode, a 4-bit register number (0-31) and an 8-bit value. The program counter is incremented by one when this instruction is executed. <span class="citation" data-cites="avr_instruction_set">(<a href="../../references.html#ref-avr_instruction_set" role="doc-biblioref">Atmel 2020, 92</a>)</span>.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="lds-instruction" class="level4" data-number="3.3.5.2">
+<h4 data-number="3.3.5.2" class="anchored" data-anchor-id="lds-instruction"><span class="header-section-number">3.3.5.2</span> <code>LDS</code> instruction</h4>
+<div id="fig-lds-instruction" class="quarto-float quarto-figure quarto-figure-center anchored" alt="An extract from the Atmel ATmega328 data manual for the LDS instruction.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-lds-instruction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/wk2_lds_instruction.png" class="img-fluid figure-img" alt="An extract from the Atmel ATmega328 data manual for the LDS instruction.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lds-instruction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.9: The <code>LDS</code> instruction: takes an bit opcode, an 12-bit opcode, a 4-bit register number (0-31) and an 16-bit value which represents a data location on memory (0-65535). The program counter is incremented by two when this instruction is executed. <span class="citation" data-cites="avr_instruction_set">(<a href="../../references.html#ref-avr_instruction_set" role="doc-biblioref">Atmel 2020, 93</a>)</span>.
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>You can lookup <code>ADD</code> and <code>STS</code> (store to store) to confirm the details given in <a href="#tbl-counter-example" class="quarto-xref">Table&nbsp;<span>3.1</span></a>.</p>
+</div>
+<hr>
+</section>
+<section id="example-program" class="level4" data-number="3.3.5.3">
+<h4 data-number="3.3.5.3" class="anchored" data-anchor-id="example-program"><span class="header-section-number">3.3.5.3</span> Example program</h4>
+<div class="notes">
+<p>The assembly program shown in <a href="#lst-week2-addition" class="quarto-xref">Listing&nbsp;<span>3.1</span></a> illustrates the use of the registers, program counter and the <code>ADC</code> instruction. By changing the values of the data at lines 14 nd 15, you can verify the final state of the status register explored in <a href="#sec-week2-sr-examples" class="quarto-xref"><span>Section 3.2.4</span></a>.</p>
+</div>
+<div id="lst-week2-addition" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|14|15|23|24|25|27|28|30|31|32|33">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-week2-addition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;3.1: Assembly program illustrating the use of registers, the ADC function and the status register
+</figcaption>
+<div aria-describedby="lst-week2-addition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="co">; Assembly - simple addition.asm</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="co">;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co">; Created: 11/10/2022 14:14:16</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="co">; Author : Ben Clifford</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co">;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a>        .device ATmega32</span>
+<span id="cb2-9"><a href="#cb2-9"></a></span>
+<span id="cb2-10"><a href="#cb2-10"></a>    .<span class="pp">equ</span>    VARIABLES   <span class="op">=</span> <span class="bn">0x0100</span>        <span class="co">;Start address in internal RAM for variables (default)</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a>        .<span class="pp">equ</span>    PROGRAMME   <span class="op">=</span> <span class="bn">0x0000</span>        <span class="co">;Start address in Flash for programme (default)</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>        .<span class="pp">equ</span>    STACK       <span class="op">=</span> <span class="bn">0x08FF</span>        <span class="co">;Last address in RAM to be used for the Stack (default)</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a></span>
+<span id="cb2-14"><a href="#cb2-14"></a>        .<span class="pp">equ</span>    num1 <span class="op">=</span> <span class="dv">110</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a>        .<span class="pp">equ</span>    num2 <span class="op">=</span> <span class="dv">227</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a></span>
+<span id="cb2-17"><a href="#cb2-17"></a>        .DSEG</span>
+<span id="cb2-18"><a href="#cb2-18"></a>        .<span class="bu">org</span> VARIABLES</span>
+<span id="cb2-19"><a href="#cb2-19"></a></span>
+<span id="cb2-20"><a href="#cb2-20"></a>        .CSEG</span>
+<span id="cb2-21"><a href="#cb2-21"></a>        .<span class="bu">org</span> PROGRAMME                  </span>
+<span id="cb2-22"><a href="#cb2-22"></a></span>
+<span id="cb2-23"><a href="#cb2-23"></a><span class="fu">MAIN:</span>       </span>
+<span id="cb2-24"><a href="#cb2-24"></a>        LDI R16<span class="op">,</span> num1</span>
+<span id="cb2-25"><a href="#cb2-25"></a>        STS <span class="bn">0x0100</span><span class="op">,</span> R16<span class="co">;</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a></span>
+<span id="cb2-27"><a href="#cb2-27"></a>        LDI R16<span class="op">,</span> num2</span>
+<span id="cb2-28"><a href="#cb2-28"></a>        STS <span class="bn">0x0101</span><span class="op">,</span> R16<span class="co">;</span></span>
+<span id="cb2-29"><a href="#cb2-29"></a></span>
+<span id="cb2-30"><a href="#cb2-30"></a>        <span class="bu">LDS</span> R16<span class="op">,</span> <span class="bn">0x0100</span><span class="co">;</span></span>
+<span id="cb2-31"><a href="#cb2-31"></a>        <span class="bu">LDS</span> R17<span class="op">,</span> <span class="bn">0x0101</span><span class="co">;</span></span>
+<span id="cb2-32"><a href="#cb2-32"></a>        <span class="bu">ADC</span> R16<span class="op">,</span> R17</span>
+<span id="cb2-33"><a href="#cb2-33"></a>        STS <span class="bn">0x0100</span><span class="op">,</span> R16<span class="co">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</section>
+</section>
+<section id="sec-week02-stack-pointer" class="level2 center" data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background" data-number="3.4">
+<h2 data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background" data-number="3.4" class="anchored" data-anchor-id="sec-week02-stack-pointer"><span class="header-section-number">3.4</span> The Stack Pointer</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/wallpaper.png" class="img-fluid" alt="decorative image used for slide background"></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+</div>
+<hr>
+<section id="the-stack" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="the-stack"><span class="header-section-number">3.4.1</span> The Stack</h3>
+<p>In a microcontroller, the ‘stack’ is a space in memory with a fixed origin and a variable size that can be used for temporary storage purposes, such as storing local variables and saving return address for subroutine calls and interrupts.</p>
+<div class="fragment">
+<p>The stack supports two types of operations:</p>
+</div>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>Push – a data item is placed at the location pointed to by the stack pointer</li>
+<li>Pop or Pull – a data item at the current location pointed to by the stack pointer is removed.</li>
+</ol>
+</div>
+<div class="fragment">
+<p>The stack typically operates as a “Last In First Out” (LIFO) buffer</p>
+</div>
+<hr>
+</section>
+<section id="what-is-the-stack-pointer" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="what-is-the-stack-pointer"><span class="header-section-number">3.4.2</span> What is the stack pointer?</h3>
+<p>The <em>stack pointer register</em> keeps track of the top of the stack.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>A stack <code>PUSH</code> command will decrement the stack pointer.</li>
+<li>A stack <code>POP</code> command will increment the stack pointer.</li>
+</ul>
+</div>
+<hr>
+<p>The AVR stack pointer is implemented as two 8-bit registers in the I/O space.</p>
+<p>The are called <code>SPH</code> (stack pointer high byte) and <code>SPL</code> (stack pointer low byte) as illustrated in <a href="#fig-week02-sp-register" class="quarto-xref">Figure&nbsp;<span>3.10</span></a>.</p>
+<div id="fig-week02-sp-register" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The AVR stack pointer implemented as two bytes SPH and SPL.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-sp-register-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/sp_register.png" class="img-fluid figure-img" alt="The AVR stack pointer implemented as two bytes SPH and SPL.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-sp-register-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.10: The AVR stack pointer implemented as two bytes SPH and SPL
+</figcaption>
+</figure>
+</div>
+<hr>
+<p><a href="#fig-week02-sp-operation" class="quarto-xref">Figure&nbsp;<span>3.11</span></a> illustrates the operation of the stack pointer as it appears to the user of the stack.</p>
+<div id="fig-week02-sp-operation" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustration of the operation of a stack.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-sp-operation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/sp_operation.png" class="img-fluid figure-img" alt="Illustration of the operation of a stack.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-sp-operation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.11: Illustration of the operation of a stack.
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>Like a box of Pringles, when you pop an item of the stack, it comes from the top. The pringle below the one you have just taken off becomes the new top. If you were to put the Pringle back, it becomes the new top. When the pringles box is empty, there is nothing on the stack and the stack pointer will be pointing at the memory address of the bottom of the stack.</p>
+</div>
+<hr>
+</section>
+<section id="stack-pointer-demonstration" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="stack-pointer-demonstration"><span class="header-section-number">3.4.3</span> Stack Pointer Demonstration</h3>
+<div class="notes">
+<p>An example of the use of the stack is given in <a href="#lst-week2-stack" class="quarto-xref">Listing&nbsp;<span>3.2</span></a>. We will demonstrate this program in class.</p>
+</div>
+<div id="lst-week2-stack" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|21|22|23|24|25|26|27|29|30|31">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-week2-stack-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;3.2: Example of the use of the stack
+</figcaption>
+<div aria-describedby="lst-week2-stack-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">;</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="co">; Assembly - Stack pointer example.asm</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">;</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">; Created: 11/10/2022 14:14:16</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">; Author : Ben Clifford</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">;</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a></span>
+<span id="cb3-8"><a href="#cb3-8"></a>        .device ATmega32</span>
+<span id="cb3-9"><a href="#cb3-9"></a></span>
+<span id="cb3-10"><a href="#cb3-10"></a>    .<span class="pp">equ</span>    VARIABLES   <span class="op">=</span> <span class="bn">0x0100</span>        <span class="co">;Start address in internal RAM for variables (default)</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>        .<span class="pp">equ</span>    PROGRAMME   <span class="op">=</span> <span class="bn">0x0000</span>        <span class="co">;Start address in Flash for programme (default)</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>        .<span class="pp">equ</span>    STACK       <span class="op">=</span> <span class="bn">0x08FF</span>        <span class="co">;Last address in RAM to be used for the Stack (default)</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>        </span>
+<span id="cb3-14"><a href="#cb3-14"></a></span>
+<span id="cb3-15"><a href="#cb3-15"></a>        .DSEG</span>
+<span id="cb3-16"><a href="#cb3-16"></a>        .<span class="bu">org</span> VARIABLES</span>
+<span id="cb3-17"><a href="#cb3-17"></a></span>
+<span id="cb3-18"><a href="#cb3-18"></a>        .CSEG</span>
+<span id="cb3-19"><a href="#cb3-19"></a>        .<span class="bu">org</span> PROGRAMME                  </span>
+<span id="cb3-20"><a href="#cb3-20"></a></span>
+<span id="cb3-21"><a href="#cb3-21"></a><span class="fu">MAIN:</span>   </span>
+<span id="cb3-22"><a href="#cb3-22"></a>        LDI R16<span class="op">,</span> <span class="dv">1</span><span class="co">;</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a>        LDI R17<span class="op">,</span> <span class="dv">2</span><span class="co">;</span></span>
+<span id="cb3-24"><a href="#cb3-24"></a>        LDI R18<span class="op">,</span> <span class="dv">3</span></span>
+<span id="cb3-25"><a href="#cb3-25"></a>        <span class="bu">PUSH</span> R16</span>
+<span id="cb3-26"><a href="#cb3-26"></a>        <span class="bu">PUSH</span> R17</span>
+<span id="cb3-27"><a href="#cb3-27"></a>        <span class="bu">PUSH</span> R18</span>
+<span id="cb3-28"><a href="#cb3-28"></a></span>
+<span id="cb3-29"><a href="#cb3-29"></a>        <span class="bu">POP</span> R16</span>
+<span id="cb3-30"><a href="#cb3-30"></a>        <span class="bu">POP</span> R17</span>
+<span id="cb3-31"><a href="#cb3-31"></a>        <span class="bu">POP</span> R18</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-week02-io" class="level2 center" data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background [wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)" data-number="3.5">
+<h2 data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background [wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)" data-number="3.5" class="anchored" data-anchor-id="sec-week02-io"><span class="header-section-number">3.5</span> Introduction to Microcontroller I/O</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/wallpaper.png" class="img-fluid" alt="decorative image used for slide background"></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+</div>
+<hr>
+<section id="io-on-the-atmega328" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="io-on-the-atmega328"><span class="header-section-number">3.5.1</span> I/O on the ATmega328</h3>
+<div class="notes">
+<p><a href="#fig-week02-arduino-nano" class="quarto-xref">Figure&nbsp;<span>3.12</span></a> illustrates the layout of the input-output (I/O) pins of the Atmel ATmega328 packaged as an Arduino Nano that you will be using in the lab and project.</p>
+</div>
+<div id="fig-week02-arduino-nano" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Input/output pins for the Arduino nano.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-arduino-nano-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/arduino_nano.png" class="img-fluid figure-img" alt="Input/output pins for the Arduino nano.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-arduino-nano-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.12: Input/output pins for the Arduino nano
+</figcaption>
+</figure>
+</div>
+<hr>
+<div class="notes">
+<p><a href="#fig-week02-atmega325-schematic" class="quarto-xref">Figure&nbsp;<span>3.13</span></a> is the schematic diagram of the Atmel ATmega328 reproduced from the reference manual.</p>
+</div>
+<div id="fig-week02-atmega325-schematic" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-atmega325-schematic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/atmega325_schematic.png" class="img-fluid figure-img" alt="Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-atmega325-schematic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.13: Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller <span class="citation" data-cites="atmel_data">(<a href="../../references.html#ref-atmel_data" role="doc-biblioref">Atmel 2015, 6</a>)</span>
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="mcu-inputs" class="level3" data-number="3.5.2">
+<h3 data-number="3.5.2" class="anchored" data-anchor-id="mcu-inputs"><span class="header-section-number">3.5.2</span> MCU Inputs</h3>
+<p>Consider a switch which on one side is connected to a 5V power source and on the other side to a microntroller input.</p>
+<p><img src="pictures/wk2_switch.png" class="img-fluid"></p>
+<div class="fragment">
+<p>What voltage is read at the I/O port when the switch is closed and when it is open?</p>
+</div>
+<hr>
+</section>
+<section id="pull-ups" class="level3" data-number="3.5.3">
+<h3 data-number="3.5.3" class="anchored" data-anchor-id="pull-ups"><span class="header-section-number">3.5.3</span> Pull Ups</h3>
+<p>To get around this issue, microcontrollers use pull-up (or pull-down) circuitry to hold the port high (or low) (see <a href="#fig-week02-pullup" class="quarto-xref">Figure&nbsp;<span>3.14</span></a>).</p>
+<div id="fig-week02-pullup" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Schematic of the pullup circuitry for the ATmega328.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-pullup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/pullup.png" class="img-fluid figure-img" alt="Schematic of the pullup circuitry for the ATmega328.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-pullup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.14: Schematic of the pullup circuitry for the ATmega328 (from the manual <span class="citation" data-cites="atmel_data">(<a href="../../references.html#ref-atmel_data" role="doc-biblioref">Atmel 2015, 58</a>)</span>
+</figcaption>
+</figure>
+</div>
+<hr>
+<p>What voltage is read at the I/O port when the switch ‘S1’ is closed and when it is open now?</p>
+<div id="fig-week2-pu-enabled" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Port with pull-up enabled.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week2-pu-enabled-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/pu_enabled.png" class="img-fluid figure-img" alt="Port with pull-up enabled.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week2-pu-enabled-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.15: Port with pull-up enabled
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="ports-as-general-digital-io" class="level3" data-number="3.5.4">
+<h3 data-number="3.5.4" class="anchored" data-anchor-id="ports-as-general-digital-io"><span class="header-section-number">3.5.4</span> Ports as General Digital I/O</h3>
+<div id="fig-week02-general-io" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The PORTC register.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-general-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/general_io.png" class="img-fluid figure-img" alt="The PORTC register.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-general-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.16: The <code>PORTC</code> register
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>The ports are bi-directional I/O ports with optional internal pull-ups meaning they can be configured to read an input such as a switch or a sensor or to write to an output such as an LED or control an actuator. <a href="#fig-week02-general-io" class="quarto-xref">Figure&nbsp;<span>3.16</span></a> shows a functional description of one I/O-port pin, which we give the notation <code>Pxn</code>.</p>
+</div>
+<hr>
+</section>
+<section id="configuring-a-pin" class="level3" data-number="3.5.5">
+<h3 data-number="3.5.5" class="anchored" data-anchor-id="configuring-a-pin"><span class="header-section-number">3.5.5</span> Configuring a pin</h3>
+<div id="fig-week02-iomap" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-iomap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/iomap.png" class="img-fluid figure-img" alt="A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-iomap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.17: A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>Recall the 64 I/O registers early on in the user data space (see <a href="#fig-week02-iomap" class="quarto-xref">Figure&nbsp;<span>3.17</span></a>):</p>
+<ul>
+<li>General purpose registers – <code>0x0000</code> – <code>0x001F</code></li>
+<li>Three I/O memory address locations are allocated for each port, one each for:
+<ul>
+<li>the <em>Data Registers</em> – <code>PORTx</code>,</li>
+<li>the <em>Data Direction Register</em> – <code>DDRx</code>, and</li>
+<li>the <em>Port Input Pins</em> – <code>PINx</code></li>
+</ul></li>
+</ul>
+<p>Note: <code>x</code> refers to the numbering letter for the port (<code>B</code>, <code>C</code>, or <code>D</code> in our case).</p>
+</div>
+<hr>
+</section>
+<section id="configuring-a-pin---data-direction" class="level3" data-number="3.5.6">
+<h3 data-number="3.5.6" class="anchored" data-anchor-id="configuring-a-pin---data-direction"><span class="header-section-number">3.5.6</span> Configuring a Pin - Data Direction</h3>
+<p>The <code>DDxn</code> bit in the <code>DDRx</code> Register (illustrated for <code>DDRB</code> in <a href="#fig-week02-ddrb" class="quarto-xref">Figure&nbsp;<span>3.18</span></a>) selects the data direction (input or output) of this pin.</p>
+<div id="fig-week02-ddrb" class="quarto-float quarto-figure quarto-figure-center anchored" alt="DDRB - The port B data direction register.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-ddrb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/ddrb.png" class="img-fluid figure-img" alt="DDRB - The port B data direction register.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-ddrb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.18: <code>DDRB</code> - The port B data direction register.
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<ul>
+<li>Writing <strong>logic one</strong> to <code>DDxn</code>, <code>PORTxn</code> is configured as an <strong>output pin</strong>.</li>
+<li>Writing <strong>logic zero</strong> to <code>DDxn</code>, <code>PORTxn</code> is configured as an <strong>input pin</strong>. .</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="writing-to-a-pin---output" class="level3" data-number="3.5.7">
+<h3 data-number="3.5.7" class="anchored" data-anchor-id="writing-to-a-pin---output"><span class="header-section-number">3.5.7</span> Writing to a Pin - Output</h3>
+<p>The <code>Pxn</code> bit in the <code>PORTx</code> Register (illustrated for <code>PORTC</code> in <a href="#fig-week02-portc" class="quarto-xref">Figure&nbsp;<span>3.19</span></a>) has two purposes dependent on the condition of the corresponding bit in the <code>DDRx</code> register.</p>
+<div id="fig-week02-portc" class="quarto-float quarto-figure quarto-figure-center anchored" alt="PORTC - the port C data register">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-portc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/portc.png" class="img-fluid figure-img" alt="PORTC - the port C data register">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-portc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.19: <code>PORTC</code> - the port C data register
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>If the <code>DDRx</code> bit is configured as an output:</p>
+<ul>
+<li>Writing logic one to <code>PORTxn</code> drives the pin high (on-state).</li>
+<li>Writing logic zero to <code>PORTxn</code> to logic zero drives the pin low (off-state).</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="reading-from-a-pin---input" class="level3" data-number="3.5.8">
+<h3 data-number="3.5.8" class="anchored" data-anchor-id="reading-from-a-pin---input"><span class="header-section-number">3.5.8</span> Reading from a Pin - Input</h3>
+<p>The port pin can be read through the <strong><code>PINxn</code> Register bit</strong> (illustrated for <code>PINB</code> in <a href="#fig-week02-pinb" class="quarto-xref">Figure&nbsp;<span>3.20</span></a>.</p>
+<div id="fig-week02-pinb" class="quarto-float quarto-figure quarto-figure-center anchored" alt="PINB - the port B input pins address">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week02-pinb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/pinb.png" class="img-fluid figure-img" alt="PINB - the port B input pins address">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-pinb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.20: <code>PINB</code> - the port B input pins address
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>This is independent of the setting of Data Direction bit <code>DDxn</code>, however is good practice to have it set.</p>
+<p><strong>Writing</strong> a logic one to <code>PINxn</code> toggles the value of <code>PORTxn</code>, independent on the value of <code>DDRxn</code>.</p>
+</div>
+<hr>
+</section>
+<section id="configuring-a-pin---pull-up-enable" class="level3" data-number="3.5.9">
+<h3 data-number="3.5.9" class="anchored" data-anchor-id="configuring-a-pin---pull-up-enable"><span class="header-section-number">3.5.9</span> Configuring a Pin - Pull Up Enable</h3>
+<p>Providing a port is configured as an input.</p>
+<ul>
+<li><p>If <code>PORTxn</code> is written <strong>logic one</strong> when the pin is configured as an input pin, the <strong>pull-up resistor</strong> is activated.</p></li>
+<li><p>To switch the <strong>pull-up resistor</strong> off, <code>PORTxn</code> has to be written logic zero or the pin has to be configured as an output pin.</p></li>
+</ul>
+<hr>
+</section>
+<section id="basic-io-demonstration" class="level3" data-number="3.5.10">
+<h3 data-number="3.5.10" class="anchored" data-anchor-id="basic-io-demonstration"><span class="header-section-number">3.5.10</span> Basic I/O Demonstration</h3>
+<div class="notes">
+<p>Code listing <a href="#lst-week2-simple-io" class="quarto-xref">Listing&nbsp;<span>3.3</span></a> is an example program written in assembly that illustrates simple IO. We will demonstrate this in class. Please refer to <a href="#fig-week2-basic-io-demonstration" class="quarto-xref">Figure&nbsp;<span>3.21</span></a> which shows what the demo looks like.</p>
+<div id="fig-week2-basic-io-demonstration" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week2-basic-io-demonstration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/ide_for_demo.png" class="img-fluid figure-img" alt="Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week2-basic-io-demonstration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.21: Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O
+</figcaption>
+</figure>
+</div>
+</div>
+<div id="lst-week2-simple-io" class="asm listing quarto-float quarto-figure quarto-figure-left anchored" data-code-line-numbers="|">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-week2-simple-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;3.3: Demonstration of simple I/O
+</figcaption>
+<div aria-describedby="lst-week2-simple-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="co">;.EQU DDRB = 0x04</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co">;.EQU PORTB = 0x05</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co">;.EQU PIND = 0x09</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co">;.EQU DDRD = 0x0A</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co">;.EQU PORTD = 0x0B</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a>.CSEG</span>
+<span id="cb4-10"><a href="#cb4-10"></a>.<span class="bu">ORG</span> <span class="bn">0x0200</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>    <span class="co">;setup bits 2 and 3 of port D as inputs</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>    <span class="bu">IN</span> R16<span class="op">,</span> DDRD</span>
+<span id="cb4-13"><a href="#cb4-13"></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11110011</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>    <span class="bu">OUT</span> DDRD<span class="op">,</span> R16</span>
+<span id="cb4-15"><a href="#cb4-15"></a></span>
+<span id="cb4-16"><a href="#cb4-16"></a>    <span class="co">;setup bits 0 and 1 of port B as outputs</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>    <span class="bu">IN</span> R16<span class="op">,</span> DDRB</span>
+<span id="cb4-18"><a href="#cb4-18"></a>    ORI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">00000011</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a>    <span class="bu">OUT</span> DDRB<span class="op">,</span> R16</span>
+<span id="cb4-20"><a href="#cb4-20"></a></span>
+<span id="cb4-21"><a href="#cb4-21"></a>    <span class="co">;both pins B0 (D8) and B1 (D9) start low</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a>    <span class="bu">IN</span>  R16<span class="op">,</span> PORTB</span>
+<span id="cb4-23"><a href="#cb4-23"></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11111100</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a>    <span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb4-25"><a href="#cb4-25"></a></span>
+<span id="cb4-26"><a href="#cb4-26"></a>    <span class="co">;Enable the pull up resistor for bits 2 and 3 of port D</span></span>
+<span id="cb4-27"><a href="#cb4-27"></a>    <span class="bu">IN</span>  R16<span class="op">,</span> PORTD</span>
+<span id="cb4-28"><a href="#cb4-28"></a>    ORI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">00001100</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a>    <span class="bu">OUT</span> PORTD<span class="op">,</span> R16</span>
+<span id="cb4-30"><a href="#cb4-30"></a></span>
+<span id="cb4-31"><a href="#cb4-31"></a><span class="fu">LOOP:</span></span>
+<span id="cb4-32"><a href="#cb4-32"></a>    SBIC PIND<span class="op">,</span> <span class="dv">2</span> <span class="co">; skip RJMP if bit 2 is set (button pressed)</span></span>
+<span id="cb4-33"><a href="#cb4-33"></a>    RJMP LED1</span>
+<span id="cb4-34"><a href="#cb4-34"></a></span>
+<span id="cb4-35"><a href="#cb4-35"></a>    SBIC PIND<span class="op">,</span> <span class="dv">3</span> <span class="co">; skip RJMP if bit 3 is set (button pressed)</span></span>
+<span id="cb4-36"><a href="#cb4-36"></a>    RJMP LED2</span>
+<span id="cb4-37"><a href="#cb4-37"></a></span>
+<span id="cb4-38"><a href="#cb4-38"></a>    <span class="bu">IN</span> R16<span class="op">,</span> PORTB</span>
+<span id="cb4-39"><a href="#cb4-39"></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11111100</span></span>
+<span id="cb4-40"><a href="#cb4-40"></a>    <span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb4-41"><a href="#cb4-41"></a>    RJMP LOOP</span>
+<span id="cb4-42"><a href="#cb4-42"></a></span>
+<span id="cb4-43"><a href="#cb4-43"></a><span class="fu">LED1:</span></span>
+<span id="cb4-44"><a href="#cb4-44"></a>    SBI PORTB<span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb4-45"><a href="#cb4-45"></a>    RJMP LOOP</span>
+<span id="cb4-46"><a href="#cb4-46"></a></span>
+<span id="cb4-47"><a href="#cb4-47"></a><span class="fu">LED2:</span></span>
+<span id="cb4-48"><a href="#cb4-48"></a>    SBI PORTB<span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb4-49"><a href="#cb4-49"></a>    RJMP LOOP</span>
+<span id="cb4-50"><a href="#cb4-50"></a></span>
+<span id="cb4-51"><a href="#cb4-51"></a>.EXIT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="summary" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="summary">Summary</h2>
+<p>In this chapter we have:</p>
+<ul>
+<li><p>Introduced a few more parts of the AVR core, namely, the status register, program counter and stack pointer and how these are used under normal operation</p></li>
+<li><p>Started to look at I/O on a microcontroller including the concept of pull up resistors as well as some of the specific registers used in the AVR core to enable the use of both input and output device</p></li>
+</ul>
+<hr>
+<section id="on-canvas" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="on-canvas">On Canvas</h3>
+<p>Canvas module <a href="https://canvas.swansea.ac.uk/courses/44971/modules/305537?wrap=1">Week 2: Microcontroller Architecture and I/O</a>, along with these notes, there is some additional self study material on canvas on page <a href="https://canvas.swansea.ac.uk/courses/44971/pages/week-3-atmel-atmega328-architecture-overview?module_item_id=2258072">Week 2: Atmel ATmega328 Architecture Overview</a>. This includes a video demonstration, from my former colleague Ben Clifford, of the various topics discussed in this session.</p>
+<p>There is also a quiz on Microcontroller Architecture.</p>
+<hr>
+</section>
+<section id="any-questions" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="any-questions">Any Questions?</h3>
+<p>Please use the <a href="https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656">Course Question Board</a> on Canvas or take advantage of the lecturers’ office hours.</p>
+<hr>
+</section>
+<section id="next-time" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="next-time">Next time</h3>
+<ul>
+<li><a href="../..\lectures/week03">Introduction to Programming and Program Development</a></li>
+</ul>
+<hr>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-atmel_data" class="csl-entry" role="listitem">
+Atmel. 2015. <em>Datasheet: ATmega328p: 8-Bit AVR Microntroller with 32K Bytes in-System Programming Flash</em> (version 7810D–AVR–01/15). Microchip; <a href="
+                  https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
+                  " class="uri">
+                  https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
+</a>.
+</div>
+<div id="ref-avr_instruction_set" class="csl-entry" role="listitem">
+———. 2020. <em>AVR(r) Instruction Set Manual</em> (version DS40002198A). Microchip; <a href="
+                  https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ReferenceManuals/AVR-InstructionSet-Manual-DS40002198.pdf
+                  " class="uri">
+                  https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/ReferenceManuals/AVR-InstructionSet-Manual-DS40002198.pdf
+</a>.
+</div>
+</div>
+</section>
+</section>
+
+<p>Copyright © 2021-2025 Swansea University. All rights reserved.</p></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jahangerh\.github\.io\/eg-151-textbook");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/week02/index.html" class="pagination-link" aria-label="Introduction to Data Representation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../lectures/week04/index.html" class="pagination-link" aria-label="Introduction to Programming and Program Development">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Introduction to Programming and Program Development</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week03/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

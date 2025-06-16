@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="lecture03_files/libs/clipboard/clipboard.min.js"></script>
+<script src="lecture03_files/libs/quarto-html/tabby.min.js"></script>
+<script src="lecture03_files/libs/quarto-html/popper.min.js"></script>
+<script src="lecture03_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="lecture03_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="lecture03_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="lecture03_files/libs/quarto-html/quarto-syntax-highlighting-dark-e2182856f2c32102dd26b05a5ef16cb5.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.30">
+
+  <meta name="dcterms.date" content="2025-10-08">
+  <title>Architecture of the Atmel ATmega 328 Microcontroller</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lecture03_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="lecture03_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+      }
+    pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+    div.sourceCode
+      { color: #e1e4e8; background-color: #24292e; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #e1e4e8; } /* Normal */
+    code span.al { color: #ff5555; font-weight: bold; } /* Alert */
+    code span.an { color: #6a737d; } /* Annotation */
+    code span.at { color: #f97583; } /* Attribute */
+    code span.bn { color: #79b8ff; } /* BaseN */
+    code span.bu { color: #f97583; } /* BuiltIn */
+    code span.cf { color: #f97583; } /* ControlFlow */
+    code span.ch { color: #9ecbff; } /* Char */
+    code span.cn { color: #79b8ff; } /* Constant */
+    code span.co { color: #6a737d; } /* Comment */
+    code span.cv { color: #6a737d; } /* CommentVar */
+    code span.do { color: #6a737d; } /* Documentation */
+    code span.dt { color: #f97583; } /* DataType */
+    code span.dv { color: #79b8ff; } /* DecVal */
+    code span.er { color: #ff5555; text-decoration: underline; } /* Error */
+    code span.ex { color: #f97583; font-weight: bold; } /* Extension */
+    code span.fl { color: #79b8ff; } /* Float */
+    code span.fu { color: #b392f0; } /* Function */
+    code span.im { color: #9ecbff; } /* Import */
+    code span.in { color: #6a737d; } /* Information */
+    code span.kw { color: #f97583; } /* Keyword */
+    code span.op { color: #e1e4e8; } /* Operator */
+    code span.ot { color: #b392f0; } /* Other */
+    code span.pp { color: #f97583; } /* Preprocessor */
+    code span.re { color: #6a737d; } /* RegionMarker */
+    code span.sc { color: #79b8ff; } /* SpecialChar */
+    code span.ss { color: #9ecbff; } /* SpecialString */
+    code span.st { color: #9ecbff; } /* String */
+    code span.va { color: #ffab70; } /* Variable */
+    code span.vs { color: #9ecbff; } /* VerbatimString */
+    code span.wa { color: #ff5555; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="lecture03_files/libs/revealjs/dist/theme/quarto-091ebfb71d12db7fc524ec91495e1509.css">
+  <link href="lecture03_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="lecture03_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="lecture03_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="lecture03_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="lecture03_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="lecture03_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-dark">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="pictures/image1.png" data-background-opacity="0.9" data-background-size="contain" class="quarto-title-block center">
+  <h1 class="title">Architecture of the Atmel ATmega 328 Microcontroller</h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Ben Clifford 
+</div>
+        <p class="quarto-title-affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+    </div>
+</div>
+
+  <p class="date">10/08/2025</p>
+</section>
+<section class="slide level2">
+
+<p>#../website/lectures/week02/index.qmd</p>
+<aside class="notes">
+<p><a href=".\slides/lecture03.html">Presentation version</a> of these <a href="#/sec-week02">notes</a>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+<img data-src="pictures/week02_chapter_heading.png" style="width:100.0%" alt="lecture cover image showing architecture, some gates and an Arduino nano board" class="r-stretch"></section>
+<section id="sec-week02" class="slide level2 unnumbered">
+<h2>Introduction</h2>
+<p>In <a href=".\lectures/week1">Introduction to Microcontrollers and Microcontroller Architecture</a> we described what a microcontroller is and looked at how one can be described by considering its architecture. We finished the lecture looking at <a href=".\lectures/week01/#sec-atmel-atmega328">The Atmel ATmega 328 Microcontroller</a> which provides an overview of the AVR core architecture and we introduced the general purpose registers and the ALU.</p>
+</section>
+<section id="lecture-topics" class="slide level2 unnumbered">
+<h2>Lecture Topics</h2>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img data-src="pictures/week02_contents_image.png" style="width:100.0%" data-img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><a href="#/sec-week02-intro" class="quarto-xref">Section&nbsp;1</a>: <a href="#/sec-week02-intro">Introducing the Atmel ATmega 328 MCU</a></li>
+<li><a href="#/sec-week02-status-register" class="quarto-xref">Section&nbsp;2</a>: <a href="#/sec-week02-status-register">The Status Register</a></li>
+<li><a href="#/sec-week02-program-counter" class="quarto-xref">Section&nbsp;3</a>: <a href="#/sec-week02-program-counter">The Program Counter</a></li>
+<li><a href="#/sec-week02-stack-pointer" class="quarto-xref">Section&nbsp;4</a>: <a href="#/sec-week02-stack-pointer">The Stack Pointer</a></li>
+<li><a href="#/sec-week02-io" class="quarto-xref">Section&nbsp;5</a>: <a href="#/sec-week02-io">Introduction to Microcontroller I/O</a></li>
+</ul>
+</div></div>
+</section>
+<section id="sec-week02-intro" class="slide level2">
+<h2>Introducing the Atmel ATmega 328 MCU</h2>
+<h3 class="unnumbered" id="architecture-of-the-atmel-atmega-328-mcu">Architecture of the Atmel ATmega 328 MCU</h3>
+
+<img data-src="pictures/atmel_arch.png" alt="The architecture of the Atmel ATMega328 Microcontroller" class="r-stretch quarto-figure-center" id="fig-week02-atmel-arch"><p class="caption">
+Figure&nbsp;1: The architecture of the Atmel ATMega328 Microcontroller
+</p></section>
+<section class="slide level2">
+
+<p>Referring to <a href="#/fig-week02-atmel-arch" class="quarto-xref">Figure&nbsp;1</a>, we note that</p>
+<ul>
+<li class="fragment">This is an 8-bit CMOS microcontroller based on the AVR enhanced <strong>RISC architecture</strong> with 131 instructions</li>
+<li class="fragment">It has 2KB of Internal SRAM, 32 KB of Flash Memory and 1 KB of EEPROM</li>
+<li class="fragment">It has <strong>32 General Purpose Registers</strong></li>
+<li class="fragment">It can achieve up to 20 MIPS at 20 MHz (maximum clock frequency)</li>
+<li class="fragment">There are <strong>8 Analog I/O Pins</strong> connected to 10-bit ADC</li>
+<li class="fragment">There are <strong>22 Digital I/O Pins</strong> (6 capable of PWM)</li>
+<li class="fragment">The AVR core uses a <strong>Harvard memory architecture</strong> – with separate memories and buses for program and data.</li>
+</ul>
+</section>
+<section id="sec-week02-status-register" class="slide level2 center" data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background">
+<h2>The Status Register</h2>
+</section>
+<aside class="notes">
+<p><img data-src="pictures/wallpaper.png" alt="decorative image used for slide background"></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<section class="slide level2">
+
+<h3 id="what-is-the-status-register">What is the status register?</h3>
+<div class="fragment">
+<div id="fig-week02-sreg" class="quarto-float quarto-figure quarto-figure-center" alt="SREG - The AVR Status Register">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week02-sreg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/sreg.png" alt="SREG - The AVR Status Register">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week02-sreg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: SREG - The AVR Status Register
+</figcaption>
+</figure>
+</div>
+</div>
+<ul>
+<li class="fragment">An 8-bit register containing flags that contain information about the result of the most recently executed instruction and the current <strong>state of the&nbsp;processor</strong> (<a href="#/fig-week02-sreg" class="quarto-xref">Figure&nbsp;2</a>).</li>
+<li class="fragment">The status register is updated after all ALU instructions as specified by the instruction set reference.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="example---effect-on-sreg-of-adc-instruction">Example - Effect on SREG of <code>ADC</code> instruction</h4>
+
+<img data-src="pictures/AVR-instruction.png" alt="Example instruction showing how the status register is affected by the `ADC` (add with carry) instruction." class="r-stretch quarto-figure-center" id="fig-week02-sreg-setting"><p class="caption">
+Figure&nbsp;3: Example instruction showing how the status register is affected by the <code>ADC</code> (add with carry) instruction <span class="citation" data-cites="avr_instruction_set">(<strong>avr_instruction_set?</strong>)</span>
+</p></section>
+<section class="slide level2">
+
+<h3 id="status-register-flags">Status Register Flags</h3>
+<table class="caption-top">
+<caption>Status Register Flags</caption>
+<colgroup>
+<col style="width: 10%">
+<col style="width: 30%">
+<col style="width: 60%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Bit</th>
+<th>Flag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bit 0</td>
+<td><strong>Carry Flag (C)</strong></td>
+<td>The carry flag is set when the execution of the previous arithmetic or logic instruction produced a carry out of bit-7 or required a borrow.</td>
+</tr>
+<tr class="even">
+<td>Bit 1</td>
+<td><strong>Zero Flag (Z)</strong></td>
+<td>The zero flag is set when the result of the previous arithmetic or logic instruction resulted in a zero</td>
+</tr>
+<tr class="odd">
+<td>Bit 2</td>
+<td><strong>Negative Flag (N)</strong></td>
+<td>The negative flag is set when the result of the previous arithmetic or logic instruction is negative</td>
+</tr>
+<tr class="even">
+<td>Bit 3</td>
+<td><strong>Two’s Complement Overflow Flag (V)</strong></td>
+<td>The Two’s Complement Overflow Flag V supports two’s complement arithmetic. +ve + +ve = -ve or -ve + -ve = +ve</td>
+</tr>
+<tr class="odd">
+<td>Bit 4</td>
+<td><strong>Sign Bit (S)</strong></td>
+<td>The S-bit is always an exclusive or between the Negative Flag and the Two’s Complement Overflow Flag.</td>
+</tr>
+<tr class="even">
+<td>Bit 5</td>
+<td><strong>Half Carry Flag (H)</strong></td>
+<td>The half carry flag is set when the execution of the previous arithmetic or logic instruction produced a carry out of bit-3 or required a borrow from bit-4.</td>
+</tr>
+<tr class="odd">
+<td>Bit 6</td>
+<td><strong>Bit Copy Storage (T)</strong></td>
+<td>A bit from a register in the Register File can be copied into T by the BST instruction, and a bit in T can be copied into a bit in a register in the Register File by the BLD instruction.</td>
+</tr>
+<tr class="even">
+<td>Bit 7</td>
+<td><strong>Global Interrupt Enable (I)</strong></td>
+<td>The Global Interrupt Enable bit is set to enable interrupts. The individual interrupt enable control is then performed in separate control registers.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+<h3 id="status-register-example">Status Register Example</h3>
+
+<img data-src="pictures/sreg-example.png" class="r-stretch quarto-figure-center" id="fig-example-of-sr-working"><p class="caption">
+Figure&nbsp;4: An example of how the status register works
+</p></section>
+<section class="slide level2">
+
+<h3 id="sec-week2-sr-examples">Status Register Demonstration</h3>
+<div class="columns">
+<div class="column">
+<p>Code to be executed</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href=""></a>LDI R16<span class="op">,</span> Addend</span>
+<span id="cb1-2"><a href=""></a>LDI R17<span class="op">,</span> Augend</span>
+<span id="cb1-3"><a href=""></a><span class="bu">ADD</span> R16<span class="op">,</span> R17</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="pictures/status-reg.png"></p>
+<figcaption>Status register</figcaption>
+</figure>
+</div>
+</div></div>
+<p>Record status of SREG at line 3.</p>
+</section>
+<section class="slide level2">
+
+<h4 class="center unnumbered" id="examples">Examples</h4>
+</section>
+<section class="slide level2">
+
+<p><span class="math display">\[
+\begin{array}{lrr}
+\mathrm{Addend} &amp; 0\,1\,1\,0\,1\,1\,1\,0 &amp; 110_{10}\\
+\mathrm{Augend} &amp; 1\,1\,1\,0\,0\,0\,1\,1 &amp; 227_{10}\\
+\hline
+\mathrm{Sum} &amp; &amp;
+\end{array}
+\]</span></p>
+</section>
+<section class="slide level2">
+
+<p><span class="math display">\[
+\begin{array}{lrr}
+\mathrm{Addend} &amp; 0\,0\,1\,1\,0\,1\,1\,1 &amp; 55_{10}\\
+\mathrm{Augend} &amp; 0\,1\,0\,1\,0\,0\,0\,0 &amp; 80_{10}\\
+\hline
+\mathrm{Sum} &amp; &amp;
+\end{array}
+\]</span></p>
+</section>
+<section class="slide level2">
+
+<p><span class="math display">\[
+\begin{array}{lrr}
+\mathrm{Addend} &amp; 1\,0\,0\,0\,0\,0\,0\,0 &amp; 128_{10}\\
+\mathrm{Augend} &amp; 1\,0\,0\,0\,0\,0\,0\,0 &amp; 128_{10}\\
+\hline
+\mathrm{Sum} &amp; &amp;
+\end{array}
+\]</span></p>
+</section>
+<section id="sec-week02-program-counter" class="slide level2 center" data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background">
+<h2>The Program Counter</h2>
+</section>
+<aside class="notes">
+<p><img data-src="pictures/wallpaper.png" alt="decorative image used for slide background"></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<section class="slide level2">
+
+<h3 id="what-is-the-program-counter">What is The Program Counter?</h3>
+<ul>
+<li class="fragment">A program is a sequence of instructions written in a particular order to perform a specific task</li>
+<li class="fragment">The instructions of the program are stored sequentially in non-volatile memory.</li>
+<li class="fragment">The program counter is a register which holds the address of the next instruction to be executed</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="example-of-a-program">Example of a program</h3>
+<p><a href="#/fig-week02-a-program" class="quarto-xref">Figure&nbsp;5</a> illustrates a simple program to add two numbers.</p>
+
+<img data-src="pictures/pc_example.png" alt="An example program showing three instructions located at memory locations 0 through 2." class="r-stretch quarto-figure-center" id="fig-week02-a-program"><p class="caption">
+Figure&nbsp;5: An example program showing three instructions located at memory locations 0 through 2.
+</p><aside class="notes">
+<p>It is written in assembly code for the Atmel ATmega328 MCU. Each instruction is a programmer-friendly rendition of an 16- or 32-bit binary code that is stored at the memory locations shown.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="organisation-of-program-memory">Organisation of program memory</h3>
+<ul>
+<li class="fragment">The ATmega328 microcontroller has a 32 Kbyte flash memory which is organised into 256 pages each containing 64 Words of program.</li>
+<li class="fragment">The program counter is 14-bits and can access each of these memory locations <code>0x0000</code> – <code>0x3FFE</code></li>
+<li class="fragment">The remaining addresses <code>0x3FFF</code> – <code>0x7FA5</code> (the boot flash section) are reserved for the bootloader</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><a href="#/fig-week02-prog-mem" class="quarto-xref">Figure&nbsp;6</a> illustrates the organisation of the program memory for the ATmega328.</p>
+
+<img data-src="pictures/prog_mem.png" alt="The program memory of the ATmega328 microcontroller." class="r-stretch quarto-figure-center" id="fig-week02-prog-mem"><p class="caption">
+Figure&nbsp;6: The program memory of the ATmega328 microcontroller
+</p><aside class="notes">
+<p>Remember a word is 16 bits</p>
+<p>64 (words) = 128 bytes</p>
+<p>256 (pages) each of 128 bytes = 32 KB (or decimal 32768 / binary 32678)</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<p><a href="#/fig-week02-prog-counter" class="quarto-xref">Figure&nbsp;7</a> shows how the program counter is used to access the next instruction.</p>
+
+<img data-src="pictures/prog_counter.png" alt="How the program counter is used to access instructions within the available pages of program memory." class="r-stretch quarto-figure-center" id="fig-week02-prog-counter"><p class="caption">
+Figure&nbsp;7: How the program counter is used to access instructions within the available pages of program memory
+</p><aside class="notes">
+<p>The Least significant six bits address the instruction words within a given page. Note: <span class="math inline">\(2^6 = 64\)</span> words which is <span class="math inline">\(128\)</span> bytes.</p>
+<p>The 8 most significant bits address the <em>page</em> in program memory in which the instruction word is to be found. Note: <span class="math inline">\(2^8 = 256\)</span> and that <span class="math inline">\(256 \times 64 \times 2 = 32,768\)</span> bytes.</p>
+<h3 id="the-bootloader">The Bootloader</h3>
+<p>In short, microcontrollers are usually programmed through a programmer (specialist piece of hardware) unless you have a piece of firmware in your microcontroller that allows installing new firmware without the need of an external programmer. This small piece of firmware is called a bootloader and can allow the program to be rewritten by the microcontroller itself e.g.&nbsp;via an over-the-air (OTA) updates.</p>
+<p>The bootloader also contains the reset routine (power-on-reset)</p>
+<p>During reset, all I/O Registers are set to their initial values, and the program starts execution from the Reset Vector. For the ATmega168A/168PA/328/328P family of microcontrollers, the instruction placed at the Reset Vector must be a JMP – Absolute Jump – instruction to the reset handling routine.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="program-counter-demonstration">Program Counter Demonstration</h3>
+<div id="tbl-counter-example" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-counter-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: A selection of instructions and the number of 16-bit words they need for storage.
+</figcaption>
+<div aria-describedby="tbl-counter-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Instruction</th>
+<th style="text-align: left;">Number of words</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>ADD</code></td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>LDI</code></td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>LDS</code></td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>STS</code></td>
+<td style="text-align: left;">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>When executing these instructions, the program counter advances by the number of words in each instruction. We will demonstrate this later.</p>
+<aside class="notes">
+<p>Consider the instructions <code>LDI</code> (load immediate) and <code>LDS</code> (load from store).</p>
+<p>Refering to the data manual <span class="citation" data-cites="avr_instruction_set">(<strong>avr_instruction_set?</strong>)</span> we see that the LDI instruction is a one word instruction (<a href="#/fig-ldi-instruction" class="quarto-xref">Figure&nbsp;8</a>) taking the opcode and the 8-bit data value. We also see that the <code>LDS</code> instruction (<a href="#/fig-lds-instruction" class="quarto-xref">Figure&nbsp;9</a>) is a two word instruction: taking a 16 bit memory address as its operand.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h4 id="ldi-instruction"><code>LDI</code> instruction</h4>
+
+<img data-src="pictures/wk2_ldi_instruction.png" alt="An extract from the Atmel ATmega328 data manual for the LDI instruction." class="r-stretch quarto-figure-center" id="fig-ldi-instruction"><p class="caption">
+Figure&nbsp;8: The <code>LDI</code> instruction: takes a four bit opcode, a 4-bit register number (0-31) and an 8-bit value. The program counter is incremented by one when this instruction is executed. <span class="citation" data-cites="avr_instruction_set">(<strong>avr_instruction_set?</strong>)</span>.
+</p></section>
+<section class="slide level2">
+
+<h4 id="lds-instruction"><code>LDS</code> instruction</h4>
+
+<img data-src="pictures/wk2_lds_instruction.png" alt="An extract from the Atmel ATmega328 data manual for the LDS instruction." class="r-stretch quarto-figure-center" id="fig-lds-instruction"><p class="caption">
+Figure&nbsp;9: The <code>LDS</code> instruction: takes an bit opcode, an 12-bit opcode, a 4-bit register number (0-31) and an 16-bit value which represents a data location on memory (0-65535). The program counter is incremented by two when this instruction is executed. <span class="citation" data-cites="avr_instruction_set">(<strong>avr_instruction_set?</strong>)</span>.
+</p><aside class="notes">
+<p>You can lookup <code>ADD</code> and <code>STS</code> (store to store) to confirm the details given in <a href="#/tbl-counter-example" class="quarto-xref">Table&nbsp;1</a>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h4 id="example-program">Example program</h4>
+<aside class="notes">
+<p>The assembly program shown in <a href="#/lst-week2-addition" class="quarto-xref">Listing&nbsp;1</a> illustrates the use of the registers, program counter and the <code>ADC</code> instruction. By changing the values of the data at lines 14 nd 15, you can verify the final state of the status register explored in <a href="#/sec-week2-sr-examples" class="quarto-xref">Section&nbsp;2.4</a>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="lst-week2-addition" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|14|15|23|24|25|27|28|30|31|32|33">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-week2-addition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;1: Assembly program illustrating the use of registers, the ADC function and the status register
+</figcaption>
+<div aria-describedby="lst-week2-addition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb2" data-code-line-numbers="|14|15|23|24|25|27|28|30|31|32|33"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href=""></a><span class="co">;</span></span>
+<span id="cb2-2"><a href=""></a><span class="co">; Assembly - simple addition.asm</span></span>
+<span id="cb2-3"><a href=""></a><span class="co">;</span></span>
+<span id="cb2-4"><a href=""></a><span class="co">; Created: 11/10/2022 14:14:16</span></span>
+<span id="cb2-5"><a href=""></a><span class="co">; Author : Ben Clifford</span></span>
+<span id="cb2-6"><a href=""></a><span class="co">;</span></span>
+<span id="cb2-7"><a href=""></a></span>
+<span id="cb2-8"><a href=""></a>        .device ATmega32</span>
+<span id="cb2-9"><a href=""></a></span>
+<span id="cb2-10"><a href=""></a>    .<span class="pp">equ</span>    VARIABLES   <span class="op">=</span> <span class="bn">0x0100</span>        <span class="co">;Start address in internal RAM for variables (default)</span></span>
+<span id="cb2-11"><a href=""></a>        .<span class="pp">equ</span>    PROGRAMME   <span class="op">=</span> <span class="bn">0x0000</span>        <span class="co">;Start address in Flash for programme (default)</span></span>
+<span id="cb2-12"><a href=""></a>        .<span class="pp">equ</span>    STACK       <span class="op">=</span> <span class="bn">0x08FF</span>        <span class="co">;Last address in RAM to be used for the Stack (default)</span></span>
+<span id="cb2-13"><a href=""></a></span>
+<span id="cb2-14"><a href=""></a>        .<span class="pp">equ</span>    num1 <span class="op">=</span> <span class="dv">110</span></span>
+<span id="cb2-15"><a href=""></a>        .<span class="pp">equ</span>    num2 <span class="op">=</span> <span class="dv">227</span></span>
+<span id="cb2-16"><a href=""></a></span>
+<span id="cb2-17"><a href=""></a>        .DSEG</span>
+<span id="cb2-18"><a href=""></a>        .<span class="bu">org</span> VARIABLES</span>
+<span id="cb2-19"><a href=""></a></span>
+<span id="cb2-20"><a href=""></a>        .CSEG</span>
+<span id="cb2-21"><a href=""></a>        .<span class="bu">org</span> PROGRAMME                  </span>
+<span id="cb2-22"><a href=""></a></span>
+<span id="cb2-23"><a href=""></a><span class="fu">MAIN:</span>       </span>
+<span id="cb2-24"><a href=""></a>        LDI R16<span class="op">,</span> num1</span>
+<span id="cb2-25"><a href=""></a>        STS <span class="bn">0x0100</span><span class="op">,</span> R16<span class="co">;</span></span>
+<span id="cb2-26"><a href=""></a></span>
+<span id="cb2-27"><a href=""></a>        LDI R16<span class="op">,</span> num2</span>
+<span id="cb2-28"><a href=""></a>        STS <span class="bn">0x0101</span><span class="op">,</span> R16<span class="co">;</span></span>
+<span id="cb2-29"><a href=""></a></span>
+<span id="cb2-30"><a href=""></a>        <span class="bu">LDS</span> R16<span class="op">,</span> <span class="bn">0x0100</span><span class="co">;</span></span>
+<span id="cb2-31"><a href=""></a>        <span class="bu">LDS</span> R17<span class="op">,</span> <span class="bn">0x0101</span><span class="co">;</span></span>
+<span id="cb2-32"><a href=""></a>        <span class="bu">ADC</span> R16<span class="op">,</span> R17</span>
+<span id="cb2-33"><a href=""></a>        STS <span class="bn">0x0100</span><span class="op">,</span> R16<span class="co">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-week02-stack-pointer" class="slide level2 center" data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background">
+<h2>The Stack Pointer</h2>
+</section>
+<aside class="notes">
+<p><img data-src="pictures/wallpaper.png" alt="decorative image used for slide background"></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<section class="slide level2 scrollable">
+
+<h3 id="the-stack">The Stack</h3>
+<p>In a microcontroller, the ‘stack’ is a space in memory with a fixed origin and a variable size that can be used for temporary storage purposes, such as storing local variables and saving return address for subroutine calls and interrupts.</p>
+<div class="fragment">
+<p>The stack supports two types of operations:</p>
+</div>
+<ol type="1">
+<li class="fragment">Push – a data item is placed at the location pointed to by the stack pointer</li>
+<li class="fragment">Pop or Pull – a data item at the current location pointed to by the stack pointer is removed.</li>
+</ol>
+<div class="fragment">
+<p>The stack typically operates as a “Last In First Out” (LIFO) buffer</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="what-is-the-stack-pointer">What is the stack pointer?</h3>
+<p>The <em>stack pointer register</em> keeps track of the top of the stack.</p>
+<ul>
+<li class="fragment">A stack <code>PUSH</code> command will decrement the stack pointer.</li>
+<li class="fragment">A stack <code>POP</code> command will increment the stack pointer.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>The AVR stack pointer is implemented as two 8-bit registers in the I/O space.</p>
+<p>The are called <code>SPH</code> (stack pointer high byte) and <code>SPL</code> (stack pointer low byte) as illustrated in <a href="#/fig-week02-sp-register" class="quarto-xref">Figure&nbsp;10</a>.</p>
+
+<img data-src="pictures/sp_register.png" alt="The AVR stack pointer implemented as two bytes SPH and SPL." class="r-stretch quarto-figure-center" id="fig-week02-sp-register"><p class="caption">
+Figure&nbsp;10: The AVR stack pointer implemented as two bytes SPH and SPL
+</p></section>
+<section class="slide level2">
+
+<p><a href="#/fig-week02-sp-operation" class="quarto-xref">Figure&nbsp;11</a> illustrates the operation of the stack pointer as it appears to the user of the stack.</p>
+
+<img data-src="pictures/sp_operation.png" alt="Illustration of the operation of a stack." class="r-stretch quarto-figure-center" id="fig-week02-sp-operation"><p class="caption">
+Figure&nbsp;11: Illustration of the operation of a stack.
+</p><aside class="notes">
+<p>Like a box of Pringles, when you pop an item of the stack, it comes from the top. The pringle below the one you have just taken off becomes the new top. If you were to put the Pringle back, it becomes the new top. When the pringles box is empty, there is nothing on the stack and the stack pointer will be pointing at the memory address of the bottom of the stack.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="stack-pointer-demonstration">Stack Pointer Demonstration</h3>
+<aside class="notes">
+<p>An example of the use of the stack is given in <a href="#/lst-week2-stack" class="quarto-xref">Listing&nbsp;2</a>. We will demonstrate this program in class.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="lst-week2-stack" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|21|22|23|24|25|26|27|29|30|31">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-week2-stack-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;2: Example of the use of the stack
+</figcaption>
+<div aria-describedby="lst-week2-stack-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb3" data-code-line-numbers="|21|22|23|24|25|26|27|29|30|31"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href=""></a><span class="co">;</span></span>
+<span id="cb3-2"><a href=""></a><span class="co">; Assembly - Stack pointer example.asm</span></span>
+<span id="cb3-3"><a href=""></a><span class="co">;</span></span>
+<span id="cb3-4"><a href=""></a><span class="co">; Created: 11/10/2022 14:14:16</span></span>
+<span id="cb3-5"><a href=""></a><span class="co">; Author : Ben Clifford</span></span>
+<span id="cb3-6"><a href=""></a><span class="co">;</span></span>
+<span id="cb3-7"><a href=""></a></span>
+<span id="cb3-8"><a href=""></a>        .device ATmega32</span>
+<span id="cb3-9"><a href=""></a></span>
+<span id="cb3-10"><a href=""></a>    .<span class="pp">equ</span>    VARIABLES   <span class="op">=</span> <span class="bn">0x0100</span>        <span class="co">;Start address in internal RAM for variables (default)</span></span>
+<span id="cb3-11"><a href=""></a>        .<span class="pp">equ</span>    PROGRAMME   <span class="op">=</span> <span class="bn">0x0000</span>        <span class="co">;Start address in Flash for programme (default)</span></span>
+<span id="cb3-12"><a href=""></a>        .<span class="pp">equ</span>    STACK       <span class="op">=</span> <span class="bn">0x08FF</span>        <span class="co">;Last address in RAM to be used for the Stack (default)</span></span>
+<span id="cb3-13"><a href=""></a>        </span>
+<span id="cb3-14"><a href=""></a></span>
+<span id="cb3-15"><a href=""></a>        .DSEG</span>
+<span id="cb3-16"><a href=""></a>        .<span class="bu">org</span> VARIABLES</span>
+<span id="cb3-17"><a href=""></a></span>
+<span id="cb3-18"><a href=""></a>        .CSEG</span>
+<span id="cb3-19"><a href=""></a>        .<span class="bu">org</span> PROGRAMME                  </span>
+<span id="cb3-20"><a href=""></a></span>
+<span id="cb3-21"><a href=""></a><span class="fu">MAIN:</span>   </span>
+<span id="cb3-22"><a href=""></a>        LDI R16<span class="op">,</span> <span class="dv">1</span><span class="co">;</span></span>
+<span id="cb3-23"><a href=""></a>        LDI R17<span class="op">,</span> <span class="dv">2</span><span class="co">;</span></span>
+<span id="cb3-24"><a href=""></a>        LDI R18<span class="op">,</span> <span class="dv">3</span></span>
+<span id="cb3-25"><a href=""></a>        <span class="bu">PUSH</span> R16</span>
+<span id="cb3-26"><a href=""></a>        <span class="bu">PUSH</span> R17</span>
+<span id="cb3-27"><a href=""></a>        <span class="bu">PUSH</span> R18</span>
+<span id="cb3-28"><a href=""></a></span>
+<span id="cb3-29"><a href=""></a>        <span class="bu">POP</span> R16</span>
+<span id="cb3-30"><a href=""></a>        <span class="bu">POP</span> R17</span>
+<span id="cb3-31"><a href=""></a>        <span class="bu">POP</span> R18</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-week02-io" class="slide level2 center" data-background-image="pictures/wallpaper.png" data-fig-alt="decorative image used for slide background [wallpaper.dog/microcontroller-wallpapers](https://wallpaper.dog/microcontroller-wallpapers)">
+<h2>Introduction to Microcontroller I/O</h2>
+</section>
+<aside class="notes">
+<p><img data-src="pictures/wallpaper.png" alt="decorative image used for slide background"></p>
+<p><a href="https://wallpaper.dog/microcontroller-wallpapers">wallpaper.dog/microcontroller-wallpapers</a></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<section class="slide level2">
+
+<h3 id="io-on-the-atmega328">I/O on the ATmega328</h3>
+<aside class="notes">
+<p><a href="#/fig-week02-arduino-nano" class="quarto-xref">Figure&nbsp;12</a> illustrates the layout of the input-output (I/O) pins of the Atmel ATmega328 packaged as an Arduino Nano that you will be using in the lab and project.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+<img data-src="pictures/arduino_nano.png" alt="Input/output pins for the Arduino nano." class="r-stretch quarto-figure-center" id="fig-week02-arduino-nano"><p class="caption">
+Figure&nbsp;12: Input/output pins for the Arduino nano
+</p></section>
+<section class="slide level2">
+
+<aside class="notes">
+<p><a href="#/fig-week02-atmega325-schematic" class="quarto-xref">Figure&nbsp;13</a> is the schematic diagram of the Atmel ATmega328 reproduced from the reference manual.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+<img data-src="pictures/atmega325_schematic.png" alt="Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller." class="r-stretch quarto-figure-center" id="fig-week02-atmega325-schematic"><p class="caption">
+Figure&nbsp;13: Schematic diagram showing the I/O provided by the Atmel ATmega328 microcontroller <span class="citation" data-cites="atmel_data">(<strong>atmel_data?</strong>)</span>
+</p></section>
+<section class="slide level2">
+
+<h3 id="mcu-inputs">MCU Inputs</h3>
+<p>Consider a switch which on one side is connected to a 5V power source and on the other side to a microntroller input.</p>
+
+<img data-src="pictures/wk2_switch.png" class="r-stretch"><div class="fragment">
+<p>What voltage is read at the I/O port when the switch is closed and when it is open?</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="pull-ups">Pull Ups</h3>
+<p>To get around this issue, microcontrollers use pull-up (or pull-down) circuitry to hold the port high (or low) (see <a href="#/fig-week02-pullup" class="quarto-xref">Figure&nbsp;14</a>).</p>
+
+<img data-src="pictures/pullup.png" alt="Schematic of the pullup circuitry for the ATmega328." class="r-stretch quarto-figure-center" id="fig-week02-pullup"><p class="caption">
+Figure&nbsp;14: Schematic of the pullup circuitry for the ATmega328 (from the manual <span class="citation" data-cites="atmel_data">(<strong>atmel_data?</strong>)</span>
+</p></section>
+<section class="slide level2">
+
+<p>What voltage is read at the I/O port when the switch ‘S1’ is closed and when it is open now?</p>
+
+<img data-src="pictures/pu_enabled.png" alt="Port with pull-up enabled." class="r-stretch quarto-figure-center" id="fig-week2-pu-enabled"><p class="caption">
+Figure&nbsp;15: Port with pull-up enabled
+</p></section>
+<section class="slide level2">
+
+<h3 id="ports-as-general-digital-io">Ports as General Digital I/O</h3>
+
+<img data-src="pictures/general_io.png" alt="The PORTC register." class="r-stretch quarto-figure-center" id="fig-week02-general-io"><p class="caption">
+Figure&nbsp;16: The <code>PORTC</code> register
+</p><aside class="notes">
+<p>The ports are bi-directional I/O ports with optional internal pull-ups meaning they can be configured to read an input such as a switch or a sensor or to write to an output such as an LED or control an actuator. <a href="#/fig-week02-general-io" class="quarto-xref">Figure&nbsp;16</a> shows a functional description of one I/O-port pin, which we give the notation <code>Pxn</code>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="configuring-a-pin">Configuring a pin</h3>
+
+<img data-src="pictures/iomap.png" alt="A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers." class="r-stretch quarto-figure-center" id="fig-week02-iomap"><p class="caption">
+Figure&nbsp;17: A portion of the memory map of the Atmel ATmega328 showing the location of the I/O registers
+</p><aside class="notes">
+<p>Recall the 64 I/O registers early on in the user data space (see <a href="#/fig-week02-iomap" class="quarto-xref">Figure&nbsp;17</a>):</p>
+<ul>
+<li>General purpose registers – <code>0x0000</code> – <code>0x001F</code></li>
+<li>Three I/O memory address locations are allocated for each port, one each for:
+<ul>
+<li>the <em>Data Registers</em> – <code>PORTx</code>,</li>
+<li>the <em>Data Direction Register</em> – <code>DDRx</code>, and</li>
+<li>the <em>Port Input Pins</em> – <code>PINx</code></li>
+</ul></li>
+</ul>
+<p>Note: <code>x</code> refers to the numbering letter for the port (<code>B</code>, <code>C</code>, or <code>D</code> in our case).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="configuring-a-pin---data-direction">Configuring a Pin - Data Direction</h3>
+<p>The <code>DDxn</code> bit in the <code>DDRx</code> Register (illustrated for <code>DDRB</code> in <a href="#/fig-week02-ddrb" class="quarto-xref">Figure&nbsp;18</a>) selects the data direction (input or output) of this pin.</p>
+
+<img data-src="pictures/ddrb.png" alt="DDRB - The port B data direction register." class="r-stretch quarto-figure-center" id="fig-week02-ddrb"><p class="caption">
+Figure&nbsp;18: <code>DDRB</code> - The port B data direction register.
+</p><aside class="notes">
+<ul>
+<li>Writing <strong>logic one</strong> to <code>DDxn</code>, <code>PORTxn</code> is configured as an <strong>output pin</strong>.</li>
+<li>Writing <strong>logic zero</strong> to <code>DDxn</code>, <code>PORTxn</code> is configured as an <strong>input pin</strong>. .</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="writing-to-a-pin---output">Writing to a Pin - Output</h3>
+<p>The <code>Pxn</code> bit in the <code>PORTx</code> Register (illustrated for <code>PORTC</code> in <a href="#/fig-week02-portc" class="quarto-xref">Figure&nbsp;19</a>) has two purposes dependent on the condition of the corresponding bit in the <code>DDRx</code> register.</p>
+
+<img data-src="pictures/portc.png" alt="PORTC - the port C data register" class="r-stretch quarto-figure-center" id="fig-week02-portc"><p class="caption">
+Figure&nbsp;19: <code>PORTC</code> - the port C data register
+</p><aside class="notes">
+<p>If the <code>DDRx</code> bit is configured as an output:</p>
+<ul>
+<li>Writing logic one to <code>PORTxn</code> drives the pin high (on-state).</li>
+<li>Writing logic zero to <code>PORTxn</code> to logic zero drives the pin low (off-state).</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="reading-from-a-pin---input">Reading from a Pin - Input</h3>
+<p>The port pin can be read through the <strong><code>PINxn</code> Register bit</strong> (illustrated for <code>PINB</code> in <a href="#/fig-week02-pinb" class="quarto-xref">Figure&nbsp;20</a>.</p>
+
+<img data-src="pictures/pinb.png" alt="PINB - the port B input pins address" class="r-stretch quarto-figure-center" id="fig-week02-pinb"><p class="caption">
+Figure&nbsp;20: <code>PINB</code> - the port B input pins address
+</p><aside class="notes">
+<p>This is independent of the setting of Data Direction bit <code>DDxn</code>, however is good practice to have it set.</p>
+<p><strong>Writing</strong> a logic one to <code>PINxn</code> toggles the value of <code>PORTxn</code>, independent on the value of <code>DDRxn</code>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="configuring-a-pin---pull-up-enable">Configuring a Pin - Pull Up Enable</h3>
+<p>Providing a port is configured as an input.</p>
+<ul>
+<li><p>If <code>PORTxn</code> is written <strong>logic one</strong> when the pin is configured as an input pin, the <strong>pull-up resistor</strong> is activated.</p></li>
+<li><p>To switch the <strong>pull-up resistor</strong> off, <code>PORTxn</code> has to be written logic zero or the pin has to be configured as an output pin.</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="basic-io-demonstration">Basic I/O Demonstration</h3>
+<aside class="notes">
+<p>Code listing <a href="#/lst-week2-simple-io" class="quarto-xref">Listing&nbsp;3</a> is an example program written in assembly that illustrates simple IO. We will demonstrate this in class. Please refer to <a href="#/fig-week2-basic-io-demonstration" class="quarto-xref">Figure&nbsp;21</a> which shows what the demo looks like.</p>
+<div id="fig-week2-basic-io-demonstration" class="quarto-float quarto-figure quarto-figure-center" alt="Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week2-basic-io-demonstration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/ide_for_demo.png" alt="Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week2-basic-io-demonstration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21: Screen shot of the Atmel IDE taken during the rehersal for the demo of I/O
+</figcaption>
+</figure>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="lst-week2-simple-io" class="asm listing quarto-float quarto-figure quarto-figure-left" data-code-line-numbers="|">
+<figure class="quarto-float quarto-float-lst">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-week2-simple-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;3: Demonstration of simple I/O
+</figcaption>
+<div aria-describedby="lst-week2-simple-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb4" data-code-line-numbers="|"><pre class="sourceCode numberSource asm number-lines code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href=""></a></span>
+<span id="cb4-2"><a href=""></a><span class="co">;.EQU DDRB = 0x04</span></span>
+<span id="cb4-3"><a href=""></a><span class="co">;.EQU PORTB = 0x05</span></span>
+<span id="cb4-4"><a href=""></a></span>
+<span id="cb4-5"><a href=""></a><span class="co">;.EQU PIND = 0x09</span></span>
+<span id="cb4-6"><a href=""></a><span class="co">;.EQU DDRD = 0x0A</span></span>
+<span id="cb4-7"><a href=""></a><span class="co">;.EQU PORTD = 0x0B</span></span>
+<span id="cb4-8"><a href=""></a></span>
+<span id="cb4-9"><a href=""></a>.CSEG</span>
+<span id="cb4-10"><a href=""></a>.<span class="bu">ORG</span> <span class="bn">0x0200</span></span>
+<span id="cb4-11"><a href=""></a>    <span class="co">;setup bits 2 and 3 of port D as inputs</span></span>
+<span id="cb4-12"><a href=""></a>    <span class="bu">IN</span> R16<span class="op">,</span> DDRD</span>
+<span id="cb4-13"><a href=""></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11110011</span></span>
+<span id="cb4-14"><a href=""></a>    <span class="bu">OUT</span> DDRD<span class="op">,</span> R16</span>
+<span id="cb4-15"><a href=""></a></span>
+<span id="cb4-16"><a href=""></a>    <span class="co">;setup bits 0 and 1 of port B as outputs</span></span>
+<span id="cb4-17"><a href=""></a>    <span class="bu">IN</span> R16<span class="op">,</span> DDRB</span>
+<span id="cb4-18"><a href=""></a>    ORI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">00000011</span></span>
+<span id="cb4-19"><a href=""></a>    <span class="bu">OUT</span> DDRB<span class="op">,</span> R16</span>
+<span id="cb4-20"><a href=""></a></span>
+<span id="cb4-21"><a href=""></a>    <span class="co">;both pins B0 (D8) and B1 (D9) start low</span></span>
+<span id="cb4-22"><a href=""></a>    <span class="bu">IN</span>  R16<span class="op">,</span> PORTB</span>
+<span id="cb4-23"><a href=""></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11111100</span></span>
+<span id="cb4-24"><a href=""></a>    <span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb4-25"><a href=""></a></span>
+<span id="cb4-26"><a href=""></a>    <span class="co">;Enable the pull up resistor for bits 2 and 3 of port D</span></span>
+<span id="cb4-27"><a href=""></a>    <span class="bu">IN</span>  R16<span class="op">,</span> PORTD</span>
+<span id="cb4-28"><a href=""></a>    ORI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">00001100</span></span>
+<span id="cb4-29"><a href=""></a>    <span class="bu">OUT</span> PORTD<span class="op">,</span> R16</span>
+<span id="cb4-30"><a href=""></a></span>
+<span id="cb4-31"><a href=""></a><span class="fu">LOOP:</span></span>
+<span id="cb4-32"><a href=""></a>    SBIC PIND<span class="op">,</span> <span class="dv">2</span> <span class="co">; skip RJMP if bit 2 is set (button pressed)</span></span>
+<span id="cb4-33"><a href=""></a>    RJMP LED1</span>
+<span id="cb4-34"><a href=""></a></span>
+<span id="cb4-35"><a href=""></a>    SBIC PIND<span class="op">,</span> <span class="dv">3</span> <span class="co">; skip RJMP if bit 3 is set (button pressed)</span></span>
+<span id="cb4-36"><a href=""></a>    RJMP LED2</span>
+<span id="cb4-37"><a href=""></a></span>
+<span id="cb4-38"><a href=""></a>    <span class="bu">IN</span> R16<span class="op">,</span> PORTB</span>
+<span id="cb4-39"><a href=""></a>    ANDI R16<span class="op">,</span> <span class="bn">0b</span><span class="er">11111100</span></span>
+<span id="cb4-40"><a href=""></a>    <span class="bu">OUT</span> PORTB<span class="op">,</span> R16</span>
+<span id="cb4-41"><a href=""></a>    RJMP LOOP</span>
+<span id="cb4-42"><a href=""></a></span>
+<span id="cb4-43"><a href=""></a><span class="fu">LED1:</span></span>
+<span id="cb4-44"><a href=""></a>    SBI PORTB<span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb4-45"><a href=""></a>    RJMP LOOP</span>
+<span id="cb4-46"><a href=""></a></span>
+<span id="cb4-47"><a href=""></a><span class="fu">LED2:</span></span>
+<span id="cb4-48"><a href=""></a>    SBI PORTB<span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb4-49"><a href=""></a>    RJMP LOOP</span>
+<span id="cb4-50"><a href=""></a></span>
+<span id="cb4-51"><a href=""></a>.EXIT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+</section>
+<section id="summary" class="slide level2 unnumbered">
+<h2>Summary</h2>
+<p>In this chapter we have:</p>
+<ul>
+<li><p>Introduced a few more parts of the AVR core, namely, the status register, program counter and stack pointer and how these are used under normal operation</p></li>
+<li><p>Started to look at I/O on a microcontroller including the concept of pull up resistors as well as some of the specific registers used in the AVR core to enable the use of both input and output device</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 class="unnumbered" id="on-canvas">On Canvas</h3>
+<p>Canvas module <a href="https://canvas.swansea.ac.uk/courses/44971/modules/305537?wrap=1">Week 2: Microcontroller Architecture and I/O</a>, along with these notes, there is some additional self study material on canvas on page <a href="https://canvas.swansea.ac.uk/courses/44971/pages/week-3-atmel-atmega328-architecture-overview?module_item_id=2258072">Week 2: Atmel ATmega328 Architecture Overview</a>. This includes a video demonstration, from my former colleague Ben Clifford, of the various topics discussed in this session.</p>
+<p>There is also a quiz on Microcontroller Architecture.</p>
+</section>
+<section class="slide level2">
+
+<h3 class="unnumbered" id="any-questions">Any Questions?</h3>
+<p>Please use the <a href="https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656">Course Question Board</a> on Canvas or take advantage of the lecturers’ office hours.</p>
+</section>
+<section class="slide level2">
+
+<h3 class="unnumbered" id="next-time">Next time</h3>
+<ul>
+<li><a href=".\lectures/week03">Introduction to Programming and Program Development</a></li>
+</ul>
+</section>
+<section class="slide level2">
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="lecture03_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="lecture03_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="lecture03_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="lecture03_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="lecture03_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="lecture03_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="lecture03_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="lecture03_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="lecture03_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="lecture03_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="lecture03_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+            let selectedAnnoteEl;
+            const selectorForAnnotation = ( cell, annotation) => {
+              let cellAttr = 'data-code-cell="' + cell + '"';
+              let lineAttr = 'data-code-annotation="' +  annotation + '"';
+              const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+              return selector;
+            }
+            const selectCodeLines = (annoteEl) => {
+              const doc = window.document;
+              const targetCell = annoteEl.getAttribute("data-target-cell");
+              const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+              const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+              const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+              const lineIds = lines.map((line) => {
+                return targetCell + "-" + line;
+              })
+              let top = null;
+              let height = null;
+              let parent = null;
+              if (lineIds.length > 0) {
+                  //compute the position of the single el (top and bottom and make a div)
+                  const el = window.document.getElementById(lineIds[0]);
+                  top = el.offsetTop;
+                  height = el.offsetHeight;
+                  parent = el.parentElement.parentElement;
+                if (lineIds.length > 1) {
+                  const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+                  const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+                  height = bottom - top;
+                }
+                if (top !== null && height !== null && parent !== null) {
+                  // cook up a div (if necessary) and position it 
+                  let div = window.document.getElementById("code-annotation-line-highlight");
+                  if (div === null) {
+                    div = window.document.createElement("div");
+                    div.setAttribute("id", "code-annotation-line-highlight");
+                    div.style.position = 'absolute';
+                    parent.appendChild(div);
+                  }
+                  div.style.top = top - 2 + "px";
+                  div.style.height = height + 4 + "px";
+                  div.style.left = 0;
+                  let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+                  if (gutterDiv === null) {
+                    gutterDiv = window.document.createElement("div");
+                    gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                    gutterDiv.style.position = 'absolute';
+                    const codeCell = window.document.getElementById(targetCell);
+                    const gutter = codeCell.querySelector('.code-annotation-gutter');
+                    gutter.appendChild(gutterDiv);
+                  }
+                  gutterDiv.style.top = top - 2 + "px";
+                  gutterDiv.style.height = height + 4 + "px";
+                }
+                selectedAnnoteEl = annoteEl;
+              }
+            };
+            const unselectCodeLines = () => {
+              const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+              elementsIds.forEach((elId) => {
+                const div = window.document.getElementById(elId);
+                if (div) {
+                  div.remove();
+                }
+              });
+              selectedAnnoteEl = undefined;
+            };
+              // Handle positioning of the toggle
+          window.addEventListener(
+            "resize",
+            throttle(() => {
+              elRect = undefined;
+              if (selectedAnnoteEl) {
+                selectCodeLines(selectedAnnoteEl);
+              }
+            }, 10)
+          );
+          function throttle(fn, ms) {
+          let throttle = false;
+          let timer;
+            return (...args) => {
+              if(!throttle) { // first call gets through
+                  fn.apply(this, args);
+                  throttle = true;
+              } else { // all the others get throttled
+                  if(timer) clearTimeout(timer); // cancel #2
+                  timer = setTimeout(() => {
+                    fn.apply(this, args);
+                    timer = throttle = false;
+                  }, ms);
+              }
+            };
+          }
+            const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+            for (let i=0; i<annoteTargets.length; i++) {
+              const annoteTarget = annoteTargets[i];
+              const targetCell = annoteTarget.getAttribute("data-target-cell");
+              const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+              const contentFn = () => {
+                const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+                if (content) {
+                  const tipContent = content.cloneNode(true);
+                  tipContent.classList.add("code-annotation-tip-content");
+                  return tipContent.outerHTML;
+                }
+              }
+              const config = {
+                allowHTML: true,
+                content: contentFn,
+                onShow: (instance) => {
+                  selectCodeLines(instance.reference);
+                  instance.reference.classList.add('code-annotation-active');
+                  window.tippy.hideAll();
+                },
+                onHide: (instance) => {
+                  unselectCodeLines();
+                  instance.reference.classList.remove('code-annotation-active');
+                },
+                maxWidth: 300,
+                delay: [50, 0],
+                duration: [200, 0],
+                offset: [5, 10],
+                arrow: true,
+                appendTo: function(el) {
+                  return el.parentElement.parentElement.parentElement;
+                },
+                interactive: true,
+                interactiveBorder: 10,
+                theme: 'light-border',
+                placement: 'right',
+                popperOptions: {
+                  modifiers: [
+                  {
+                    name: 'flip',
+                    options: {
+                      flipVariations: false, // true by default
+                      allowedAutoPlacements: ['right'],
+                      fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+                    },
+                  },
+                  {
+                    name: 'preventOverflow',
+                    options: {
+                      mainAxis: false,
+                      altAxis: false
+                    }
+                  }
+                  ]        
+                }      
+              };
+              window.tippy(annoteTarget, config); 
+            }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

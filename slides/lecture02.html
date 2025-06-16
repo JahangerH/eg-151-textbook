@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="lecture02_files/libs/clipboard/clipboard.min.js"></script>
+<script src="lecture02_files/libs/quarto-html/tabby.min.js"></script>
+<script src="lecture02_files/libs/quarto-html/popper.min.js"></script>
+<script src="lecture02_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="lecture02_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="lecture02_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="lecture02_files/libs/quarto-html/quarto-syntax-highlighting-dark-e2182856f2c32102dd26b05a5ef16cb5.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.30">
+
+  <meta name="author" content="Ben Clifford">
+  <title>Introduction to Data Representation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lecture02_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="lecture02_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="lecture02_files/libs/revealjs/dist/theme/quarto-091ebfb71d12db7fc524ec91495e1509.css">
+  <link href="lecture02_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="lecture02_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="lecture02_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="lecture02_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="lecture02_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="lecture02_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-dark">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="pictures/image1.png" data-background-opacity="0.9" data-background-size="contain" class="quarto-title-block center">
+  <h1 class="title">Introduction to Data Representation</h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Ben Clifford 
+</div>
+        <p class="quarto-title-affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+    </div>
+</div>
+
+  <p class="date">Wednesday October 1, 2025</p>
+</section>
+<section id="websitelecturesdata_representationindex.qmd" class="slide level2">
+<h2>#../website/lectures/data_representation/index.qmd</h2>
+<p>title: Introduction to Data Representation author: name: Ben Clifford affiliation: Welsh Centre for Printing and Coatings copyright: Copyright © 2021-2025 Swansea University. All rights reserved. date: 10/01/2025 —</p>
+</section>
+<section id="week2:introduction" class="slide level2 unnumbered">
+<h2>Introduction</h2>
+<aside class="notes">
+<p><a href=".\slides/lecture02.html">Presentation version</a> of these <a href="#/week2:introduction">notes</a>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside class="notes">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>This chapter is designed to reinforce the material to be introduced in Week 2 of <strong>EG-143 Digital Systems</strong> and so it will not be delivered as part of a formal lecture in <strong>EG-151 Microcontrollers</strong>.</p>
+<p>Instead, we have provided some self-study materials in the Canvas Pages <a href="https://canvas.swansea.ac.uk/courses/52902/pages/introduction-to-data-representation?module_item_id=2882134">Introduction to Data Representation</a> and <a href="https://canvas.swansea.ac.uk/courses/52902/pages/twos-complement-bcd-binary-fractions-and-a-dot-s-c-dot-i-i?module_item_id=2882135">Two’s complement, BCD, Binary Fractions and A.S.C.I.I</a> as well as in <a href=".\appendix/appendix_a.html">Appendix A: Other Data Representations</a>.</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<p>This material is examinable in EG-151 but there will not be a formal lecture. You should therefore read these notes for revision for the class test, try the execises and complete the quiz <a href="https://canvas.swansea.ac.uk/courses/52902/assignments/407475?display=full_width">Quiz Week 1(b) - Data Representation</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="week2:toc" class="slide level2 unnumbered">
+<h2>Topics Covered in this Lecture</h2>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img data-src="pictures/dr_contents_image.png" style="width:100.0%" data-img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><a href="#/sec-week2:intro2dr" class="quarto-xref">Section&nbsp;2</a> <a href="#/sec-week2:intro2dr">Data Representations</a></li>
+<li><a href="#/sec-week2:numbering" class="quarto-xref">Section&nbsp;3</a> <a href="#/sec-week2:numbering">Numbering Systems and Base Conversion</a></li>
+<li><a href="#/sec-week2:addition_and_subtraction" class="quarto-xref">Section&nbsp;4</a> <a href="#/sec-week2:addition_and_subtraction">Binary Addition and Subtraction</a></li>
+<li><a href="#/sec-week2:sr" class="quarto-xref">Section&nbsp;5</a> <a href="#/sec-week2:sr">Introduction to the Status Register</a></li>
+</ul>
+</div></div>
+</section>
+<section id="sec-week2:intro2dr" class="slide level2 center">
+<h2>Data Representations</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="how-is-data-stored-digitally">How is Data stored Digitally?</h3>
+<p>Modern digital processors and microcontrollers contain millions of solid state devices known as transistors (<a href="#/fig-week2-transistor" class="quarto-xref">Figure&nbsp;1</a>).</p>
+
+<img data-src="pictures/transistor.png" alt="A single transistor" class="r-stretch quarto-figure-center" id="fig-week2-transistor"><p class="caption">
+Figure&nbsp;1: A single transistor
+</p><aside class="notes">
+<p>With one transistor we can control the flow of electrons creating an object with two states – <em>on</em> or <em>off</em>. This is known as a binary system.</p>
+<p>We can use the output (or input if wired to ground) of this transistor to connect to other transistors forming: logic gates and eventually a bit of memory.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<p>By arranging six of these transistors appropriately we can create a memory device that can store one bit of data (<a href="#/fig-week2:1_bit_of_memory" class="quarto-xref">Figure&nbsp;2</a>).</p>
+<div id="fig-week2:1_bit_of_memory" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-week2:1_bit_of_memory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="pictures/memory.jpg">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week2:1_bit_of_memory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: One bit of SRAM memory<a href="#/footnotes" class="footnote-ref" id="fnref1" role="doc-noteref" data-footnote-href="#/fn1" onclick=""><sup>1</sup></a>
+</figcaption>
+</figure>
+</div>
+<aside></aside></section>
+<section class="slide level2">
+
+<h3 id="terminology">Terminology</h3>
+<div class="fragment">
+<p><strong>1 bit = 1 data unit</strong></p>
+<p><img data-src="pictures/bit.png"></p>
+</div>
+<div class="fragment">
+<p><strong>1 nybble = 4 data units (4 bits)</strong></p>
+<p><img data-src="pictures/nybble.png"></p>
+</div>
+<div class="fragment">
+<p><strong>1 byte = 8 data units (8 bits, 2 nybbles)</strong></p>
+<p><img data-src="pictures/byte.png"></p>
+</div>
+<div class="fragment">
+<p><strong>1 word = 16 data units (16 bits, 2 bytes, 4 nybbles)</strong></p>
+<p><img data-src="pictures/word.png"></p>
+</div>
+</section>
+<section id="sec-week2:numbering" class="slide level2 center">
+<h2>Numbering Systems and Base Conversion</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="decimal-number-representation">Decimal Number Representation</h3>
+<p>Take the decimal number (Base 10) 4623, what does this representation mean?</p>
+<div class="fragment">
+<p><span class="math display">\[4623\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[4000 + 600 + 20 + 3\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[(4\times 1000) + (6\times 100) + (2\times 10) + (3\times 1)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[\left(4\times 10^3\right) + \left(6\times 10^2\right) + \left(2\times 10^1\right) + \left(3\times 10^0\right)\]</span></p>
+</div>
+</section>
+<section class="slide level2">
+
+<p>We can break down any base 10 (decimal) number <span class="math inline">\(N\)</span> in the same way using the expression:</p>
+<p><span class="math display">\[N_{10} = \cdots  + \left(X\times 10^3\right) + \left(X\times 10^2\right) + \left(X\times 10^1\right) + \left(X\times 10^0\right)\]</span></p>
+<p>where <span class="math inline">\(X\)</span> is any <em>digit</em> in the set <span class="math inline">\(\{0, 1, 2, 3, 4, 5, 6, 7, 8, 9\}\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="what-about-other-bases">What About Other Bases?</h3>
+<p>We can apply the same techniques to any other base to convert the value into decimal (base 10).</p>
+<p>For programming (and digital systems more generally), the <em>binary</em> (base 2), <em>octal</em> (base 8) and <em>hexadecimal</em> (base 16) representations are commonly used<a href="#/footnotes" class="footnote-ref" id="fnref2" role="doc-noteref" data-footnote-href="#/fn2" onclick=""><sup>2</sup></a></p>
+<aside></aside></section>
+<section class="slide level2">
+
+<h4 id="binary-base-2">Binary (base 2)</h4>
+<p><span class="math display">\[N_2 = \cdots + \left(X\times 2^5\right) + \left(X\times 2^4\right) + \left(X\times 2^3\right) + \left(X\times 2^2\right) + \left(X\times 2^1\right) + \left(X\times 2^0\right)\]</span></p>
+<p>where <span class="math inline">\(X\)</span> is any digit in the set <span class="math inline">\(\{0, 1\}\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<h5 id="example-1">Example 1</h5>
+<p>Consider the binary representation <span class="math inline">\(N_2 = 10010011\)</span>. What is the value of <span class="math inline">\(N_2\)</span> in decimal base 10?</p>
+</section>
+<section class="slide level2">
+
+<h6 id="solution">Solution</h6>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = \left(1\times 2^7\right) + \left(0\times 2^6\right) + \left(0\times 2^5\right) + \left(1\times 2^4\right) + \left(0\times 2^3\right) + \left(0\times 2^2\right) + \left(1\times 2^1\right) + \left(1\times 2^0\right)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = \left(1\times 128\right) + \left(0\times 64\right) + \left(0\times 32\right) + \left(1\times 16\right) + \left(0\times 8\right) + \left(0\times 4\right) + \left(1\times 2\right) + \left(1\times 1\right)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 128 + 16 + 2 + 1\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 147_{10}\]</span></p>
+</div>
+</section>
+<section class="slide level2">
+
+<h4 id="octal-base-8">Octal (base 8)</h4>
+<p>Octal:</p>
+<p><span class="math display">\[N_{8} = \cdots  + \left(X\times 8^5\right) + \left(X\times 8^4\right) + \left(X\times 8^3\right) + \left(X\times 8^2\right) + \left(X\times 8^1\right) + \left(X\times 8^0\right)\]</span></p>
+<p>where <span class="math inline">\(X\)</span> is any <em>digit</em> in the set <span class="math inline">\(\{0, 1, 2, 3, 4, 5, 6, 7\}\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<h5 id="example-2">Example 2</h5>
+<p>Consider the octal representation <span class="math inline">\(N_8 = 712\)</span>. What is the value of <span class="math inline">\(N_8\)</span> in decimal base 10?</p>
+</section>
+<section class="slide level2">
+
+<h6 id="solution-1">Solution</h6>
+<div class="fragment">
+<p><span class="math display">\[N_8 = 713\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = \left(7\times 8^2\right) + \left(1·8^1\right) + \left(2·8^0\right)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = (7\times 64) + (1\times 8) + (2\times 1)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 448 + 8 + 2\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 458_{10}\]</span></p>
+</div>
+</section>
+<section class="slide level2">
+
+<h4 id="hexadecimal-base-16">Hexadecimal (base 16)</h4>
+<p><span class="math display">\[N_{16} = \cdots  + \left(X\times 16^5\right) + \left(X\times 16^4\right) + \left(X\times 16^3\right) + \left(X\times 16^2\right) + \left(X\times 16^1\right) + \left(X\times 16^0\right)\]</span></p>
+<p>where <span class="math inline">\(X\)</span> is any <em>digit</em> in the set <span class="math inline">\(\{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, \textrm{A}, \textrm{B}, \textrm{C}, \textrm{D}, \textrm{E}, \textrm{F}\}\)</span><a href="#/footnotes" class="footnote-ref" id="fnref3" role="doc-noteref" data-footnote-href="#/fn3" onclick=""><sup>3</sup></a>.</p>
+<aside></aside></section>
+<section class="slide level2">
+
+<h5 id="example-3">Example 3</h5>
+<p>Consider the hexadecimal representation <span class="math inline">\(N_{16} = 3\textrm{C}4\)</span>. What is the value of <span class="math inline">\(N_{16}\)</span> in decimal base 10?</p>
+</section>
+<section class="slide level2">
+
+<h6 id="solution-2">Solution</h6>
+<div class="fragment">
+<p><span class="math display">\[N_{16} = \left(3\times 16^2\right) + \left(\textrm{C}\times 16^1\right) + \left(4\times 16^0\right)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 3\times 256 + 12\times 16 + 4\times 1\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 768 + 192 + 4\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 964_{10}\]</span></p>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="decimal-number-conversion">Decimal Number Conversion</h3>
+<p>A decimal number can be converted into any other base using the <strong>divide-by-<span class="math inline">\(n\)</span></strong> method where <span class="math inline">\(n\)</span> represents the desired base.</p>
+</section>
+<section class="slide level2">
+
+
+<img data-src="pictures/division_method.png" alt="Illustration of a step in the division-by-n method of decimal number conversion." class="r-stretch quarto-figure-center" id="fig-divide-by-n-method"><p class="caption">
+Figure&nbsp;3: a step in the division-by-<span class="math inline">\(n\)</span> method of decimal number conversion.
+</p><p>Step 1 (see <a href="#/fig-divide-by-n-method" class="quarto-xref">Figure&nbsp;3</a>) − Divide the decimal number by the value of the new base and get the quotient and a remainder.</p>
+<div class="fragment">
+<p>Step 2 − Keep dividing the quotient of the previous divide by the new base and record the remainder</p>
+</div>
+<div class="fragment">
+<p>Step 3 − Repeat Step 2, until the quotient becomes zero</p>
+</div>
+<div class="fragment">
+<p>Step 4 – Read the remainders from bottom (MSB) to top (LSB).</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h4 id="example-4">Example 4</h4>
+<p>Convert <span class="math inline">\(28_{10}\)</span> into binary (base 2).</p>
+</section>
+<section class="slide level2">
+
+<h5 id="solution-3">Solution</h5>
+<div class="fragment">
+<p>Step 1: <span class="math inline">\(28 \div 2 = 14\)</span> remainder <span class="math inline">\(0\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 2: <span class="math inline">\(14 \div 2 = 7\)</span> remainder <span class="math inline">\(0\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 3: <span class="math inline">\(7 \div 2 = 3\)</span> remainder <span class="math inline">\(1\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 4: <span class="math inline">\(3 \div 2 = 1\)</span> remainder <span class="math inline">\(1\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 5: <span class="math inline">\(1 \div 2 = 0\)</span> remainder <span class="math inline">\(1\)</span></p>
+</div>
+<div class="fragment">
+<p>Binary value: <span class="math inline">\(28_{10} = 11100_{2}\)</span>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h5 id="confirmation">Confirmation</h5>
+<p><span class="math display">\[\begin{align}
+11000_2 &amp;= \left(1\times 2^4\right) + \left(1\times 2^3\right) + \left(1\times 2^2\right) + \left(0\times 2^1\right) + \left(0\times 2^0\right)\\
+&amp;= \left(1\times 16\right) + \left(1\times 8\right) + \left(1\times 4\right) + \left(0\times 2\right) + \left(0\times 1\right)\\
+&amp;= 16 + 8 + 4\\
+&amp;= 28_{10}
+\end{align}\]</span></p>
+</section>
+<section class="slide level2">
+
+<h4 id="example-5">Example 5</h4>
+<p>Convert <span class="math inline">\(28_{10}\)</span> into octal (base 8).</p>
+</section>
+<section class="slide level2">
+
+<h5 id="solution-4">Solution</h5>
+<div class="fragment">
+<p>Step 1: <span class="math inline">\(28 \div 8 = 3\)</span> remainder <span class="math inline">\(4\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 2: <span class="math inline">\(3 \div 8 = 0\)</span> remainder <span class="math inline">\(3\)</span></p>
+</div>
+<div class="fragment">
+<p>Octal value: <span class="math inline">\(28_{10} = 34_{8}\)</span>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h5 id="confirmation-1">Confirmation</h5>
+<p><span class="math display">\[\begin{align}
+34_8 &amp;= \left(3\times 8^1\right) + \left(4\times 8^0\right)\\
+&amp;= \left(3\times 8\right) + \left(4\times 1\right) \\
+&amp;= 24 + 4\\
+&amp;= 28_{10}
+\end{align}\]</span></p>
+</section>
+<section class="slide level2">
+
+<h4 id="example-6">Example 6</h4>
+<p>Convert <span class="math inline">\(28_{10}\)</span> into hexadecimal (base 16).</p>
+</section>
+<section class="slide level2">
+
+<h5 id="solution-5">Solution</h5>
+<div class="fragment">
+<p>Step 1: <span class="math inline">\(28 \div 16 = 1\)</span> remainder <span class="math inline">\(12\,\left(\textrm{C}_{16}\right)\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 2: <span class="math inline">\(1 \div 16 = 0\)</span> remainder <span class="math inline">\(1\)</span></p>
+</div>
+<div class="fragment">
+<p>Hexadecimal value: <span class="math inline">\(28_{10} = 1\textrm{C}_{16}\)</span>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h5 id="confirmation-2">Confirmation</h5>
+<p><span class="math display">\[\begin{align}
+1\textrm{C}_{16} &amp;= \left(1\times 16^1\right) + \left(\textrm{C}\times 16^0\right)\\
+&amp;= \left(1\times 16\right) + \left(12\times 1\right) \\
+&amp;= 16 + 12\\
+&amp;= 28_{10}
+\end{align}\]</span></p>
+</section>
+<section class="slide level2">
+
+<h3 id="tricks-and-tips">Tricks and Tips</h3>
+<p>All numbers are stored in a computer in binary form. Depending on the encoding, each digit takes up 1 bit (binary), 3 bits (octal) or 4 bits (decimal and hexadecimal).</p>
+<p>If the digit needs less bits than allowed for its representation, the remaining bits the the left of the number will be set to zero.</p>
+</section>
+<section class="slide level2">
+
+<p>For example:</p>
+<ul>
+<li class="fragment"><span class="math inline">\(1_2\)</span> is represented as <code>0b00000001</code><a href="#/footnotes" class="footnote-ref" id="fnref4" role="doc-noteref" data-footnote-href="#/fn4" onclick=""><sup>4</sup></a> (binary, prefix <code>0b</code>, seven padding 0 bits + 1 bit for the value 1).</li>
+<li class="fragment"><span class="math inline">\(5_8\)</span> is <code>0005</code> (octal prefix <code>0</code> followed two 0 digits (2 bits plus 3 bits) (00 000 101).</li>
+<li class="fragment"><span class="math inline">\(10_{10} = 8 + 2\)</span> is <code>0b00010010</code>.</li>
+<li class="fragment"><span class="math inline">\(\textrm{E}\)</span> is <code>0x0E</code> (hexadecimal prefix <code>0x</code> followed by <code>0b0000</code>, and <code>0b1110</code> = <code>0b00001110</code>).</li>
+</ul>
+<aside></aside></section>
+<section class="slide level2">
+
+<p>For octal and hexadecimal values, the equivalent binary number is easily obtained by grouping from the right.</p>
+<ul>
+<li class="fragment">For octal, the largest digit is 7 which needs three bits. So the octal representation of an 8 bit binary number will have 2 bits (0-3) + two groups of 3 bits. The maximum number allowed is <code>0b11 111 111</code> = <code>0377</code> = <span class="math inline">\(255_{10}\)</span>.</li>
+<li class="fragment">For hexadecimal, four bits are needed to represent all values in the range 0-F. So an 8 bit value can only represent two hexadecimal digits <code>0x00</code> to <code>0xFF</code>.</li>
+</ul>
+<aside class="notes">
+<p>To convert a binary number to octal or heaxdecimal, just group the binary digits and then read off the value.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h4 id="example-7">Example 7</h4>
+<p>Convert the binary number <code>0x000011101</code> to octal and hexadecimal. Give the value in decimal.</p>
+</section>
+<section class="slide level2">
+
+<h5 id="solution-6">Solution</h5>
+<div class="fragment">
+<p>Grouping <code>0x000011101</code> by threes gives <code>00</code> + <code>011</code> + <code>101</code> = <code>0035</code> = <span class="math inline">\(35_8\)</span>.</p>
+</div>
+<div class="fragment">
+<p>Grouping <code>0x000011101</code> by fours gives <code>0001</code> + <code>1101</code> = <code>0x01D</code> = <span class="math inline">\(1\textrm{D}_{16}\)</span>.</p>
+</div>
+<div class="fragment">
+<p>Taking the octal value <span class="math inline">\(62_8 = \left(0\times 8^2\right) + \left(3\times 8^1\right) + (5\times 8^0) = 0 + 24 + 5 = 29_{10}\)</span>.</p>
+</div>
+</section>
+<section class="slide level2">
+
+<h4 id="example-8">Example 8</h4>
+<p>Convert the octal number <span class="math inline">\(62_8\)</span> (<code>0062</code>) to binary and hexadecimal. Give the value in decimal.</p>
+</section>
+<section class="slide level2">
+
+<h5 id="solution-7">Solution</h5>
+<div class="fragment">
+<p>The octal digits <span class="math inline">\(6_8\)</span> and <span class="math inline">\(2_8\)</span> are the three-bit binary values <code>0b110</code> and <code>0b010</code> respectively. So the equivalent 8-bit binary byte is obtained by combining these binary values and prepending with two zeros: <code>0b00 110 010</code> <span class="math inline">\(\to\)</span> <code>0b00110010</code>.</p>
+</div>
+<div class="fragment">
+<p>Grouping the binary number <code>0b00110010</code> in blocks of 4 gives <code>0b 0011 0010</code> which gives the hexdecimal digits <span class="math inline">\(3_{16}\)</span> and <span class="math inline">\(2_{16}\)</span> respectively. So <span class="math inline">\(62_8 = 32_{16}\)</span>.</p>
+</div>
+<div class="fragment">
+<p>The equivalent decimal number is <span class="math inline">\(\left(3\times 16^1\right) + \left(2\times 16^0\right) = 48 + 2 = 50_{10}\)</span>.<a href="#/footnotes" class="footnote-ref" id="fnref5" role="doc-noteref" data-footnote-href="#/fn5" onclick=""><sup>5</sup></a></p>
+</div>
+<aside></aside></section>
+<section class="slide level2">
+
+<h3 id="summary-of-number-systems">Summary of number systems</h3>
+<aside class="notes">
+<p><a href="#/tbl-week2-number-values" class="quarto-xref">Table&nbsp;1</a> shows the equivalent binary, octal and hexadecimal values for decimal numbers 0-16. Note that we need just 1 nybble to represent a value in the range 0-154 but we need two nybbles (1 byte) for numbers greater than 15. The maximum value representable in one byte of data is <span class="math inline">\(2^8 - 1 = 255\)</span>. The concept can of course be extended to words (16 bits). The maximum value that can be represented with 16 bits is <span class="math inline">\(2^{16} - 1 = 65,535\)</span>.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<div id="tbl-week2-number-values" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-week2-number-values-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Representation of integer values in 8 bit computer systems
+</figcaption>
+<div aria-describedby="tbl-week2-number-values-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 23%">
+<col style="width: 22%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Decimal (Code)</th>
+<th>Binary (Code)</th>
+<th>Octal (Code)</th>
+<th>Hexadecimal (Code)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(0\)</span> (<code>0</code>)</td>
+<td><span class="math inline">\(0\)</span> (<code>0b00000000</code>)</td>
+<td><span class="math inline">\(0\)</span> (<code>000</code>)</td>
+<td><span class="math inline">\(0\)</span> (<code>0x00</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(1\)</span> (<code>1</code>)</td>
+<td><span class="math inline">\(1\)</span> (<code>0b00000001</code>)</td>
+<td><span class="math inline">\(1\)</span> (<code>001</code>)</td>
+<td><span class="math inline">\(1\)</span> (<code>0x01</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(2\)</span> (<code>2</code>)</td>
+<td><span class="math inline">\(10\)</span> (<code>0b00000010</code>)</td>
+<td><span class="math inline">\(2\)</span> (<code>002</code>)</td>
+<td><span class="math inline">\(2\)</span> (<code>0x02</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(3\)</span> (<code>3</code>)</td>
+<td><span class="math inline">\(11\)</span> (<code>0b00000011</code>)</td>
+<td><span class="math inline">\(3\)</span> (<code>003</code>)</td>
+<td><span class="math inline">\(3\)</span> (<code>0x03</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(4\)</span> (<code>4</code>)</td>
+<td><span class="math inline">\(100\)</span> (<code>0b00000100</code>)</td>
+<td><span class="math inline">\(4\)</span> (<code>004</code>)</td>
+<td><span class="math inline">\(4\)</span> (<code>0x04</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(5\)</span> (<code>5</code>)</td>
+<td><span class="math inline">\(101\)</span> (<code>0b00000101</code>)</td>
+<td><span class="math inline">\(5\)</span> (<code>005</code>)</td>
+<td><span class="math inline">\(5\)</span> (<code>0x05</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(6\)</span> (<code>6</code>)</td>
+<td><span class="math inline">\(110\)</span> (<code>0b00000110</code>)</td>
+<td><span class="math inline">\(6\)</span> (<code>006</code>)</td>
+<td><span class="math inline">\(6\)</span> (<code>0x06</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(7\)</span> (<code>7</code>)</td>
+<td><span class="math inline">\(111\)</span> (<code>0b00000111</code>)</td>
+<td><span class="math inline">\(7\)</span> (<code>007</code>)</td>
+<td><span class="math inline">\(7\)</span> (<code>0x07</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(8\)</span> (<code>8</code>)</td>
+<td><span class="math inline">\(1000\)</span> (<code>0b00001000</code>)</td>
+<td><span class="math inline">\(10\)</span> (<code>010</code>)</td>
+<td><span class="math inline">\(8\)</span> (<code>0x08</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(9\)</span> (<code>9</code>)</td>
+<td><span class="math inline">\(1001\)</span> (<code>0b00001001</code>)</td>
+<td><span class="math inline">\(11\)</span> (<code>011</code>)</td>
+<td><span class="math inline">\(9\)</span> (<code>0x09</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(10\)</span> (<code>10</code>)</td>
+<td><span class="math inline">\(1010\)</span> (<code>0b00010010</code>)</td>
+<td><span class="math inline">\(12\)</span> (<code>012</code>)</td>
+<td><span class="math inline">\(\mathrm{A}\)</span> (<code>0x0A</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(11\)</span> (<code>11</code>)</td>
+<td><span class="math inline">\(1011\)</span> (<code>0b00001011</code>)</td>
+<td><span class="math inline">\(13\)</span> (<code>013</code>)</td>
+<td><span class="math inline">\(\mathrm{B}\)</span> (<code>0x0B</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(12\)</span> (<code>12</code>)</td>
+<td><span class="math inline">\(1100\)</span> (<code>0b00001100</code>)</td>
+<td><span class="math inline">\(14\)</span> (<code>014</code>)</td>
+<td><span class="math inline">\(\mathrm{C}\)</span> (<code>0x0C</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(13\)</span> (<code>13</code>)</td>
+<td><span class="math inline">\(1101\)</span> (<code>0b00001101</code>)</td>
+<td><span class="math inline">\(15\)</span> (<code>015</code>)</td>
+<td><span class="math inline">\(\mathrm{D}\)</span> (<code>0x0D</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(14\)</span> (<code>14</code>)</td>
+<td><span class="math inline">\(1110\)</span> (<code>0b00001110</code>)</td>
+<td><span class="math inline">\(16\)</span> (<code>016</code>)</td>
+<td><span class="math inline">\(\mathrm{E}\)</span> (<code>0x0E</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(15\)</span> (<code>15</code>)</td>
+<td><span class="math inline">\(1111\)</span> (<code>0b00001111</code>)</td>
+<td><span class="math inline">\(17\)</span> (<code>017</code>)</td>
+<td><span class="math inline">\(\mathrm{F}\)</span> (<code>0x0F</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(16\)</span> (<code>16</code>)</td>
+<td><span class="math inline">\(10000\)</span> (<code>0b0010000</code>)</td>
+<td><span class="math inline">\(20\)</span> (<code>020</code>)</td>
+<td><span class="math inline">\(10\)</span> (<code>0x10</code>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="other-binary-encodings">Other binary encodings</h3>
+<p>Numbers are not the only type of data that can be encoded using binary values. In fact, all data that is manipulated by computers is represented by an encoding of binary numbers.</p>
+</section>
+<section class="slide level2">
+
+<p>Some examples of codings that you will see are:</p>
+<ul>
+<li class="fragment">Characters which are represented as ASCII code (7 bits), extended ASCII (8 bits) or UTF (1-4 bytes) used to represent other characters (e.g.&nbsp;for accented characters, other alphabets and languages, math symbols, emojis) and other purposes.</li>
+<li class="fragment">Other numerical encodings, such as Binary Coded Decimal (BCD)</li>
+<li class="fragment">Machine codes, which is how computers represent exercutable programmes, are also represented in binary numbers. These are usually generated by an assembler, compiler, or interpreter from human-readable code that is stored in text files that are themselves use characters encoded in ASCII or UTF.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>Additional self-directed learning materials which explore some of these extra encodings are provided on <a href="https://canvas.swansea.ac.uk/courses/52902/pages/introduction-to-data-representation?module_item_id=2882134">Canvas</a>.</p>
+<p>We will dicuss some of the encodings used for machine code in later lectures.</p>
+</section>
+<section id="sec-week2:addition_and_subtraction" class="slide level2 center">
+<h2>Binary Addition and Subtraction</h2>
+<p>How do computers add and subtract numbers?</p>
+</section>
+<section class="slide level2">
+
+<h3 id="binary-arithmetic">Binary Arithmetic</h3>
+<p>Microcontrollers work with 0’s and 1’s (binary).</p>
+<p>In order to add or subtract two binary numbers there are a series of rules similar to in decimal arithmetic.</p>
+</section>
+<section class="slide level2">
+
+<h4 id="rules-for-binary-addition">Rules for Binary Addition</h4>
+<p><span class="math display">\[\begin{align*}
+0 + 0 &amp;= 0\\
+0 + 1 &amp;= 1\\
+1 + 0 &amp;= 1\\
+1 + 1 &amp;= 10\quad\textrm{i.e.}\, 0 + \textrm{carry}\, 1
+\end{align*}\]</span></p>
+</section>
+<section class="slide level2">
+
+<h5 id="example-10">Example 10</h5>
+<p>Confirm using binary addition that <span class="math inline">\(14_{10} + 19_{10} = 33_{10}\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<h6 id="solution-fig-example-10">Solution (<a href="#/fig-example-10" class="quarto-xref">Figure&nbsp;4</a>)</h6>
+
+<img data-src="pictures/addition1.png" alt="Example of binary addition: 14 + 19 = 33" class="r-stretch quarto-figure-center" id="fig-example-10"><p class="caption">
+Figure&nbsp;4: Example 10: <span class="math inline">\(14_{10} + 19_{10} = 33_{10}\)</span>
+</p></section>
+<section class="slide level2">
+
+<h5 id="example-11">Example 11</h5>
+<p>Confirm using binary addition that <span class="math inline">\(46_{10} + 147_{10} = 193_{10}\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<h6 id="solution-fig-example-11">Solution (<a href="#/fig-example-11" class="quarto-xref">Figure&nbsp;5</a>)</h6>
+
+<img data-src="pictures/addition2.png" alt="Example of binary addition: 46 + 147 = 193" class="r-stretch quarto-figure-center" id="fig-example-11"><p class="caption">
+Figure&nbsp;5: Example 11: <span class="math inline">\(46_{10} + 147_{10} = 193_{10}\)</span>
+</p></section>
+<section class="slide level2">
+
+<h4 id="rules-for-binary-subtraction">Rules for Binary Subtraction</h4>
+<p><span class="math display">\[\begin{align*}
+0 - 0 &amp;= 0\\
+1 - 0 &amp;= 1\\
+1 - 1 &amp;= 0\\
+0 - 1 &amp;= 10 - 1 +\,\textrm{borrow} = 1+ \textrm{borrow}
+\end{align*}\]</span></p>
+</section>
+<section class="slide level2">
+
+<h5 id="example-12">Example 12</h5>
+<p>Confirm using binary subtraction that <span class="math inline">\(27_{10} - 14_{10} = 13_{10}\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<h6 id="solution-fig-example-12">Solution (<a href="#/fig-example-12" class="quarto-xref">Figure&nbsp;6</a>)</h6>
+
+<img data-src="pictures/subtraction1.png" alt="Example of binary subtraction: 27 - 14 = 13" class="r-stretch quarto-figure-center" id="fig-example-12"><p class="caption">
+Figure&nbsp;6: Example of binary subtraction: <span class="math inline">\(27_{10} - 14_{10} = 13_{10}\)</span>
+</p></section>
+<section class="slide level2">
+
+<h5 id="example-13">Example 13</h5>
+<p>Show using binary subtraction that <span class="math inline">\(175_{10} - 83_{10} = 92_{10}\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<h6 id="solution-fig-example-13">Solution (<a href="#/fig-example-13" class="quarto-xref">Figure&nbsp;7</a>)</h6>
+
+<img data-src="pictures/subtraction2.png" alt="Example of binary subtraction: 175 - 83 = 92" class="r-stretch quarto-figure-center" id="fig-example-13"><p class="caption">
+Figure&nbsp;7: Example of binary subtraction: <span class="math inline">\(175_{10} - 83_{10} = 92_{10}\)</span>
+</p></section>
+<section class="slide level2">
+
+<h4 id="binary-arithmetic-and-flags">Binary Arithmetic and Flags</h4>
+<p>What happens when the result is larger than 8-bits?</p>
+</section>
+<section class="slide level2">
+
+<h5 id="extended-rules-for-binary-addition">Extended Rules for Binary Addition</h5>
+<p>We need to extend the rules of binary addition to introduce an overflow that is indicated by a carry flag.</p>
+<p><span class="math display">\[\begin{align*}
+0 + 0 &amp;= 0 \\
+0 + 1 &amp;= 1 \\
+1 + 0 &amp;= 1 \\
+1 + 1 &amp;= 10\quad \textrm{i.e.}\, 0 + \textrm{carry}\, 1 \\
+1 + 1 + 1 &amp;= 11\quad \textrm{i.e.}\, 1 + \textrm{carry}\, 1
+\end{align*}\]</span></p>
+</section>
+<section class="slide level2">
+
+<h5 id="week2:example14">Example 14</h5>
+<p>Show using binary addition that <span class="math inline">\(110_{10} + 227_{10} = 337_{10}\)</span>.</p>
+</section>
+<section class="slide level2">
+
+<h6 id="solution-fig-example-14">Solution (<a href="#/fig-example-14" class="quarto-xref">Figure&nbsp;8</a>)</h6>
+
+<img data-src="pictures/addition3.png" alt="Example of binary subtraction with overflow: 110 + 227 = 337" class="r-stretch quarto-figure-center" id="fig-example-14"><p class="caption">
+Figure&nbsp;8: Example of binary subtraction with overflow: <span class="math inline">\(110_{10} + 227_{10} = 337_{10}\)</span>
+</p><aside class="notes">
+<p>The overflow is acknowledged in the <strong>status register</strong> by the carry flag</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="sec-week2:sr" class="slide level2">
+<h2>Introduction to the Status Register</h2>
+<p>The microcontroller has an 8-bit register containing a number of flags which can be set based on the condition of the microcontroller.</p>
+<p>The status register for the Atmel ATMega328/P is illustrated in <a href="#/fig-week2-sr" class="quarto-xref">Figure&nbsp;9</a>.</p>
+
+<img data-src="pictures/status_register.png" alt="The Status Register of the Atmel ATMega328/P" class="r-stretch quarto-figure-center" id="fig-week2-sr"><p class="caption">
+Figure&nbsp;9: The Status Register of the Atmel ATMega328/P
+</p></section>
+<section class="slide level2">
+
+<h3 id="status-register-flags-associated-with-binary-addition-and-subtraction">Status register flags associated with binary addition and subtraction</h3>
+<ul>
+<li class="fragment">The Half Carry Flag <code>H</code> is set (to 1) if there was a carry from bit 3; it is cleared (set to 0) otherwise.</li>
+<li class="fragment">The Zero Flag <code>Z</code> is set if the result is <code>0x00000000</code>; cleared otherwise.</li>
+<li class="fragment">The Carry Flag <code>C</code> is set if there was a carry from the most significant bit (MSB)<a href="#/footnotes" class="footnote-ref" id="fnref6" role="doc-noteref" data-footnote-href="#/fn6" onclick=""><sup>6</sup></a> of the result; cleared otherwise.</li>
+</ul>
+<div class="fragment">
+<p>We will look at the status register in detail in <a href="../week02/">Architecture of the Atmel ATmega 328 Microcontroller</a>.</p>
+</div>
+<aside></aside></section>
+<section class="slide level2">
+
+<h3 id="binary-arithmetic-example-14">Binary Arithmetic Example 14</h3>
+<p><a href="#/fig-week2-ex15" class="quarto-xref">Figure&nbsp;10</a> shows the condition of the status register after completing the addition from <a href="#/week2:example14">Example 14</a>.</p>
+
+<img data-src="pictures/sr_after_ex14.png" alt="The condition of the status register after completing the sum 110 + 227 = 337." class="r-stretch quarto-figure-center" id="fig-week2-ex15"><p class="caption">
+Figure&nbsp;10: The condition of the status register after completing the sum <span class="math inline">\(110_{10} + 227_{10} = 337\)</span>.
+</p></section>
+<section id="other-data-representations" class="slide level2">
+<h2>Other Data Representations</h2>
+<p>We have provided notes and videos that introduce other commonly used data representations in <a href=".\appendix/appendix_a.html">Appendix A: Other Data Representations</a>.</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<p>This chapter and <a href=".\appendix/appendix_a.html">Appendix A</a> are examinable and you should study both as part of your preparation for the class test.</p>
+</div>
+</div>
+</div>
+<h3 class="unnumbered" id="next">Next</h3>
+<p>In the next lecture we will look at the <a href=".\lectures/week2/">Architecture of the Atmel ATmega 328 Microcontroller</a>.</p>
+</section>
+<section class="slide level2">
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document smaller scrollable" role="doc-endnotes"><h2>Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Source of image used in <a href="#/fig-week2:1_bit_of_memory" class="quarto-xref">Figure&nbsp;2</a>: <a href="https://youtu.be/r787m_IaR1I">SRAM vs DRAM : How SRAM Works? How DRAM Works? Why SRAM is faster than RAM?</a>, All About Electronics - YouTube.</p></li>
+<li id="fn2"><p>Note that octal and hexadecimal are related to binary as in each case the base is a power of 2. In the case of octal <span class="math inline">\(8 = 2^3\)</span> and hexadecimal <span class="math inline">\(16 = 2^4\)</span>.</p></li>
+<li id="fn3"><p>Note we have to introduce the letters A-F to represent the two-digit decinal numbers 10-15. Thus <span class="math inline">\(\textrm{A}_{16} = 10_{10}\)</span>, <span class="math inline">\(\textrm{B}_{16} = 11_{10}\)</span>, <span class="math inline">\(\textrm{C}_{16} = 12_{10}\)</span>, <span class="math inline">\(\textrm{D}_{16} = 13_{10}\)</span>, <span class="math inline">\(\textrm{E}_{16} = 14_{10}\)</span>, <span class="math inline">\(\textrm{F}_{16} = 15_{10}\)</span>,</p></li>
+<li id="fn4"><p>The prefix <code>0b</code> is used in C code and many other languages as the prefix for the text representation of a binary value. <code>0</code> is used for octal values and <code>0x</code> for hexadecimal values. If there is no leading zero, the number is assumed to be decimal. However a number is defined in program code, the actual value stored in memory to represent that number will be a binary number.</p></li>
+<li id="fn5"><p>The calculator app on both Windows and MacOS have a programmer view that makes it easy to confirm these results.</p></li>
+<li id="fn6"><p>The most significant bit is the left most bit. It corresponds to the numerical value <span class="math inline">\(2^7 = 128\)</span>. For certain operations, it may also indicate a negative number.</p></li>
+</ol>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="lecture02_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="lecture02_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="lecture02_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="lecture02_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="lecture02_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="lecture02_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="lecture02_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="lecture02_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="lecture02_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="lecture02_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="lecture02_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+            let selectedAnnoteEl;
+            const selectorForAnnotation = ( cell, annotation) => {
+              let cellAttr = 'data-code-cell="' + cell + '"';
+              let lineAttr = 'data-code-annotation="' +  annotation + '"';
+              const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+              return selector;
+            }
+            const selectCodeLines = (annoteEl) => {
+              const doc = window.document;
+              const targetCell = annoteEl.getAttribute("data-target-cell");
+              const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+              const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+              const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+              const lineIds = lines.map((line) => {
+                return targetCell + "-" + line;
+              })
+              let top = null;
+              let height = null;
+              let parent = null;
+              if (lineIds.length > 0) {
+                  //compute the position of the single el (top and bottom and make a div)
+                  const el = window.document.getElementById(lineIds[0]);
+                  top = el.offsetTop;
+                  height = el.offsetHeight;
+                  parent = el.parentElement.parentElement;
+                if (lineIds.length > 1) {
+                  const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+                  const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+                  height = bottom - top;
+                }
+                if (top !== null && height !== null && parent !== null) {
+                  // cook up a div (if necessary) and position it 
+                  let div = window.document.getElementById("code-annotation-line-highlight");
+                  if (div === null) {
+                    div = window.document.createElement("div");
+                    div.setAttribute("id", "code-annotation-line-highlight");
+                    div.style.position = 'absolute';
+                    parent.appendChild(div);
+                  }
+                  div.style.top = top - 2 + "px";
+                  div.style.height = height + 4 + "px";
+                  div.style.left = 0;
+                  let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+                  if (gutterDiv === null) {
+                    gutterDiv = window.document.createElement("div");
+                    gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                    gutterDiv.style.position = 'absolute';
+                    const codeCell = window.document.getElementById(targetCell);
+                    const gutter = codeCell.querySelector('.code-annotation-gutter');
+                    gutter.appendChild(gutterDiv);
+                  }
+                  gutterDiv.style.top = top - 2 + "px";
+                  gutterDiv.style.height = height + 4 + "px";
+                }
+                selectedAnnoteEl = annoteEl;
+              }
+            };
+            const unselectCodeLines = () => {
+              const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+              elementsIds.forEach((elId) => {
+                const div = window.document.getElementById(elId);
+                if (div) {
+                  div.remove();
+                }
+              });
+              selectedAnnoteEl = undefined;
+            };
+              // Handle positioning of the toggle
+          window.addEventListener(
+            "resize",
+            throttle(() => {
+              elRect = undefined;
+              if (selectedAnnoteEl) {
+                selectCodeLines(selectedAnnoteEl);
+              }
+            }, 10)
+          );
+          function throttle(fn, ms) {
+          let throttle = false;
+          let timer;
+            return (...args) => {
+              if(!throttle) { // first call gets through
+                  fn.apply(this, args);
+                  throttle = true;
+              } else { // all the others get throttled
+                  if(timer) clearTimeout(timer); // cancel #2
+                  timer = setTimeout(() => {
+                    fn.apply(this, args);
+                    timer = throttle = false;
+                  }, ms);
+              }
+            };
+          }
+            const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+            for (let i=0; i<annoteTargets.length; i++) {
+              const annoteTarget = annoteTargets[i];
+              const targetCell = annoteTarget.getAttribute("data-target-cell");
+              const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+              const contentFn = () => {
+                const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+                if (content) {
+                  const tipContent = content.cloneNode(true);
+                  tipContent.classList.add("code-annotation-tip-content");
+                  return tipContent.outerHTML;
+                }
+              }
+              const config = {
+                allowHTML: true,
+                content: contentFn,
+                onShow: (instance) => {
+                  selectCodeLines(instance.reference);
+                  instance.reference.classList.add('code-annotation-active');
+                  window.tippy.hideAll();
+                },
+                onHide: (instance) => {
+                  unselectCodeLines();
+                  instance.reference.classList.remove('code-annotation-active');
+                },
+                maxWidth: 300,
+                delay: [50, 0],
+                duration: [200, 0],
+                offset: [5, 10],
+                arrow: true,
+                appendTo: function(el) {
+                  return el.parentElement.parentElement.parentElement;
+                },
+                interactive: true,
+                interactiveBorder: 10,
+                theme: 'light-border',
+                placement: 'right',
+                popperOptions: {
+                  modifiers: [
+                  {
+                    name: 'flip',
+                    options: {
+                      flipVariations: false, // true by default
+                      allowedAutoPlacements: ['right'],
+                      fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+                    },
+                  },
+                  {
+                    name: 'preventOverflow',
+                    options: {
+                      mainAxis: false,
+                      altAxis: false
+                    }
+                  }
+                  ]        
+                }      
+              };
+              window.tippy(annoteTarget, config); 
+            }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

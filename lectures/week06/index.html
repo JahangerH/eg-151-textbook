@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.30">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ben Clifford">
+<meta name="dcterms.date" content="2025-10-29">
+
+<title>6&nbsp; Interfacing to digital I/O with C – EG-151 Microcontrollers 2025-2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../lectures/week07/index.html" rel="next">
+<link href="../../lectures/week05/index.html" rel="prev">
+<link href="../../logo.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-662ae1889177880cb371f83234c0a158.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-de0027c6417e353ce4980619e2136061.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="application/json" class="js-hypothesis-config">
+{
+  "theme": "clean",
+  "openSidebar": false
+}
+</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week06/index.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">EG-151 Microcontrollers 2025-2026</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/JahangerH/eg-151-textbook/tree/main/website/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Course Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_aims.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Aims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_delivery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Delivery Method</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lectures/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontrollers Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers—Module Staff</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Microcontrollers and Microcontroller Architecture</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Introduction to Programming and Program Development</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Introduction to Programming with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week06/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lab_intro/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Laboratory Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Assessment of the Laboratory Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_work.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Laboratory Work in the Department of Electronic and Electrical Engineering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_instruments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Laboratory Instruments</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Laboratory Safety</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/experiment0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Experiment: to construct an oscillator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Simulation Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Questions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/construction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Construction Exercise - Continuity Tester</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/soldering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Safe Soldering</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontroller Programming Laboratory</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/get_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Experiment 1: Binary Counter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Experiment 2: Digital Input</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Experiment 3: Analogue to Digital Conversion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Experiment 4: Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Experiment 5: LCD Display Panel</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mini Projects</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/voltmeter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Voltmeter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/range_finder.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Ultrasonic Range Finder</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/clock_timer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Clock Time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/weather_station.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Weather Station</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/appendix_a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Other Data Representations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/programming_in_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Programming in C – from nothing to software</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-week05-intro" id="toc-sec-week05-intro" class="nav-link active" data-scroll-target="#sec-week05-intro">Introduction</a></li>
+  <li><a href="#lecture-topics" id="toc-lecture-topics" class="nav-link" data-scroll-target="#lecture-topics">Lecture topics</a></li>
+  <li><a href="#sec-wk5-arduino-ide" id="toc-sec-wk5-arduino-ide" class="nav-link" data-scroll-target="#sec-wk5-arduino-ide"><span class="header-section-number">6.1</span> How does I/O work using the Arduino IDE</a></li>
+  <li><a href="#digital-control" id="toc-digital-control" class="nav-link" data-scroll-target="#digital-control"><span class="header-section-number">6.1.1</span> Digital Control</a></li>
+  <li><a href="#sec-wk5-bitmasking" id="toc-sec-wk5-bitmasking" class="nav-link" data-scroll-target="#sec-wk5-bitmasking"><span class="header-section-number">6.2</span> Bitmasking</a></li>
+  <li><a href="#logical-bitwise-operators" id="toc-logical-bitwise-operators" class="nav-link" data-scroll-target="#logical-bitwise-operators"><span class="header-section-number">6.2.1</span> Logical Bitwise Operators</a></li>
+  <li><a href="#truth-tables-for-the-bitwise-logical-operators." id="toc-truth-tables-for-the-bitwise-logical-operators." class="nav-link" data-scroll-target="#truth-tables-for-the-bitwise-logical-operators."><span class="header-section-number">6.2.2</span> Truth tables for the bitwise logical operators.</a></li>
+  <li><a href="#masking-example" id="toc-masking-example" class="nav-link" data-scroll-target="#masking-example"><span class="header-section-number">6.2.3</span> Masking Example</a></li>
+  <li><a href="#sec-wk5-digital-io-example" id="toc-sec-wk5-digital-io-example" class="nav-link" data-scroll-target="#sec-wk5-digital-io-example"><span class="header-section-number">6.3</span> Digital I/O Example Program</a></li>
+  <li><a href="#example---breadboard" id="toc-example---breadboard" class="nav-link" data-scroll-target="#example---breadboard"><span class="header-section-number">6.3.1</span> Example - breadboard</a></li>
+  <li><a href="#example-code---statement-1" id="toc-example-code---statement-1" class="nav-link" data-scroll-target="#example-code---statement-1"><span class="header-section-number">6.3.2</span> Example Code - statement 1</a></li>
+  <li><a href="#sec-wk5-align-to-io-mem-map" id="toc-sec-wk5-align-to-io-mem-map" class="nav-link" data-scroll-target="#sec-wk5-align-to-io-mem-map"><span class="header-section-number">6.3.3</span> Example code - aligning port names to the I/O memory map</a></li>
+  <li><a href="#sec-wk5-main-c" id="toc-sec-wk5-main-c" class="nav-link" data-scroll-target="#sec-wk5-main-c"><span class="header-section-number">6.3.4</span> Example Code - the main function</a></li>
+  <li><a href="#example-code---set-data-direction-registers" id="toc-example-code---set-data-direction-registers" class="nav-link" data-scroll-target="#example-code---set-data-direction-registers"><span class="header-section-number">6.3.5</span> Example Code - Set data direction registers</a></li>
+  <li><a href="#example-code---set-pull-ups-for-inputs-and-initialize-outputs" id="toc-example-code---set-pull-ups-for-inputs-and-initialize-outputs" class="nav-link" data-scroll-target="#example-code---set-pull-ups-for-inputs-and-initialize-outputs"><span class="header-section-number">6.3.6</span> Example Code - Set pull-ups for inputs and initialize outputs</a></li>
+  <li><a href="#example-code---the-infinite-for-loop" id="toc-example-code---the-infinite-for-loop" class="nav-link" data-scroll-target="#example-code---the-infinite-for-loop"><span class="header-section-number">6.3.7</span> Example Code - The infinite for loop</a></li>
+  <li><a href="#example-code---reading-the-button" id="toc-example-code---reading-the-button" class="nav-link" data-scroll-target="#example-code---reading-the-button"><span class="header-section-number">6.3.8</span> Example Code - Reading the button</a></li>
+  <li><a href="#the-full-program" id="toc-the-full-program" class="nav-link" data-scroll-target="#the-full-program"><span class="header-section-number">6.3.9</span> The full program</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a>
+  <ul class="collapse">
+  <li><a href="#on-canvas" id="toc-on-canvas" class="nav-link" data-scroll-target="#on-canvas">On Canvas</a></li>
+  <li><a href="#any-questions" id="toc-any-questions" class="nav-link" data-scroll-target="#any-questions">Any Questions?</a></li>
+  <li><a href="#next-time" id="toc-next-time" class="nav-link" data-scroll-target="#next-time">Next time</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week06/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week06/index.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Ben Clifford </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 29, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="notes">
+<p><a href="../..\slides/lecture06.html">Presentation version</a> of these <a href="#sec-week05-intro">notes</a>.</p>
+</div>
+<p><img src="pictures/week05_chapter_heading.png" class="img-fluid" style="width:100.0%" alt="lecture cover image showing architecture, some gates and an Arduino nano board"></p>
+<section id="sec-week05-intro" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-week05-intro">Introduction</h2>
+<p>In this lecture we will be looking at two different approaches to reading and writing to ports on a microcontroller.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>The first approach discussed is using library files and predefined functions to control I/O ports as is conventionally done with the Arduino IDE.</li>
+<li>The second approach will look at accessing I/O bits directly using bit masks to select the desired pins.</li>
+</ul>
+</div>
+</section>
+<section id="lecture-topics" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="lecture-topics">Lecture topics</h2>
+<p>We begin by looking at digital inputs and outputs before moving onto to show a detailed example program implemented on the Atmel ATmega328 microcontroller.</p>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img src="pictures/week05_contents_image.png" class="img-fluid" style="width:100.0%" data-img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><p><a href="#sec-wk5-arduino-ide" class="quarto-xref"><span>Section 6.1</span></a>: <a href="#sec-wk5-arduino-ide:">How does I/O work using the Arduino IDE</a></p></li>
+<li><p><a href="#sec-wk5-bitmasking" class="quarto-xref"><span>Section 6.2</span></a>: <a href="#sec-wk5-bit-masking">Bitmasking</a></p></li>
+<li><p><a href="#sec-wk5-digital-io-example" class="quarto-xref"><span>Section 6.3</span></a>: <a href="#sec-wk5-digital-io-example">Digital I/O Example Program</a></p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="sec-wk5-arduino-ide" class="level2 center" data-background-image="pictures/arduino_nano_wallpaper.jpg" data-number="6.1">
+<h2 data-background-image="pictures/arduino_nano_wallpaper.jpg" data-number="6.1" class="anchored" data-anchor-id="sec-wk5-arduino-ide"><span class="header-section-number">6.1</span> How does I/O work using the Arduino IDE</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/arduino_nano_wallpaper.jpg" class="img-fluid" alt="Decorative section background - showing an Arduino nano microcontroller and an LED light stripi."></p>
+<p>Image source: <a href="https://www.flickr.com/photos/netlcom/36486445205/">This Photo</a> by Unknown Author is licensed under <a href="https://creativecommons.org/licenses/by-nc/3.0/">CC BY-NC</a></p>
+</div>
+<hr>
+<section id="digital-control" class="level3" data-number="6.1.1">
+<h3 data-number="6.1.1" class="anchored" data-anchor-id="digital-control"><span class="header-section-number">6.1.1</span> Digital Control</h3>
+<p>Imagine a circuit with LEDs connected to <code>D8</code> and <code>D9</code> of the Atmel ATmega328 microcontroller.</p>
+<div class="fragment">
+<p>Both LEDs will be wired to PORTD. How can the LED at <code>D9</code> be switched on without changing the state of the LED at <code>D8</code>?</p>
+</div>
+<div class="fragment">
+<p>The answer is to use the <em>pin</em> functions provided by the Arduino library. These functions allow programmers to gain direct access to particular pins</p>
+</div>
+<hr>
+<div class="notes">
+<p>Using the Arduino IDE, the programmer would first define the pin as an output and then use the <code>digitalWrite</code> function to write <code>HIGH</code> (integer <code>0x1</code>) or <code>LOW</code> (integer <code>0x0</code>) to the pin as required.</p>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">void</span> setup<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>  <span class="co">// put your setup code here, to run once:</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>  pinMode<span class="op">(</span><span class="dv">9</span><span class="op">,</span> OUTPUT<span class="op">);</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="op">}</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="dt">void</span> loop<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="co">// put your main code here, to run repeatedly:</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  digitalWrite<span class="op">(</span><span class="dv">9</span><span class="op">,</span> HIGH<span class="op">);</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>  delay<span class="op">(</span><span class="dv">1000</span><span class="op">);</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>  digitalWrite<span class="op">(</span><span class="dv">9</span><span class="op">,</span> LOW<span class="op">);</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="notes">
+<p>This is because for each “sketch” the Arduino IDE automatically includes a the include file <code>Arduino.h</code> and the library file <code>wiring_digital.c</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+</div>
+<hr>
+<section id="the-include-file-arduino.h" class="level4" data-number="6.1.1.1">
+<h4 data-number="6.1.1.1" class="anchored" data-anchor-id="the-include-file-arduino.h"><span class="header-section-number">6.1.1.1</span> The include file Arduino.h</h4>
+<div class="notes">
+<p>Amongst a number of other definitions<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, the <code>Arduino.h</code> file contains the declarations for the commonly used digital I/O functions: <code>pinMode</code>, <code>digitalWrite</code> and <code>digitalRead</code> (<a href="#lst-arduino-h-digital" class="quarto-xref">Listing&nbsp;<span>6.1</span></a>).</p>
+</div>
+<div id="lst-arduino-h-digital" class="c listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-arduino-h-digital-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;6.1: Declaration of the digital I/O functions for Ardunio hardware (lines 134–136 of Ardunio.h)
+</figcaption>
+<div aria-describedby="lst-arduino-h-digital-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">void</span> pinMode<span class="op">(</span><span class="dt">uint8_t</span> pin<span class="op">,</span> <span class="dt">uint8_t</span> mode<span class="op">);</span>     <span class="co">/* 1 */</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="dt">void</span> digitalWrite<span class="op">(</span><span class="dt">uint8_t</span> pin<span class="op">,</span> <span class="dt">uint8_t</span> val<span class="op">);</span> <span class="co">/* 2 */</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="dt">int</span> digitalRead<span class="op">(</span><span class="dt">uint8_t</span> pin<span class="op">);</span>                <span class="co">/* 3 */</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li><code>pinMode</code> takes two <em>unsigned</em> 8-bit integers as arguments and has return type of void (returns nothing).</li>
+<li><code>digitalWrite</code> takes two <em>unsigned</em> 8-bit integers as arguments and has return type of void (returns nothing).</li>
+<li><code>digitalRead</code> takes one <em>unsigned</em> 8-bit integer as an argument and returns a <em>signed</em> integer value.</li>
+</ol>
+</div>
+<div class="fragment">
+
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Remember the function declaration only tells the compiler about a function’s name, return type, and arguments.</p>
+<p>The actual definition of these functions lies elsewhere in the Arduino core library.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="the-library-file-wiring_digital.c" class="level4" data-number="6.1.1.2">
+<h4 data-number="6.1.1.2" class="anchored" data-anchor-id="the-library-file-wiring_digital.c"><span class="header-section-number">6.1.1.2</span> The library file wiring_digital.c</h4>
+<p>The <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring_digital.c">wiring_digital.c</a> file contains the definitions for the <code>pinMode</code>, <code>digitalWrite</code> and <code>digitalRead</code> functions.</p>
+<p>See <a href="#lst-wk5-pinMode" class="quarto-xref">Listing&nbsp;<span>6.2</span></a>, <a href="#lst-wk5-digital-write" class="quarto-xref">Listing&nbsp;<span>6.3</span></a> and <a href="#lst-wk5-digital-read" class="quarto-xref">Listing&nbsp;<span>6.4</span></a> for extracts from this library file.</p>
+<hr>
+<section id="pinmode" class="level5">
+<h5 class="anchored" data-anchor-id="pinmode"><code class="unnumbered">pinMode</code></h5>
+<div id="lst-wk5-pinMode" class="c listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk5-pinMode-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;6.2: Function <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring_digital.c#L29">pinMode</a> (wiring_digital.c line 29)
+</figcaption>
+<div aria-describedby="lst-wk5-pinMode-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">void</span> pinMode<span class="op">(</span><span class="dt">uint8_t</span> pin<span class="op">,</span> <span class="dt">uint8_t</span> mode<span class="op">)</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    <span class="dt">uint8_t</span> bit <span class="op">=</span> digitalPinToBitMask<span class="op">(</span>pin<span class="op">);</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    <span class="dt">uint8_t</span> port <span class="op">=</span> digitalPinToPort<span class="op">(</span>pin<span class="op">);</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    <span class="dt">volatile</span> <span class="dt">uint8_t</span> <span class="op">*</span>reg<span class="op">,</span> <span class="op">*</span>out<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a>    <span class="cf">if</span> <span class="op">(</span>port <span class="op">==</span> NOT_A_PIN<span class="op">)</span> <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a>    <span class="co">// JWS: can I let the optimizer do this?</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>    reg <span class="op">=</span> portModeRegister<span class="op">(</span>port<span class="op">);</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>    out <span class="op">=</span> portOutputRegister<span class="op">(</span>port<span class="op">);</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a></span>
+<span id="cb3-13"><a href="#cb3-13"></a>    <span class="cf">if</span> <span class="op">(</span>mode <span class="op">==</span> INPUT<span class="op">)</span> <span class="op">{</span> </span>
+<span id="cb3-14"><a href="#cb3-14"></a>        <span class="dt">uint8_t</span> oldSREG <span class="op">=</span> SREG<span class="op">;</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a>                cli<span class="op">();</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>        <span class="op">*</span>reg <span class="op">&amp;=</span> <span class="op">~</span>bit<span class="op">;</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a>        <span class="op">*</span>out <span class="op">&amp;=</span> <span class="op">~</span>bit<span class="op">;</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a>        SREG <span class="op">=</span> oldSREG<span class="op">;</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>mode <span class="op">==</span> INPUT_PULLUP<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a>        <span class="dt">uint8_t</span> oldSREG <span class="op">=</span> SREG<span class="op">;</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a>                cli<span class="op">();</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>        <span class="op">*</span>reg <span class="op">&amp;=</span> <span class="op">~</span>bit<span class="op">;</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a>        <span class="op">*</span>out <span class="op">|=</span> bit<span class="op">;</span></span>
+<span id="cb3-24"><a href="#cb3-24"></a>        SREG <span class="op">=</span> oldSREG<span class="op">;</span></span>
+<span id="cb3-25"><a href="#cb3-25"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a>        <span class="dt">uint8_t</span> oldSREG <span class="op">=</span> SREG<span class="op">;</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a>                cli<span class="op">();</span></span>
+<span id="cb3-28"><a href="#cb3-28"></a>        <span class="op">*</span>reg <span class="op">|=</span> bit<span class="op">;</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a>        SREG <span class="op">=</span> oldSREG<span class="op">;</span></span>
+<span id="cb3-30"><a href="#cb3-30"></a>    <span class="op">}</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="digitalwrite" class="level5">
+<h5 class="anchored" data-anchor-id="digitalwrite"><code class="unnumbered">digitalWrite</code></h5>
+<div id="lst-wk5-digital-write" class="c listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk5-digital-write-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;6.3: Function <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring_digital.c#L138">digitalWrite</a> (wiring_digital.c line 138)
+</figcaption>
+<div aria-describedby="lst-wk5-digital-write-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">void</span> digitalWrite<span class="op">(</span><span class="dt">uint8_t</span> pin<span class="op">,</span> <span class="dt">uint8_t</span> val<span class="op">)</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>    <span class="dt">uint8_t</span> timer <span class="op">=</span> digitalPinToTimer<span class="op">(</span>pin<span class="op">);</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>    <span class="dt">uint8_t</span> bit <span class="op">=</span> digitalPinToBitMask<span class="op">(</span>pin<span class="op">);</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>    <span class="dt">uint8_t</span> port <span class="op">=</span> digitalPinToPort<span class="op">(</span>pin<span class="op">);</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>    <span class="dt">volatile</span> <span class="dt">uint8_t</span> <span class="op">*</span>out<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a></span>
+<span id="cb4-8"><a href="#cb4-8"></a>    <span class="cf">if</span> <span class="op">(</span>port <span class="op">==</span> NOT_A_PIN<span class="op">)</span> <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a></span>
+<span id="cb4-10"><a href="#cb4-10"></a>    <span class="co">// If the pin that support PWM output, we need to turn it off</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>    <span class="co">// before doing a digital write.</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>    <span class="cf">if</span> <span class="op">(</span>timer <span class="op">!=</span> NOT_ON_TIMER<span class="op">)</span> turnOffPWM<span class="op">(</span>timer<span class="op">);</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a></span>
+<span id="cb4-14"><a href="#cb4-14"></a>    out <span class="op">=</span> portOutputRegister<span class="op">(</span>port<span class="op">);</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a></span>
+<span id="cb4-16"><a href="#cb4-16"></a>    <span class="dt">uint8_t</span> oldSREG <span class="op">=</span> SREG<span class="op">;</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>    cli<span class="op">();</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a></span>
+<span id="cb4-19"><a href="#cb4-19"></a>    <span class="cf">if</span> <span class="op">(</span>val <span class="op">==</span> LOW<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a>        <span class="op">*</span>out <span class="op">&amp;=</span> <span class="op">~</span>bit<span class="op">;</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a>        <span class="op">*</span>out <span class="op">|=</span> bit<span class="op">;</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a>    <span class="op">}</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a></span>
+<span id="cb4-25"><a href="#cb4-25"></a>    SREG <span class="op">=</span> oldSREG<span class="op">;</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="digitalread" class="level5">
+<h5 class="anchored" data-anchor-id="digitalread"><code class="unnumbered">digitalRead</code></h5>
+<div id="lst-wk5-digital-read" class="c listing quarto-float quarto-figure quarto-figure-left anchored">
+<figure class="quarto-float quarto-float-lst figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-lst" id="lst-wk5-digital-read-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Listing&nbsp;6.4: Function <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring_digital.c#L165">digitalRead</a> (wiring_digital.c line 165)
+</figcaption>
+<div aria-describedby="lst-wk5-digital-read-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">int</span> digitalRead<span class="op">(</span><span class="dt">uint8_t</span> pin<span class="op">)</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>    <span class="dt">uint8_t</span> timer <span class="op">=</span> digitalPinToTimer<span class="op">(</span>pin<span class="op">);</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="dt">uint8_t</span> bit <span class="op">=</span> digitalPinToBitMask<span class="op">(</span>pin<span class="op">);</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>    <span class="dt">uint8_t</span> port <span class="op">=</span> digitalPinToPort<span class="op">(</span>pin<span class="op">);</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a>    <span class="cf">if</span> <span class="op">(</span>port <span class="op">==</span> NOT_A_PIN<span class="op">)</span> <span class="cf">return</span> LOW<span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a>    <span class="co">// If the pin that support PWM output, we need to turn it off</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>    <span class="co">// before getting a digital reading.</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a>    <span class="cf">if</span> <span class="op">(</span>timer <span class="op">!=</span> NOT_ON_TIMER<span class="op">)</span> turnOffPWM<span class="op">(</span>timer<span class="op">);</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a></span>
+<span id="cb5-13"><a href="#cb5-13"></a>    <span class="cf">if</span> <span class="op">(*</span>portInputRegister<span class="op">(</span>port<span class="op">)</span> <span class="op">&amp;</span> bit<span class="op">)</span> <span class="cf">return</span> HIGH<span class="op">;</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>    <span class="cf">return</span> LOW<span class="op">;</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="advantages-and-disadvantages-of-using-the-arduino-ide" class="level4" data-number="6.1.1.3">
+<h4 data-number="6.1.1.3" class="anchored" data-anchor-id="advantages-and-disadvantages-of-using-the-arduino-ide"><span class="header-section-number">6.1.1.3</span> Advantages and disadvantages of using the Arduino IDE</h4>
+<div class="fragment">
+<section id="advantages" class="level5">
+<h5 class="anchored" data-anchor-id="advantages">Advantages</h5>
+<div class="incremental">
+<ul class="incremental">
+<li>Code is cross processor compatible.</li>
+<li>Code is easy to understand.</li>
+<li>Code controls a named pin on the board and is therefore easy to wire up.</li>
+<li>Changing code to use different pins is trivial.</li>
+</ul>
+</div>
+</section>
+</div>
+<hr>
+<section id="disadvantages" class="level5">
+<h5 class="anchored" data-anchor-id="disadvantages">Disadvantages</h5>
+<div class="incremental">
+<ul class="incremental">
+<li>Code is slower than accessing the ports directly.</li>
+<li>You cannot perform multiple bit reads or writes in a single action.</li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+<section id="sec-wk5-bitmasking" class="level2 center" data-background-image="pictures/arduino_nano_wallpaper.jpg" data-number="6.2">
+<h2 data-background-image="pictures/arduino_nano_wallpaper.jpg" data-number="6.2" class="anchored" data-anchor-id="sec-wk5-bitmasking"><span class="header-section-number">6.2</span> Bitmasking</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/arduino_nano_wallpaper.jpg" class="img-fluid" alt="Decorative section background - showing an Arduino nano microcontroller and an LED light strip"></p>
+<p>Image source: <a href="https://www.flickr.com/photos/netlcom/36486445205/">This Photo</a> by Unknown Author is licensed under <a href="https://creativecommons.org/licenses/by-nc/3.0/">CC BY-NC</a></p>
+</div>
+<hr>
+<section id="logical-bitwise-operators" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="logical-bitwise-operators"><span class="header-section-number">6.2.1</span> Logical Bitwise Operators</h3>
+<div class="notes">
+<p>As we saw in <a href="../..\lectures/week04/#sec-wk4-bitwise-ops">Bitwise logical operators in C</a> there is a group of operators within the C programming language which are referred to as <strong>bitwise logical operators</strong> (<a href="#tbl-bitwise-logic-operators" class="quarto-xref">Table&nbsp;<span>6.1</span></a>).</p>
+</div>
+<div class="fragment">
+<div id="tbl-bitwise-logic-operators" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-bitwise-logic-operators-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6.1: The bitwise logic operators
+</figcaption>
+<div aria-describedby="tbl-bitwise-logic-operators-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Logical Operation</th>
+<th>Operator</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">AND</td>
+<td><code>&amp;</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OR</td>
+<td><code>|</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">XOR</td>
+<td><code>^</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NOT</td>
+<td><code>~</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Shift right</td>
+<td><code>&gt;&gt;</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Shift left</td>
+<td><code>&lt;&lt;</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</div>
+<div class="notes">
+<p>These are important when working with inputs and outputs as they can be used to apply masks to ports (registers) to work with only specific bits<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
+</div>
+<hr>
+</section>
+<section id="truth-tables-for-the-bitwise-logical-operators." class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="truth-tables-for-the-bitwise-logical-operators."><span class="header-section-number">6.2.2</span> Truth tables for the bitwise logical operators.</h3>
+<p>The truth tables for bitwise logical operators are given for AND (<code>&amp;</code>) in <a href="#tbl-truth-table-AND" class="quarto-xref">Table&nbsp;<span>6.2</span></a>, OR (<code>|</code>) in <a href="#tbl-truth-table-OR" class="quarto-xref">Table&nbsp;<span>6.3</span></a>, XOR (<code>^</code>) in <a href="#tbl-truth-table-XOR" class="quarto-xref">Table&nbsp;<span>6.4</span></a>, and NOT (<code>~</code>) in <a href="#tbl-truth-table-NOT" class="quarto-xref">Table&nbsp;<span>6.5</span></a>.</p>
+<hr>
+<div id="tbl-truth-table-AND" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-truth-table-AND-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6.2: Bitwise AND
+</figcaption>
+<div aria-describedby="tbl-truth-table-AND-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>A</th>
+<th>B</th>
+<th style="text-align: center;"><code>A &amp; B</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<hr>
+<div id="tbl-truth-table-OR" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-truth-table-OR-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6.3: Bitwise OR
+</figcaption>
+<div aria-describedby="tbl-truth-table-OR-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>A</th>
+<th>B</th>
+<th style="text-align: center;"><code>A | B</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<hr>
+<div id="tbl-truth-table-XOR" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-truth-table-XOR-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6.4: Bitwise XOR
+</figcaption>
+<div aria-describedby="tbl-truth-table-XOR-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>A</th>
+<th>B</th>
+<th style="text-align: center;"><code>A ^ B</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td style="text-align: center;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<hr>
+<div id="tbl-truth-table-NOT" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-truth-table-NOT-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6.5: Bitwise XOR
+</figcaption>
+<div aria-describedby="tbl-truth-table-NOT-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>A</th>
+<th style="text-align: center;"><code>~A</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td style="text-align: center;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="masking-example" class="level3" data-number="6.2.3">
+<h3 data-number="6.2.3" class="anchored" data-anchor-id="masking-example"><span class="header-section-number">6.2.3</span> Masking Example</h3>
+<p>Consider an example where you want to know if bits 0 and 7 are both on / high / logic 1 but you don’t care about any other bits.</p>
+<div class="notes">
+<p>Programmatically, this would be done using an <em>if</em> statement with a bitwise <em>and</em> operator:</p>
+</div>
+<div class="fragment">
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a>input <span class="op">=</span> <span class="bn">0b10100011</span><span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="cf">if</span> <span class="op">(</span>input <span class="op">&amp;</span> <span class="bn">0b10000001</span> <span class="op">==</span> <span class="bn">0b10000001</span> <span class="op">)</span> </span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="op">{</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>    <span class="co">// do something;</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p>If bits 0 and 7 are <code>HIGH</code></p>
+<p><span class="math display">\[
+\begin{array}{lcrr}
+\mathrm{Bit\ No.}  &amp; &amp; 7654 &amp; 3210 \\\hline
+\mathrm{Input}  &amp;    &amp; \mathbf{1}010 &amp; 001\mathbf{1} \\
+\mathrm{Mask}   &amp; \&amp; &amp; 1000 &amp; 0001 \\\hline
+\mathrm{Result} &amp;    &amp; 1000 &amp; 0001
+\end{array}
+\]</span></p>
+<hr>
+<p>If bits 0 and 7 are <code>LOW</code></p>
+<p><span class="math display">\[
+\begin{array}{lcrr}
+\mathrm{Bit\ No.} &amp; &amp; 7654 &amp; 3210 \\\hline
+\mathrm{Input}  &amp;    &amp; \mathbf{0}010 &amp; 001\mathbf{0} \\
+\mathrm{Mask}   &amp; \&amp; &amp; 1000 &amp; 0001 \\\hline
+\mathrm{Result} &amp;    &amp; 0000 &amp; 0000
+\end{array}
+\]</span></p>
+<div class="notes">
+<p>In both examples, it doesn’t matter what bits 1-6 are, they don’t affect the result.</p>
+</div>
+<hr>
+<section id="let-us-revisit-the-task" class="level4" data-number="6.2.3.1">
+<h4 data-number="6.2.3.1" class="anchored" data-anchor-id="let-us-revisit-the-task"><span class="header-section-number">6.2.3.1</span> Let us revisit the task</h4>
+<p>Imagine a circuit with LED’s connected to D8 and D9 of the Atmel ATmega328 microcontroller.</p>
+<div id="fig-wk5-arduino-pins-d8-d9" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Schematic of Arduino nano board identifying pins D8 and D9.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk5-arduino-pins-d8-d9-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/pins_8_and_9.png" class="img-fluid figure-img" alt="Schematic of Arduino nano board identifying pins D8 and D9.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk5-arduino-pins-d8-d9-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.1: Schematic of Arduino nano board identifying pins D8 and D9<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.
+</figcaption>
+</figure>
+</div>
+<hr>
+<p>How can the LED at <code>D9</code> be switched on without changing the state of the LED at <code>D8</code>?</p>
+<hr>
+<section id="atmel-atmega328-i0-architecture-recap" class="level5">
+<h5 class="anchored" data-anchor-id="atmel-atmega328-i0-architecture-recap">Atmel ATmega328 I/0 Architecture Recap</h5>
+<p><img src="pictures/io_map.png" class="img-fluid" alt="Arduino ATmega328 Memory map for I/O."></p>
+<div class="notes">
+<p>Recall:</p>
+<p>Three I/O memory address locations are allocated for each port, one each for the <em>Data Register</em> – <code>PORTx</code>, <em>Data Direction Register</em> – <code>DDRx</code>, and the <em>Port Input Pins</em> – <code>PINx</code>, where <code>x</code> refers to the numbering letter for the port (<code>B</code>, <code>C</code> or <code>D</code> in our case).</p>
+</div>
+<hr>
+</section>
+</section>
+<section id="solution-with-bit-masking" class="level4" data-number="6.2.3.2">
+<h4 data-number="6.2.3.2" class="anchored" data-anchor-id="solution-with-bit-masking"><span class="header-section-number">6.2.3.2</span> Solution with bit masking</h4>
+<p>Imagine a circuit with LED’s connected to D8 and D9 of the Atmel ATmega328 microcontroller.</p>
+<div class="fragment">
+<p>How can the LED at <code>D9</code> be switched on without changing the state of the LED at <code>D8</code>?</p>
+</div>
+<div class="incremental">
+<ul class="incremental">
+<li><code>D8 = PortB0</code></li>
+<li><code>D9 = PortB1</code></li>
+</ul>
+</div>
+<hr>
+<p>Let us assume Port B currently reads <span class="math inline">\(1010\,0001\)</span> and we execute<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a>PORTB <span class="op">=</span> PORTB <span class="op">|</span> <span class="bn">0b00000010</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><span class="math display">\[
+\begin{array}{lrrl}
+  &amp; 1010 &amp; 0001 &amp; \mathrm{Port\ B}\\
+| &amp; 0000 &amp; 0010 &amp; \mathrm{Bitmask\ for\ D9} \\ \hline
+  &amp; 1010 &amp; 00\mathbf{1}1 &amp; \mathrm{D9\ is\ on}
+\end{array}
+\]</span></p>
+<hr>
+<p>To turn the LED on <code>D9</code> off, we use the logical AND.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a>PORTB <span class="op">=</span> PORTB <span class="op">&amp;</span> <span class="bn">0xb11111101</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><span class="math display">\[
+\begin{array}{lrrl}
+  &amp; 1010 &amp; 0001 &amp; \mathrm{Port\ B}\\
+\&amp; &amp; 1111 &amp; 1101 &amp; \mathrm{Bitmask\ for\ D9} \\ \hline
+  &amp; 1010 &amp; 00\mathbf{0}1 &amp; \mathrm{D9\ is\ off}
+\end{array}
+\]</span></p>
+<hr>
+</section>
+</section>
+<section id="sec-wk5-digital-io-example" class="level2 center" data-background-image="pictures/breadboard_wallpaper.jpg" data-number="6.3">
+<h2 data-background-image="pictures/breadboard_wallpaper.jpg" data-number="6.3" class="anchored" data-anchor-id="sec-wk5-digital-io-example"><span class="header-section-number">6.3</span> Digital I/O Example Program</h2>
+</section>
+<div class="notes">
+<p><img src="pictures/breadboard_wallpaper.jpg" class="img-fluid" alt="Decorative background image showing the circuit discussed in the example."></p>
+</div>
+<hr>
+<section id="example---breadboard" class="level3" data-number="6.3.1">
+<h3 data-number="6.3.1" class="anchored" data-anchor-id="example---breadboard"><span class="header-section-number">6.3.1</span> Example - breadboard</h3>
+<div class="notes">
+<p>Consider the Ardunino nano circuit shown in <a href="#fig-wk5-example-circuit" class="quarto-xref">Figure&nbsp;<span>6.2</span></a>. The left and right push buttons are connected to the digital inputs <code>D3</code> and <code>D2</code> on the Arduino nano board. These correspond with Port D Bits 3 and 2 on the Atmega328 microcontroller.</p>
+</div>
+<div id="fig-wk5-example-circuit" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A photograph of the example circuit which has two buttons and two LEDs.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk5-example-circuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/breadboard.jpg" class="img-fluid figure-img" alt="A photograph of the example circuit which has two buttons and two LEDs.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk5-example-circuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.2: A photograph of the example circuit which has two buttons and two LEDs. When the left button is pressed, the red LED lights up. When the right button is pressed the green LED lights up.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="desired-operation" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="desired-operation">Desired operation</h5>
+<div class="incremental">
+<ul class="incremental">
+<li>When the left push button is pressed, the red LED (Port B Bit 1) is illuminated.</li>
+<li>When the right push button is pressed, the green LED (Port B Bit 0) illuminated.</li>
+<li>The buttons are digital inputs with pull-up resistors (so <em>active low</em>) and are connected to pins 1 and 2 of port D respectively.</li>
+</ul>
+</div>
+<div class="fragment">
+<p>What does the code for this look like without using the predefined Arduino functions <code>pinMode</code> and <code>digitalRead</code>?</p>
+</div>
+<hr>
+</section>
+</section>
+<section id="example-code---statement-1" class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" class="anchored" data-anchor-id="example-code---statement-1"><span class="header-section-number">6.3.2</span> Example Code - statement 1</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#include </span><span class="im">&lt;stdint.h&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="notes">
+<p><code>#include</code> is a <strong>preprocessor directive</strong> used to <strong>include header files</strong> which contain <strong>definitions and declarations</strong> of existing and frequently used functions.</p>
+<p>The <strong>&lt;&gt;</strong> variant is used for <strong>system header files</strong> that are included as part of the C language compiler.</p>
+<p>The <em>stdint.h</em> header file provides a set of <strong>type definitions (typedefs)</strong> that specify exact-width integer types, together with the defined minimum and maximum allowable values for each type, using macros. The types are tabulated in <a href="#tbl-integer-types" class="quarto-xref">Table&nbsp;<span>6.6</span></a>.</p>
+</div>
+<hr>
+<section id="data-types-defined-in-stdint.h." class="level4" data-number="6.3.2.1">
+<h4 data-number="6.3.2.1" class="anchored" data-anchor-id="data-types-defined-in-stdint.h."><span class="header-section-number">6.3.2.1</span> Data types defined in <code>&lt;stdint.h&gt;</code>.</h4>
+<div id="tbl-integer-types" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-integer-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6.6: Specific integral type limits
+</figcaption>
+<div aria-describedby="tbl-integer-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Specifier</th>
+<th style="text-align: left;">Signing</th>
+<th>Bits</th>
+<th>Bytes</th>
+<th style="text-align: left;">Minimum Value</th>
+<th style="text-align: left;">Maximum Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>int8_t</code></td>
+<td style="text-align: left;">Signed</td>
+<td>8</td>
+<td>1</td>
+<td style="text-align: left;"><span class="math inline">\(-2^7\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(2^7-1\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>uint8_t</code></td>
+<td style="text-align: left;">Unsigned</td>
+<td>8</td>
+<td>1</td>
+<td style="text-align: left;"><span class="math inline">\(0\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(2^8 - 1\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>int16_t</code></td>
+<td style="text-align: left;">Signed</td>
+<td>16</td>
+<td>2</td>
+<td style="text-align: left;"><span class="math inline">\(-2^{16}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(2^{16} - 1\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>uint16_t</code></td>
+<td style="text-align: left;">Unsigned</td>
+<td>16</td>
+<td>2</td>
+<td style="text-align: left;"><span class="math inline">\(0\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(2^{16} - 1\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>int32_t</code></td>
+<td style="text-align: left;">Signed</td>
+<td>32</td>
+<td>4</td>
+<td style="text-align: left;"><span class="math inline">\(-2^{31}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(2^{31} - 1\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>uint32_t</code></td>
+<td style="text-align: left;">Unsigned</td>
+<td>32</td>
+<td>4</td>
+<td style="text-align: left;"><span class="math inline">\(0\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(2^{32} - 1\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>int64_t</code></td>
+<td style="text-align: left;">Signed</td>
+<td>64</td>
+<td>8</td>
+<td style="text-align: left;"><span class="math inline">\(-2^{63}\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(2^{63} - 1\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>uint64_t</code></td>
+<td style="text-align: left;">Unsigned</td>
+<td>64</td>
+<td>8</td>
+<td style="text-align: left;"><span class="math inline">\(0\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(2^{64} - 1\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 38%">
+<col style="width: 44%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>bits</th>
+<th>signed range</th>
+<th>unsigned range</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>8</td>
+<td><span class="math inline">\(-128 \rightarrow 127\)</span></td>
+<td><span class="math inline">\(0 \rightarrow 255\)</span></td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td><span class="math inline">\(-32,768 32,767\)</span></td>
+<td><span class="math inline">\(0 \rightarrow 65,535\)</span></td>
+</tr>
+<tr class="odd">
+<td>32</td>
+<td><span class="math inline">\(-2,147,483,648 \rightarrow 2,147,483,647\)</span></td>
+<td><span class="math inline">\(0\rightarrow 4,294,967,295\)</span></td>
+</tr>
+<tr class="even">
+<td>64</td>
+<td><span class="math inline">\(-9,223,372,036,854.775,808\rightarrow 9,223,372,036,854.775,807\)</span></td>
+<td><span class="math inline">\(0\rightarrow 18,446,744,073,709,551,615\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="sec-wk5-align-to-io-mem-map" class="level3" data-number="6.3.3">
+<h3 data-number="6.3.3" class="anchored" data-anchor-id="sec-wk5-align-to-io-mem-map"><span class="header-section-number">6.3.3</span> Example code - aligning port names to the I/O memory map</h3>
+<p>The I/O memory map is shown in <a href="#fig-wk5-io-mem-map" class="quarto-xref">Figure&nbsp;<span>6.3</span></a>.</p>
+<div id="fig-wk5-io-mem-map" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Memory map for the I/O ports in the Atmel ATmega328.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk5-io-mem-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/io_mem_map.png" class="img-fluid figure-img" alt="Memory map for the I/O ports in the Atmel ATmega328.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk5-io-mem-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.3: Memory map for the I/O ports in the Atmel ATmega328
+</figcaption>
+</figure>
+</div>
+<hr>
+<p>We need to map a port to the address used by the port. We use <code>#define</code> for this:</p>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>Preprocessor directive: <code>#define</code></li>
+<li>Convenient name that the processor can use in code: <code>PORTD</code></li>
+<li>The size is an 8 bit unsigned integer: <code>uint8_t</code></li>
+<li>Memory address of the specific register from the datasheet (reproduced here as <a href="#fig-wk5-io-mem-map" class="quarto-xref">Figure&nbsp;<span>6.3</span></a>): <code>0x2B</code>.</li>
+</ol>
+</div>
+<div class="fragment">
+<p>The full command is<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="pp">#define PORTD</span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x2B</span><span class="op">))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p>The full set up which sets up the ports, data direction registers and pins is:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">//I/O and ADC Register definitions taken from datasheet</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="pp">#define PORTD </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x2B</span><span class="op">))</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="pp">#define DDRD  </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x2A</span><span class="op">))</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="pp">#define PIND  </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x29</span><span class="op">))</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="pp">#define PORTB </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x25</span><span class="op">))</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="pp">#define DDRB  </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x24</span><span class="op">))</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="pp">#define PINB  </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint8_t</span><span class="pp"> </span><span class="op">*)(</span><span class="bn">0x23</span><span class="op">))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="sec-wk5-main-c" class="level3" data-number="6.3.4">
+<h3 data-number="6.3.4" class="anchored" data-anchor-id="sec-wk5-main-c"><span class="header-section-number">6.3.4</span> Example Code - the main function</h3>
+<p>This is the starting point for any program<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">int</span> main <span class="op">(</span><span class="dt">void</span><span class="op">)</span> </span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a>    <span class="co">// code</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="notes">
+<p>The return type is declared as integer meaning the function returns some integer even ‘0’ at the end of the program execution. By convention, a return of ‘0’ represents the successful execution of a program.</p>
+</div>
+<hr>
+</section>
+<section id="example-code---set-data-direction-registers" class="level3" data-number="6.3.5">
+<h3 data-number="6.3.5" class="anchored" data-anchor-id="example-code---set-data-direction-registers"><span class="header-section-number">6.3.5</span> Example Code - Set data direction registers</h3>
+<div id="fig-wk5-set-dd-registers" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Video illustrating the setting up of the data direction registers.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk5-set-dd-registers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/dd.png" class="img-fluid figure-img" alt="Video illustrating the setting up of the data direction registers.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk5-set-dd-registers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.4: Video illustrating the setting up of the data direction registers.
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="example-code---set-pull-ups-for-inputs-and-initialize-outputs" class="level3" data-number="6.3.6">
+<h3 data-number="6.3.6" class="anchored" data-anchor-id="example-code---set-pull-ups-for-inputs-and-initialize-outputs"><span class="header-section-number">6.3.6</span> Example Code - Set pull-ups for inputs and initialize outputs</h3>
+<div id="fig-wk5-set-pull-ups" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Video illustrating the setting of the port D for input and resetting port B.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk5-set-pull-ups-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/pullup.png" class="img-fluid figure-img" alt="Video illustrating the setting of the port D for input and resetting port B.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk5-set-pull-ups-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.5: Video illustrating the setting of the port D for input and resetting port B
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="example-code---the-infinite-for-loop" class="level3" data-number="6.3.7">
+<h3 data-number="6.3.7" class="anchored" data-anchor-id="example-code---the-infinite-for-loop"><span class="header-section-number">6.3.7</span> Example Code - The infinite for loop</h3>
+<p>The <strong>infinite <em>for</em> loop</strong> is quite a common idiom in C:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="cf">for</span> <span class="op">(;;;)</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="op">{</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a>   <span class="co">// code that repeats forever</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Any code that is placed inside the for loop will run forever.</p>
+<div class="notes">
+<p>The Arduino IDE does the same thing behind the scenes - <code>void loop</code> is actually a function that is repeatedly called inside an infinite for loop<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="op">{</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>  setup<span class="op">();</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>    </span>
+<span id="cb14-5"><a href="#cb14-5"></a>  <span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>      loop<span class="op">();</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>  <span class="op">}</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a>        </span>
+<span id="cb14-9"><a href="#cb14-9"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+</section>
+<section id="example-code---reading-the-button" class="level3" data-number="6.3.8">
+<h3 data-number="6.3.8" class="anchored" data-anchor-id="example-code---reading-the-button"><span class="header-section-number">6.3.8</span> Example Code - Reading the button</h3>
+<div class="notes">
+<p>This <em>if</em> statement is at the heart of the program. Each time though the loop it tests the condition of bit 2 in the <code>PIND</code> register (<code>D3</code>). The pin linked to this bit has been configured as an input with the pull-up resistor enabled and it has been wired to the left button. This means the default state is 1 (<code>HIGH</code>) and pressing the button will ground the input to 0 (<code>LOW</code>).</p>
+<p>We then use a bit mask to query bit 2 only, and if the result is zero, we turn on bit 1 of <code>PORTB</code> - which illuminates the red LED.</p>
+</div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a><span class="cf">if</span> <span class="op">((</span>PIND <span class="op">&amp;</span> <span class="bn">0b00000100</span><span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="op">{</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a>    PORTB <span class="op">=</span> <span class="bn">0b00000001</span><span class="op">;</span> <span class="co">// Sets port B, bit 0 to logic 1/high which switches the LED connected to D8 on.</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+<div id="fig-wk5-interogating-the-buttons" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Video showing how the state of the buttons is interogated using bit masks.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wk5-interogating-the-buttons-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/buttons.png" class="img-fluid figure-img" alt="Video showing how the state of the buttons is interogated using bit masks.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-wk5-interogating-the-buttons-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.6: Video showing how the state of the buttons is interogated using bit masks.
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="exercise" class="level5 unnumbered">
+<h5 class="unnumbered anchored" data-anchor-id="exercise">Exercise</h5>
+<div class="fragment">
+<p>Similar code is used to test the left button on <code>PORTD</code> pin 3 to illuminate the green LED on <code>PORTB</code> pin 1.</p>
+<p>See if you can write this code.</p>
+</div>
+<div class="fragment">
+<p><strong>Solution</strong></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a><span class="cf">if</span> <span class="op">((</span>PIND <span class="op">&amp;</span> <span class="bn">0b00001000</span><span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="op">{</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>    PORTB <span class="op">=</span> <span class="bn">0b00000010</span><span class="op">;</span> <span class="co">// Sets port B, bit 1 to logic 1/high which switches the LED connected to D9 on.</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+</section>
+</section>
+<section id="the-full-program" class="level3" data-number="6.3.9">
+<h3 data-number="6.3.9" class="anchored" data-anchor-id="the-full-program"><span class="header-section-number">6.3.9</span> The full program</h3>
+<p>The full program is available as a GitHub gist: <a href="https://gist.github.com/cpjobling/07585093f8eafe69a4eeff1186110883">main.c</a>. You will need a fully featured IDE, such as <a href="https://www.microchip.com/en-us/tools-resources/develop/microchip-studio">Microchip Studio</a>, to compile and upload the code to the Ardino nano board.</p>
+</section>
+<div class="incremental">
+<section id="simulation" class="level3" data-number="6.3.10">
+<h3 data-number="6.3.10" class="anchored" data-anchor-id="simulation"><span class="header-section-number">6.3.10</span> Simulation</h3>
+<blockquote class="blockquote">
+<p>Wokwi is an online Electronics simulator. You can use it to simulate Arduino, ESP32, STM32, and many other popular boards, parts and sensors. – <a href="https://docs.wokwi.com/?utm_source=wokwi">Welcome to Wokwi!</a></p>
+</blockquote>
+<p>My 2024-2025 EG-353 Individual Engineering Project student, Yousef Alsayegh, has created Wokwi simulations of Ben Clifford’s demonstration programs. Here is the simulation of this week’s simulation <a href="https://wokwi.com/projects/413182046836258817">Week 5: Interfacing to digital I/O with C</a>. You can run the simulation and play with the code.</p>
+</section>
+<section id="exercise-1" class="level3" data-number="6.3.11">
+<h3 data-number="6.3.11" class="anchored" data-anchor-id="exercise-1"><span class="header-section-number">6.3.11</span> Exercise</h3>
+<p>Draw a flow-chart for the full program. Use subprocesses for the <code>init()</code> and <code>loop()</code> blocks.</p>
+</section>
+</div>
+<section id="summary" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="summary">Summary</h2>
+<p>In this section we have:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Begun to look at I/O operations on the Atmel Atmega 328 microcontroller including the registers and checking/setting states based on flow control statements.</li>
+<li>Introduced bit masking to read/write individual bits of a register without affecting the remaining bits.</li>
+<li>Looked at a detailed example program which uses the state of two pushbuttons to set whether an LED is illuminated or not.</li>
+</ul>
+</div>
+<hr>
+<section id="on-canvas" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="on-canvas">On Canvas</h3>
+<p>This week on the <a href="https://canvas.swansea.ac.uk/courses/52902/pages/direct-port-manipulation-in-c">canvas course page</a>, you will find the sample programs from today’s lecture.</p>
+<p>Look through these and ensure you are confident in how they work and how the masks are defined.</p>
+<p>There is also a short quiz to test your knowledge on these topics.</p>
+<hr>
+</section>
+<section id="any-questions" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="any-questions">Any Questions?</h3>
+<p>Please use the <a href="https://canvas.swansea.ac.uk/courses/52902/discussion_topics/435656">Course Question Board</a> on Canvas or take advantage of the lecturers’ office hours.</p>
+<hr>
+</section>
+<section id="next-time" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="next-time">Next time</h3>
+<ul>
+<li><a href="../..\lectures/week06">Interfacing to Analogue I/O with C</a></li>
+</ul>
+
+
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p><code>Arduino.h</code> and <code>wiring_digital.c</code> are hidden away in the installation folders for the Arduino IDE. The examples versions shown here are taken from the GitHub repository <a href="https://github.com/arduino/ArduinoCore-avr">github.com/arduino/ArduinoCore-avr</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>To see the full contents see: <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Arduino.h">Arduino.h</a> on GitHub.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>In the case of I/O specific bits refers to individual I/O pins.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Pins <code>D8</code> and <code>D9</code> are respectively bits 0 and 1 of Port B.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Idiomatic C often uses the shortcut <code>PORTB |= 0x00000010;</code> There are many such <em>assignment operators</em> in C. For example: <code>+=</code>, <code>-=</code>, <code>&amp;=</code> etc. They all mean the same thing: <code>var = var op argument</code>. Internally, the C compiler treats both forms the same so their use is a matter of style. The full version is easier to read and understand. The shortcut is quicker to type, but arguably less easy to read and understand.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>In this definition we use the qualifier volatile to inform the compiler that the variable value can be changed any time without any task given by the source code. Without this qualifier, depending on the optimisation level of the compiler this may result in code that doesn’t work as it doesn’t know the value can be changed by external sources. The asterisk symbol is used to denote a pointer, for now you do not need to know what this explicitly mean but in short a pointer is a variable whose value is the address of another variable, i.e., direct address of the memory location rather than a value.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>The actual code is slightly different and if you are interested you can access it here: <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/main.cpp">main.cpp</a>. Note that the sketch function <code>setup()</code> is called once first, then <code>loop()</code> is called each time through the infinite loop.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>The actual code is slightly different and if you are interested you can access it here: <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/main.cpp">main.cpp</a>. Note that the sketch function <code>setup()</code> is called once first, then <code>loop()</code> is called each time through the infinite loop.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+<p>Copyright © 2021-2025 Swansea University. All rights reserved.</p></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jahangerh\.github\.io\/eg-151-textbook");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/week05/index.html" class="pagination-link" aria-label="Introduction to Programming with C">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Introduction to Programming with C</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../lectures/week07/index.html" class="pagination-link" aria-label="Interfacing to Analogue I/O with C">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week06/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

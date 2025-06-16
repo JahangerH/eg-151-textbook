@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.30">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ben Clifford">
+<meta name="dcterms.date" content="2025-10-01">
+
+<title>2&nbsp; Introduction to Data Representation – EG-151 Microcontrollers 2025-2026</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../lectures/week03/index.html" rel="next">
+<link href="../../lectures/week01/index.html" rel="prev">
+<link href="../../logo.png" rel="icon" type="image/png">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-662ae1889177880cb371f83234c0a158.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-de0027c6417e353ce4980619e2136061.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="application/json" class="js-hypothesis-config">
+{
+  "theme": "clean",
+  "openSidebar": false
+}
+</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week02/index.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">EG-151 Microcontrollers 2025-2026</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/JahangerH/eg-151-textbook/tree/main/website/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Course Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_aims.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Aims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../intro/course_delivery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Delivery Method</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lectures/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontrollers Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EG-151 Microcontrollers—Module Staff</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Microcontrollers and Microcontroller Architecture</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week02/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Introduction to Programming and Program Development</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Introduction to Programming with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Interfacing to digital I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Interfacing to Analogue I/O with C</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction to Assembly Language</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Microcontroller Architecture – Program Operation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lectures/week10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Addressing Modes</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../lab_intro/intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Laboratory Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Assessment of the Laboratory Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_work.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Laboratory Work in the Department of Electronic and Electrical Engineering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_instruments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Laboratory Instruments</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/lab_safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Laboratory Safety</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/experiment0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Experiment: to construct an oscillator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Simulation Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Questions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/construction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Construction Exercise - Continuity Tester</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../lab_intro/soldering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Safe Soldering</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Microcontroller Programming Laboratory</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/get_started/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Experiment 1: Binary Counter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Experiment 2: Digital Input</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Experiment 3: Analogue to Digital Conversion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Experiment 4: Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../labs/lab05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Experiment 5: LCD Display Panel</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mini Projects</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/voltmeter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Voltmeter</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/range_finder.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Ultrasonic Range Finder</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/clock_timer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Clock Time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../projects/weather_station.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Weather Station</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/appendix_a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Other Data Representations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../appendix/programming_in_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Programming in C – from nothing to software</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#week2:introduction" id="toc-week2:introduction" class="nav-link active" data-scroll-target="#week2\:introduction">Introduction</a></li>
+  <li><a href="#week2:toc" id="toc-week2:toc" class="nav-link" data-scroll-target="#week2\:toc">Topics Covered in this Lecture</a></li>
+  <li><a href="#sec-week2:intro2dr" id="toc-sec-week2:intro2dr" class="nav-link" data-scroll-target="#sec-week2\:intro2dr"><span class="header-section-number">2.1</span> Data Representations</a></li>
+  <li><a href="#how-is-data-stored-digitally" id="toc-how-is-data-stored-digitally" class="nav-link" data-scroll-target="#how-is-data-stored-digitally"><span class="header-section-number">2.1.1</span> How is Data stored Digitally?</a></li>
+  <li><a href="#terminology" id="toc-terminology" class="nav-link" data-scroll-target="#terminology"><span class="header-section-number">2.1.2</span> Terminology</a></li>
+  <li><a href="#sec-week2:numbering" id="toc-sec-week2:numbering" class="nav-link" data-scroll-target="#sec-week2\:numbering"><span class="header-section-number">2.2</span> Numbering Systems and Base Conversion</a></li>
+  <li><a href="#decimal-number-representation" id="toc-decimal-number-representation" class="nav-link" data-scroll-target="#decimal-number-representation"><span class="header-section-number">2.2.1</span> Decimal Number Representation</a></li>
+  <li><a href="#what-about-other-bases" id="toc-what-about-other-bases" class="nav-link" data-scroll-target="#what-about-other-bases"><span class="header-section-number">2.2.2</span> What About Other Bases?</a></li>
+  <li><a href="#decimal-number-conversion" id="toc-decimal-number-conversion" class="nav-link" data-scroll-target="#decimal-number-conversion"><span class="header-section-number">2.2.3</span> Decimal Number Conversion</a></li>
+  <li><a href="#tricks-and-tips" id="toc-tricks-and-tips" class="nav-link" data-scroll-target="#tricks-and-tips"><span class="header-section-number">2.2.4</span> Tricks and Tips</a></li>
+  <li><a href="#summary-of-number-systems" id="toc-summary-of-number-systems" class="nav-link" data-scroll-target="#summary-of-number-systems"><span class="header-section-number">2.2.5</span> Summary of number systems</a></li>
+  <li><a href="#other-binary-encodings" id="toc-other-binary-encodings" class="nav-link" data-scroll-target="#other-binary-encodings"><span class="header-section-number">2.2.6</span> Other binary encodings</a></li>
+  <li><a href="#sec-week2:addition_and_subtraction" id="toc-sec-week2:addition_and_subtraction" class="nav-link" data-scroll-target="#sec-week2\:addition_and_subtraction"><span class="header-section-number">2.3</span> Binary Addition and Subtraction</a></li>
+  <li><a href="#binary-arithmetic" id="toc-binary-arithmetic" class="nav-link" data-scroll-target="#binary-arithmetic"><span class="header-section-number">2.3.1</span> Binary Arithmetic</a></li>
+  <li><a href="#sec-week2:sr" id="toc-sec-week2:sr" class="nav-link" data-scroll-target="#sec-week2\:sr"><span class="header-section-number">2.4</span> Introduction to the Status Register</a>
+  <ul class="collapse">
+  <li><a href="#status-register-flags-associated-with-binary-addition-and-subtraction" id="toc-status-register-flags-associated-with-binary-addition-and-subtraction" class="nav-link" data-scroll-target="#status-register-flags-associated-with-binary-addition-and-subtraction"><span class="header-section-number">2.4.1</span> Status register flags associated with binary addition and subtraction</a></li>
+  <li><a href="#binary-arithmetic-example-14" id="toc-binary-arithmetic-example-14" class="nav-link" data-scroll-target="#binary-arithmetic-example-14"><span class="header-section-number">2.4.2</span> Binary Arithmetic Example 14</a></li>
+  </ul></li>
+  <li><a href="#other-data-representations" id="toc-other-data-representations" class="nav-link" data-scroll-target="#other-data-representations"><span class="header-section-number">2.5</span> Other Data Representations</a>
+  <ul class="collapse">
+  <li><a href="#next" id="toc-next" class="nav-link" data-scroll-target="#next">Next</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week02/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../lectures/index.html">Microcontrollers Lectures</a></li><li class="breadcrumb-item"><a href="../../lectures/week02/index.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to Data Representation</span></h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Ben Clifford </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Welsh Centre for Printing and Coatings
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 1, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="week2:introduction" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="week2:introduction">Introduction</h2>
+<div class="notes">
+<p><a href="../..\slides/lecture02.html">Presentation version</a> of these <a href="#week2:introduction">notes</a>.</p>
+</div>
+<div class="notes">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This chapter is designed to reinforce the material to be introduced in Week 2 of <strong>EG-143 Digital Systems</strong> and so it will not be delivered as part of a formal lecture in <strong>EG-151 Microcontrollers</strong>.</p>
+<p>Instead, we have provided some self-study materials in the Canvas Pages <a href="https://canvas.swansea.ac.uk/courses/52902/pages/introduction-to-data-representation?module_item_id=2882134">Introduction to Data Representation</a> and <a href="https://canvas.swansea.ac.uk/courses/52902/pages/twos-complement-bcd-binary-fractions-and-a-dot-s-c-dot-i-i?module_item_id=2882135">Two’s complement, BCD, Binary Fractions and A.S.C.I.I</a> as well as in <a href="../..\appendix/appendix_a.html">Appendix A: Other Data Representations</a>.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This material is examinable in EG-151 but there will not be a formal lecture. You should therefore read these notes for revision for the class test, try the execises and complete the quiz <a href="https://canvas.swansea.ac.uk/courses/52902/assignments/407475?display=full_width">Quiz Week 1(b) - Data Representation</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="week2:toc" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="week2:toc">Topics Covered in this Lecture</h2>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><img src="pictures/dr_contents_image.png" class="img-fluid" style="width:100.0%" data-img-alt="A decorative image showing code, a microntroller chip and the Arduino nano microcontroller board used in the lab component of this module."></p>
+</div><div class="column" style="width:75%;">
+<ul>
+<li><a href="#sec-week2:intro2dr" class="quarto-xref"><span>Section 2.1</span></a> <a href="#sec-week2:intro2dr">Data Representations</a></li>
+<li><a href="#sec-week2:numbering" class="quarto-xref"><span>Section 2.2</span></a> <a href="#sec-week2:numbering">Numbering Systems and Base Conversion</a></li>
+<li><a href="#sec-week2:addition_and_subtraction" class="quarto-xref"><span>Section 2.3</span></a> <a href="#sec-week2:addition_and_subtraction">Binary Addition and Subtraction</a></li>
+<li><a href="#sec-week2:sr" class="quarto-xref"><span>Section 2.4</span></a> <a href="#sec-week2:sr">Introduction to the Status Register</a></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="sec-week2:intro2dr" class="level2 center" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="sec-week2:intro2dr"><span class="header-section-number">2.1</span> Data Representations</h2>
+</section>
+<hr>
+<section id="how-is-data-stored-digitally" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="how-is-data-stored-digitally"><span class="header-section-number">2.1.1</span> How is Data stored Digitally?</h3>
+<p>Modern digital processors and microcontrollers contain millions of solid state devices known as transistors (<a href="#fig-week2-transistor" class="quarto-xref">Figure&nbsp;<span>2.1</span></a>).</p>
+<div id="fig-week2-transistor" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A single transistor">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week2-transistor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/transistor.png" class="img-fluid figure-img" alt="A single transistor">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week2-transistor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.1: A single transistor
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>With one transistor we can control the flow of electrons creating an object with two states – <em>on</em> or <em>off</em>. This is known as a binary system.</p>
+<p>We can use the output (or input if wired to ground) of this transistor to connect to other transistors forming: logic gates and eventually a bit of memory.</p>
+</div>
+<hr>
+<p>By arranging six of these transistors appropriately we can create a memory device that can store one bit of data (<a href="#fig-week2:1_bit_of_memory" class="quarto-xref">Figure&nbsp;<span>2.2</span></a>).</p>
+<div id="fig-week2:1_bit_of_memory" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week2:1_bit_of_memory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/memory.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week2:1_bit_of_memory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.2: One bit of SRAM memory<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="terminology" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="terminology"><span class="header-section-number">2.1.2</span> Terminology</h3>
+<div class="fragment">
+<p><strong>1 bit = 1 data unit</strong></p>
+<p><img src="pictures/bit.png" class="img-fluid"></p>
+</div>
+<div class="fragment">
+<p><strong>1 nybble = 4 data units (4 bits)</strong></p>
+<p><img src="pictures/nybble.png" class="img-fluid"></p>
+</div>
+<div class="fragment">
+<p><strong>1 byte = 8 data units (8 bits, 2 nybbles)</strong></p>
+<p><img src="pictures/byte.png" class="img-fluid"></p>
+</div>
+<div class="fragment">
+<p><strong>1 word = 16 data units (16 bits, 2 bytes, 4 nybbles)</strong></p>
+<p><img src="pictures/word.png" class="img-fluid"></p>
+</div>
+</section>
+<section id="sec-week2:numbering" class="level2 center" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="sec-week2:numbering"><span class="header-section-number">2.2</span> Numbering Systems and Base Conversion</h2>
+</section>
+<hr>
+<section id="decimal-number-representation" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="decimal-number-representation"><span class="header-section-number">2.2.1</span> Decimal Number Representation</h3>
+<p>Take the decimal number (Base 10) 4623, what does this representation mean?</p>
+<div class="fragment">
+<p><span class="math display">\[4623\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[4000 + 600 + 20 + 3\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[(4\times 1000) + (6\times 100) + (2\times 10) + (3\times 1)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[\left(4\times 10^3\right) + \left(6\times 10^2\right) + \left(2\times 10^1\right) + \left(3\times 10^0\right)\]</span></p>
+</div>
+<hr>
+<p>We can break down any base 10 (decimal) number <span class="math inline">\(N\)</span> in the same way using the expression:</p>
+<p><span class="math display">\[N_{10} = \cdots  + \left(X\times 10^3\right) + \left(X\times 10^2\right) + \left(X\times 10^1\right) + \left(X\times 10^0\right)\]</span></p>
+<p>where <span class="math inline">\(X\)</span> is any <em>digit</em> in the set <span class="math inline">\(\{0, 1, 2, 3, 4, 5, 6, 7, 8, 9\}\)</span>.</p>
+<hr>
+</section>
+<section id="what-about-other-bases" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="what-about-other-bases"><span class="header-section-number">2.2.2</span> What About Other Bases?</h3>
+<p>We can apply the same techniques to any other base to convert the value into decimal (base 10).</p>
+<p>For programming (and digital systems more generally), the <em>binary</em> (base 2), <em>octal</em> (base 8) and <em>hexadecimal</em> (base 16) representations are commonly used<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<hr>
+<section id="binary-base-2" class="level4" data-number="2.2.2.1">
+<h4 data-number="2.2.2.1" class="anchored" data-anchor-id="binary-base-2"><span class="header-section-number">2.2.2.1</span> Binary (base 2)</h4>
+<p><span class="math display">\[N_2 = \cdots + \left(X\times 2^5\right) + \left(X\times 2^4\right) + \left(X\times 2^3\right) + \left(X\times 2^2\right) + \left(X\times 2^1\right) + \left(X\times 2^0\right)\]</span></p>
+<p>where <span class="math inline">\(X\)</span> is any digit in the set <span class="math inline">\(\{0, 1\}\)</span>.</p>
+<hr>
+<section id="example-1" class="level5">
+<h5 class="anchored" data-anchor-id="example-1">Example 1</h5>
+<p>Consider the binary representation <span class="math inline">\(N_2 = 10010011\)</span>. What is the value of <span class="math inline">\(N_2\)</span> in decimal base 10?</p>
+<hr>
+<section id="solution" class="level6">
+<h6 class="anchored" data-anchor-id="solution">Solution</h6>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = \left(1\times 2^7\right) + \left(0\times 2^6\right) + \left(0\times 2^5\right) + \left(1\times 2^4\right) + \left(0\times 2^3\right) + \left(0\times 2^2\right) + \left(1\times 2^1\right) + \left(1\times 2^0\right)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = \left(1\times 128\right) + \left(0\times 64\right) + \left(0\times 32\right) + \left(1\times 16\right) + \left(0\times 8\right) + \left(0\times 4\right) + \left(1\times 2\right) + \left(1\times 1\right)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 128 + 16 + 2 + 1\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 147_{10}\]</span></p>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="octal-base-8" class="level4" data-number="2.2.2.2">
+<h4 data-number="2.2.2.2" class="anchored" data-anchor-id="octal-base-8"><span class="header-section-number">2.2.2.2</span> Octal (base 8)</h4>
+<p>Octal:</p>
+<p><span class="math display">\[N_{8} = \cdots  + \left(X\times 8^5\right) + \left(X\times 8^4\right) + \left(X\times 8^3\right) + \left(X\times 8^2\right) + \left(X\times 8^1\right) + \left(X\times 8^0\right)\]</span></p>
+<p>where <span class="math inline">\(X\)</span> is any <em>digit</em> in the set <span class="math inline">\(\{0, 1, 2, 3, 4, 5, 6, 7\}\)</span>.</p>
+<hr>
+<section id="example-2" class="level5">
+<h5 class="anchored" data-anchor-id="example-2">Example 2</h5>
+<p>Consider the octal representation <span class="math inline">\(N_8 = 712\)</span>. What is the value of <span class="math inline">\(N_8\)</span> in decimal base 10?</p>
+<hr>
+<section id="solution-1" class="level6">
+<h6 class="anchored" data-anchor-id="solution-1">Solution</h6>
+<div class="fragment">
+<p><span class="math display">\[N_8 = 713\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = \left(7\times 8^2\right) + \left(1·8^1\right) + \left(2·8^0\right)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = (7\times 64) + (1\times 8) + (2\times 1)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 448 + 8 + 2\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 458_{10}\]</span></p>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="hexadecimal-base-16" class="level4" data-number="2.2.2.3">
+<h4 data-number="2.2.2.3" class="anchored" data-anchor-id="hexadecimal-base-16"><span class="header-section-number">2.2.2.3</span> Hexadecimal (base 16)</h4>
+<p><span class="math display">\[N_{16} = \cdots  + \left(X\times 16^5\right) + \left(X\times 16^4\right) + \left(X\times 16^3\right) + \left(X\times 16^2\right) + \left(X\times 16^1\right) + \left(X\times 16^0\right)\]</span></p>
+<p>where <span class="math inline">\(X\)</span> is any <em>digit</em> in the set <span class="math inline">\(\{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, \textrm{A}, \textrm{B}, \textrm{C}, \textrm{D}, \textrm{E}, \textrm{F}\}\)</span><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
+<hr>
+<section id="example-3" class="level5">
+<h5 class="anchored" data-anchor-id="example-3">Example 3</h5>
+<p>Consider the hexadecimal representation <span class="math inline">\(N_{16} = 3\textrm{C}4\)</span>. What is the value of <span class="math inline">\(N_{16}\)</span> in decimal base 10?</p>
+<hr>
+<section id="solution-2" class="level6">
+<h6 class="anchored" data-anchor-id="solution-2">Solution</h6>
+<div class="fragment">
+<p><span class="math display">\[N_{16} = \left(3\times 16^2\right) + \left(\textrm{C}\times 16^1\right) + \left(4\times 16^0\right)\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 3\times 256 + 12\times 16 + 4\times 1\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 768 + 192 + 4\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[N_{10} = 964_{10}\]</span></p>
+</div>
+<hr>
+</section>
+</section>
+</section>
+</section>
+<section id="decimal-number-conversion" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="decimal-number-conversion"><span class="header-section-number">2.2.3</span> Decimal Number Conversion</h3>
+<p>A decimal number can be converted into any other base using the <strong>divide-by-<span class="math inline">\(n\)</span></strong> method where <span class="math inline">\(n\)</span> represents the desired base.</p>
+<hr>
+<div id="fig-divide-by-n-method" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Illustration of a step in the division-by-n method of decimal number conversion.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-divide-by-n-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/division_method.png" class="img-fluid figure-img" alt="Illustration of a step in the division-by-n method of decimal number conversion.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-divide-by-n-method-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.3: a step in the division-by-<span class="math inline">\(n\)</span> method of decimal number conversion.
+</figcaption>
+</figure>
+</div>
+<p>Step 1 (see <a href="#fig-divide-by-n-method" class="quarto-xref">Figure&nbsp;<span>2.3</span></a>) − Divide the decimal number by the value of the new base and get the quotient and a remainder.</p>
+<div class="fragment">
+<p>Step 2 − Keep dividing the quotient of the previous divide by the new base and record the remainder</p>
+</div>
+<div class="fragment">
+<p>Step 3 − Repeat Step 2, until the quotient becomes zero</p>
+</div>
+<div class="fragment">
+<p>Step 4 – Read the remainders from bottom (MSB) to top (LSB).</p>
+</div>
+<hr>
+<section id="example-4" class="level4" data-number="2.2.3.1">
+<h4 data-number="2.2.3.1" class="anchored" data-anchor-id="example-4"><span class="header-section-number">2.2.3.1</span> Example 4</h4>
+<p>Convert <span class="math inline">\(28_{10}\)</span> into binary (base 2).</p>
+<hr>
+<section id="solution-3" class="level5">
+<h5 class="anchored" data-anchor-id="solution-3">Solution</h5>
+<div class="fragment">
+<p>Step 1: <span class="math inline">\(28 \div 2 = 14\)</span> remainder <span class="math inline">\(0\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 2: <span class="math inline">\(14 \div 2 = 7\)</span> remainder <span class="math inline">\(0\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 3: <span class="math inline">\(7 \div 2 = 3\)</span> remainder <span class="math inline">\(1\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 4: <span class="math inline">\(3 \div 2 = 1\)</span> remainder <span class="math inline">\(1\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 5: <span class="math inline">\(1 \div 2 = 0\)</span> remainder <span class="math inline">\(1\)</span></p>
+</div>
+<div class="fragment">
+<p>Binary value: <span class="math inline">\(28_{10} = 11100_{2}\)</span>.</p>
+</div>
+<hr>
+</section>
+<section id="confirmation" class="level5">
+<h5 class="anchored" data-anchor-id="confirmation">Confirmation</h5>
+<p><span class="math display">\[\begin{align}
+11000_2 &amp;= \left(1\times 2^4\right) + \left(1\times 2^3\right) + \left(1\times 2^2\right) + \left(0\times 2^1\right) + \left(0\times 2^0\right)\\
+&amp;= \left(1\times 16\right) + \left(1\times 8\right) + \left(1\times 4\right) + \left(0\times 2\right) + \left(0\times 1\right)\\
+&amp;= 16 + 8 + 4\\
+&amp;= 28_{10}
+\end{align}\]</span></p>
+<hr>
+</section>
+</section>
+<section id="example-5" class="level4" data-number="2.2.3.2">
+<h4 data-number="2.2.3.2" class="anchored" data-anchor-id="example-5"><span class="header-section-number">2.2.3.2</span> Example 5</h4>
+<p>Convert <span class="math inline">\(28_{10}\)</span> into octal (base 8).</p>
+<hr>
+<section id="solution-4" class="level5">
+<h5 class="anchored" data-anchor-id="solution-4">Solution</h5>
+<div class="fragment">
+<p>Step 1: <span class="math inline">\(28 \div 8 = 3\)</span> remainder <span class="math inline">\(4\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 2: <span class="math inline">\(3 \div 8 = 0\)</span> remainder <span class="math inline">\(3\)</span></p>
+</div>
+<div class="fragment">
+<p>Octal value: <span class="math inline">\(28_{10} = 34_{8}\)</span>.</p>
+</div>
+<hr>
+</section>
+<section id="confirmation-1" class="level5">
+<h5 class="anchored" data-anchor-id="confirmation-1">Confirmation</h5>
+<p><span class="math display">\[\begin{align}
+34_8 &amp;= \left(3\times 8^1\right) + \left(4\times 8^0\right)\\
+&amp;= \left(3\times 8\right) + \left(4\times 1\right) \\
+&amp;= 24 + 4\\
+&amp;= 28_{10}
+\end{align}\]</span></p>
+<hr>
+</section>
+</section>
+<section id="example-6" class="level4" data-number="2.2.3.3">
+<h4 data-number="2.2.3.3" class="anchored" data-anchor-id="example-6"><span class="header-section-number">2.2.3.3</span> Example 6</h4>
+<p>Convert <span class="math inline">\(28_{10}\)</span> into hexadecimal (base 16).</p>
+<hr>
+<section id="solution-5" class="level5">
+<h5 class="anchored" data-anchor-id="solution-5">Solution</h5>
+<div class="fragment">
+<p>Step 1: <span class="math inline">\(28 \div 16 = 1\)</span> remainder <span class="math inline">\(12\,\left(\textrm{C}_{16}\right)\)</span></p>
+</div>
+<div class="fragment">
+<p>Step 2: <span class="math inline">\(1 \div 16 = 0\)</span> remainder <span class="math inline">\(1\)</span></p>
+</div>
+<div class="fragment">
+<p>Hexadecimal value: <span class="math inline">\(28_{10} = 1\textrm{C}_{16}\)</span>.</p>
+</div>
+<hr>
+</section>
+<section id="confirmation-2" class="level5">
+<h5 class="anchored" data-anchor-id="confirmation-2">Confirmation</h5>
+<p><span class="math display">\[\begin{align}
+1\textrm{C}_{16} &amp;= \left(1\times 16^1\right) + \left(\textrm{C}\times 16^0\right)\\
+&amp;= \left(1\times 16\right) + \left(12\times 1\right) \\
+&amp;= 16 + 12\\
+&amp;= 28_{10}
+\end{align}\]</span></p>
+<hr>
+</section>
+</section>
+</section>
+<section id="tricks-and-tips" class="level3" data-number="2.2.4">
+<h3 data-number="2.2.4" class="anchored" data-anchor-id="tricks-and-tips"><span class="header-section-number">2.2.4</span> Tricks and Tips</h3>
+<p>All numbers are stored in a computer in binary form. Depending on the encoding, each digit takes up 1 bit (binary), 3 bits (octal) or 4 bits (decimal and hexadecimal).</p>
+<p>If the digit needs less bits than allowed for its representation, the remaining bits the the left of the number will be set to zero.</p>
+<hr>
+<p>For example:</p>
+<div class="incremental">
+<ul class="incremental">
+<li><span class="math inline">\(1_2\)</span> is represented as <code>0b00000001</code><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> (binary, prefix <code>0b</code>, seven padding 0 bits + 1 bit for the value 1).</li>
+<li><span class="math inline">\(5_8\)</span> is <code>0005</code> (octal prefix <code>0</code> followed two 0 digits (2 bits plus 3 bits) (00 000 101).</li>
+<li><span class="math inline">\(10_{10} = 8 + 2\)</span> is <code>0b00010010</code>.</li>
+<li><span class="math inline">\(\textrm{E}\)</span> is <code>0x0E</code> (hexadecimal prefix <code>0x</code> followed by <code>0b0000</code>, and <code>0b1110</code> = <code>0b00001110</code>).</li>
+</ul>
+</div>
+<hr>
+<p>For octal and hexadecimal values, the equivalent binary number is easily obtained by grouping from the right.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>For octal, the largest digit is 7 which needs three bits. So the octal representation of an 8 bit binary number will have 2 bits (0-3) + two groups of 3 bits. The maximum number allowed is <code>0b11 111 111</code> = <code>0377</code> = <span class="math inline">\(255_{10}\)</span>.</li>
+<li>For hexadecimal, four bits are needed to represent all values in the range 0-F. So an 8 bit value can only represent two hexadecimal digits <code>0x00</code> to <code>0xFF</code>.</li>
+</ul>
+</div>
+<div class="notes">
+<p>To convert a binary number to octal or heaxdecimal, just group the binary digits and then read off the value.</p>
+</div>
+<hr>
+<section id="example-7" class="level4" data-number="2.2.4.1">
+<h4 data-number="2.2.4.1" class="anchored" data-anchor-id="example-7"><span class="header-section-number">2.2.4.1</span> Example 7</h4>
+<p>Convert the binary number <code>0x000011101</code> to octal and hexadecimal. Give the value in decimal.</p>
+<hr>
+<section id="solution-6" class="level5">
+<h5 class="anchored" data-anchor-id="solution-6">Solution</h5>
+<div class="fragment">
+<p>Grouping <code>0x000011101</code> by threes gives <code>00</code> + <code>011</code> + <code>101</code> = <code>0035</code> = <span class="math inline">\(35_8\)</span>.</p>
+</div>
+<div class="fragment">
+<p>Grouping <code>0x000011101</code> by fours gives <code>0001</code> + <code>1101</code> = <code>0x01D</code> = <span class="math inline">\(1\textrm{D}_{16}\)</span>.</p>
+</div>
+<div class="fragment">
+<p>Taking the octal value <span class="math inline">\(62_8 = \left(0\times 8^2\right) + \left(3\times 8^1\right) + (5\times 8^0) = 0 + 24 + 5 = 29_{10}\)</span>.</p>
+</div>
+<hr>
+</section>
+</section>
+<section id="example-8" class="level4" data-number="2.2.4.2">
+<h4 data-number="2.2.4.2" class="anchored" data-anchor-id="example-8"><span class="header-section-number">2.2.4.2</span> Example 8</h4>
+<p>Convert the octal number <span class="math inline">\(62_8\)</span> (<code>0062</code>) to binary and hexadecimal. Give the value in decimal.</p>
+<hr>
+<section id="solution-7" class="level5">
+<h5 class="anchored" data-anchor-id="solution-7">Solution</h5>
+<div class="fragment">
+<p>The octal digits <span class="math inline">\(6_8\)</span> and <span class="math inline">\(2_8\)</span> are the three-bit binary values <code>0b110</code> and <code>0b010</code> respectively. So the equivalent 8-bit binary byte is obtained by combining these binary values and prepending with two zeros: <code>0b00 110 010</code> <span class="math inline">\(\to\)</span> <code>0b00110010</code>.</p>
+</div>
+<div class="fragment">
+<p>Grouping the binary number <code>0b00110010</code> in blocks of 4 gives <code>0b 0011 0010</code> which gives the hexdecimal digits <span class="math inline">\(3_{16}\)</span> and <span class="math inline">\(2_{16}\)</span> respectively. So <span class="math inline">\(62_8 = 32_{16}\)</span>.</p>
+</div>
+<div class="fragment">
+<p>The equivalent decimal number is <span class="math inline">\(\left(3\times 16^1\right) + \left(2\times 16^0\right) = 48 + 2 = 50_{10}\)</span>.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="summary-of-number-systems" class="level3" data-number="2.2.5">
+<h3 data-number="2.2.5" class="anchored" data-anchor-id="summary-of-number-systems"><span class="header-section-number">2.2.5</span> Summary of number systems</h3>
+<div class="notes">
+<p><a href="#tbl-week2-number-values" class="quarto-xref">Table&nbsp;<span>2.1</span></a> shows the equivalent binary, octal and hexadecimal values for decimal numbers 0-16. Note that we need just 1 nybble to represent a value in the range 0-154 but we need two nybbles (1 byte) for numbers greater than 15. The maximum value representable in one byte of data is <span class="math inline">\(2^8 - 1 = 255\)</span>. The concept can of course be extended to words (16 bits). The maximum value that can be represented with 16 bits is <span class="math inline">\(2^{16} - 1 = 65,535\)</span>.</p>
+</div>
+<div id="tbl-week2-number-values" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-week2-number-values-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2.1: Representation of integer values in 8 bit computer systems
+</figcaption>
+<div aria-describedby="tbl-week2-number-values-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 23%">
+<col style="width: 22%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Decimal (Code)</th>
+<th>Binary (Code)</th>
+<th>Octal (Code)</th>
+<th>Hexadecimal (Code)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(0\)</span> (<code>0</code>)</td>
+<td><span class="math inline">\(0\)</span> (<code>0b00000000</code>)</td>
+<td><span class="math inline">\(0\)</span> (<code>000</code>)</td>
+<td><span class="math inline">\(0\)</span> (<code>0x00</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(1\)</span> (<code>1</code>)</td>
+<td><span class="math inline">\(1\)</span> (<code>0b00000001</code>)</td>
+<td><span class="math inline">\(1\)</span> (<code>001</code>)</td>
+<td><span class="math inline">\(1\)</span> (<code>0x01</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(2\)</span> (<code>2</code>)</td>
+<td><span class="math inline">\(10\)</span> (<code>0b00000010</code>)</td>
+<td><span class="math inline">\(2\)</span> (<code>002</code>)</td>
+<td><span class="math inline">\(2\)</span> (<code>0x02</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(3\)</span> (<code>3</code>)</td>
+<td><span class="math inline">\(11\)</span> (<code>0b00000011</code>)</td>
+<td><span class="math inline">\(3\)</span> (<code>003</code>)</td>
+<td><span class="math inline">\(3\)</span> (<code>0x03</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(4\)</span> (<code>4</code>)</td>
+<td><span class="math inline">\(100\)</span> (<code>0b00000100</code>)</td>
+<td><span class="math inline">\(4\)</span> (<code>004</code>)</td>
+<td><span class="math inline">\(4\)</span> (<code>0x04</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(5\)</span> (<code>5</code>)</td>
+<td><span class="math inline">\(101\)</span> (<code>0b00000101</code>)</td>
+<td><span class="math inline">\(5\)</span> (<code>005</code>)</td>
+<td><span class="math inline">\(5\)</span> (<code>0x05</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(6\)</span> (<code>6</code>)</td>
+<td><span class="math inline">\(110\)</span> (<code>0b00000110</code>)</td>
+<td><span class="math inline">\(6\)</span> (<code>006</code>)</td>
+<td><span class="math inline">\(6\)</span> (<code>0x06</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(7\)</span> (<code>7</code>)</td>
+<td><span class="math inline">\(111\)</span> (<code>0b00000111</code>)</td>
+<td><span class="math inline">\(7\)</span> (<code>007</code>)</td>
+<td><span class="math inline">\(7\)</span> (<code>0x07</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(8\)</span> (<code>8</code>)</td>
+<td><span class="math inline">\(1000\)</span> (<code>0b00001000</code>)</td>
+<td><span class="math inline">\(10\)</span> (<code>010</code>)</td>
+<td><span class="math inline">\(8\)</span> (<code>0x08</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(9\)</span> (<code>9</code>)</td>
+<td><span class="math inline">\(1001\)</span> (<code>0b00001001</code>)</td>
+<td><span class="math inline">\(11\)</span> (<code>011</code>)</td>
+<td><span class="math inline">\(9\)</span> (<code>0x09</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(10\)</span> (<code>10</code>)</td>
+<td><span class="math inline">\(1010\)</span> (<code>0b00010010</code>)</td>
+<td><span class="math inline">\(12\)</span> (<code>012</code>)</td>
+<td><span class="math inline">\(\mathrm{A}\)</span> (<code>0x0A</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(11\)</span> (<code>11</code>)</td>
+<td><span class="math inline">\(1011\)</span> (<code>0b00001011</code>)</td>
+<td><span class="math inline">\(13\)</span> (<code>013</code>)</td>
+<td><span class="math inline">\(\mathrm{B}\)</span> (<code>0x0B</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(12\)</span> (<code>12</code>)</td>
+<td><span class="math inline">\(1100\)</span> (<code>0b00001100</code>)</td>
+<td><span class="math inline">\(14\)</span> (<code>014</code>)</td>
+<td><span class="math inline">\(\mathrm{C}\)</span> (<code>0x0C</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(13\)</span> (<code>13</code>)</td>
+<td><span class="math inline">\(1101\)</span> (<code>0b00001101</code>)</td>
+<td><span class="math inline">\(15\)</span> (<code>015</code>)</td>
+<td><span class="math inline">\(\mathrm{D}\)</span> (<code>0x0D</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(14\)</span> (<code>14</code>)</td>
+<td><span class="math inline">\(1110\)</span> (<code>0b00001110</code>)</td>
+<td><span class="math inline">\(16\)</span> (<code>016</code>)</td>
+<td><span class="math inline">\(\mathrm{E}\)</span> (<code>0x0E</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(15\)</span> (<code>15</code>)</td>
+<td><span class="math inline">\(1111\)</span> (<code>0b00001111</code>)</td>
+<td><span class="math inline">\(17\)</span> (<code>017</code>)</td>
+<td><span class="math inline">\(\mathrm{F}\)</span> (<code>0x0F</code>)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(16\)</span> (<code>16</code>)</td>
+<td><span class="math inline">\(10000\)</span> (<code>0b0010000</code>)</td>
+<td><span class="math inline">\(20\)</span> (<code>020</code>)</td>
+<td><span class="math inline">\(10\)</span> (<code>0x10</code>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<hr>
+</section>
+<section id="other-binary-encodings" class="level3" data-number="2.2.6">
+<h3 data-number="2.2.6" class="anchored" data-anchor-id="other-binary-encodings"><span class="header-section-number">2.2.6</span> Other binary encodings</h3>
+<p>Numbers are not the only type of data that can be encoded using binary values. In fact, all data that is manipulated by computers is represented by an encoding of binary numbers.</p>
+<hr>
+<p>Some examples of codings that you will see are:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Characters which are represented as ASCII code (7 bits), extended ASCII (8 bits) or UTF (1-4 bytes) used to represent other characters (e.g.&nbsp;for accented characters, other alphabets and languages, math symbols, emojis) and other purposes.</li>
+<li>Other numerical encodings, such as Binary Coded Decimal (BCD)</li>
+<li>Machine codes, which is how computers represent exercutable programmes, are also represented in binary numbers. These are usually generated by an assembler, compiler, or interpreter from human-readable code that is stored in text files that are themselves use characters encoded in ASCII or UTF.</li>
+</ul>
+</div>
+<hr>
+<p>Additional self-directed learning materials which explore some of these extra encodings are provided on <a href="https://canvas.swansea.ac.uk/courses/52902/pages/introduction-to-data-representation?module_item_id=2882134">Canvas</a>.</p>
+<p>We will dicuss some of the encodings used for machine code in later lectures.</p>
+</section>
+<section id="sec-week2:addition_and_subtraction" class="level2 center" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="sec-week2:addition_and_subtraction"><span class="header-section-number">2.3</span> Binary Addition and Subtraction</h2>
+<p>How do computers add and subtract numbers?</p>
+</section>
+<hr>
+<section id="binary-arithmetic" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="binary-arithmetic"><span class="header-section-number">2.3.1</span> Binary Arithmetic</h3>
+<p>Microcontrollers work with 0’s and 1’s (binary).</p>
+<p>In order to add or subtract two binary numbers there are a series of rules similar to in decimal arithmetic.</p>
+<hr>
+<section id="rules-for-binary-addition" class="level4" data-number="2.3.1.1">
+<h4 data-number="2.3.1.1" class="anchored" data-anchor-id="rules-for-binary-addition"><span class="header-section-number">2.3.1.1</span> Rules for Binary Addition</h4>
+<p><span class="math display">\[\begin{align*}
+0 + 0 &amp;= 0\\
+0 + 1 &amp;= 1\\
+1 + 0 &amp;= 1\\
+1 + 1 &amp;= 10\quad\textrm{i.e.}\, 0 + \textrm{carry}\, 1
+\end{align*}\]</span></p>
+<hr>
+<section id="example-10" class="level5">
+<h5 class="anchored" data-anchor-id="example-10">Example 10</h5>
+<p>Confirm using binary addition that <span class="math inline">\(14_{10} + 19_{10} = 33_{10}\)</span>.</p>
+<hr>
+<section id="solution-fig-example-10" class="level6">
+<h6 class="anchored" data-anchor-id="solution-fig-example-10">Solution (<a href="#fig-example-10" class="quarto-xref">Figure&nbsp;<span>2.4</span></a>)</h6>
+<div id="fig-example-10" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Example of binary addition: 14 + 19 = 33">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-example-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/addition1.png" class="img-fluid figure-img" alt="Example of binary addition: 14 + 19 = 33">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-example-10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.4: Example 10: <span class="math inline">\(14_{10} + 19_{10} = 33_{10}\)</span>
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="example-11" class="level5">
+<h5 class="anchored" data-anchor-id="example-11">Example 11</h5>
+<p>Confirm using binary addition that <span class="math inline">\(46_{10} + 147_{10} = 193_{10}\)</span>.</p>
+<hr>
+<section id="solution-fig-example-11" class="level6">
+<h6 class="anchored" data-anchor-id="solution-fig-example-11">Solution (<a href="#fig-example-11" class="quarto-xref">Figure&nbsp;<span>2.5</span></a>)</h6>
+<div id="fig-example-11" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Example of binary addition: 46 + 147 = 193">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-example-11-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/addition2.png" class="img-fluid figure-img" alt="Example of binary addition: 46 + 147 = 193">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-example-11-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.5: Example 11: <span class="math inline">\(46_{10} + 147_{10} = 193_{10}\)</span>
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="rules-for-binary-subtraction" class="level4" data-number="2.3.1.2">
+<h4 data-number="2.3.1.2" class="anchored" data-anchor-id="rules-for-binary-subtraction"><span class="header-section-number">2.3.1.2</span> Rules for Binary Subtraction</h4>
+<p><span class="math display">\[\begin{align*}
+0 - 0 &amp;= 0\\
+1 - 0 &amp;= 1\\
+1 - 1 &amp;= 0\\
+0 - 1 &amp;= 10 - 1 +\,\textrm{borrow} = 1+ \textrm{borrow}
+\end{align*}\]</span></p>
+<hr>
+<section id="example-12" class="level5">
+<h5 class="anchored" data-anchor-id="example-12">Example 12</h5>
+<p>Confirm using binary subtraction that <span class="math inline">\(27_{10} - 14_{10} = 13_{10}\)</span>.</p>
+<hr>
+<section id="solution-fig-example-12" class="level6">
+<h6 class="anchored" data-anchor-id="solution-fig-example-12">Solution (<a href="#fig-example-12" class="quarto-xref">Figure&nbsp;<span>2.6</span></a>)</h6>
+<div id="fig-example-12" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Example of binary subtraction: 27 - 14 = 13">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-example-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/subtraction1.png" class="img-fluid figure-img" alt="Example of binary subtraction: 27 - 14 = 13">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-example-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.6: Example of binary subtraction: <span class="math inline">\(27_{10} - 14_{10} = 13_{10}\)</span>
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="example-13" class="level5">
+<h5 class="anchored" data-anchor-id="example-13">Example 13</h5>
+<p>Show using binary subtraction that <span class="math inline">\(175_{10} - 83_{10} = 92_{10}\)</span>.</p>
+<hr>
+<section id="solution-fig-example-13" class="level6">
+<h6 class="anchored" data-anchor-id="solution-fig-example-13">Solution (<a href="#fig-example-13" class="quarto-xref">Figure&nbsp;<span>2.7</span></a>)</h6>
+<div id="fig-example-13" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Example of binary subtraction: 175 - 83 = 92">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-example-13-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/subtraction2.png" class="img-fluid figure-img" alt="Example of binary subtraction: 175 - 83 = 92">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-example-13-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.7: Example of binary subtraction: <span class="math inline">\(175_{10} - 83_{10} = 92_{10}\)</span>
+</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="binary-arithmetic-and-flags" class="level4" data-number="2.3.1.3">
+<h4 data-number="2.3.1.3" class="anchored" data-anchor-id="binary-arithmetic-and-flags"><span class="header-section-number">2.3.1.3</span> Binary Arithmetic and Flags</h4>
+<p>What happens when the result is larger than 8-bits?</p>
+<hr>
+<section id="extended-rules-for-binary-addition" class="level5">
+<h5 class="anchored" data-anchor-id="extended-rules-for-binary-addition">Extended Rules for Binary Addition</h5>
+<p>We need to extend the rules of binary addition to introduce an overflow that is indicated by a carry flag.</p>
+<p><span class="math display">\[\begin{align*}
+0 + 0 &amp;= 0 \\
+0 + 1 &amp;= 1 \\
+1 + 0 &amp;= 1 \\
+1 + 1 &amp;= 10\quad \textrm{i.e.}\, 0 + \textrm{carry}\, 1 \\
+1 + 1 + 1 &amp;= 11\quad \textrm{i.e.}\, 1 + \textrm{carry}\, 1
+\end{align*}\]</span></p>
+<hr>
+</section>
+<section id="week2:example14" class="level5">
+<h5 class="anchored" data-anchor-id="week2:example14">Example 14</h5>
+<p>Show using binary addition that <span class="math inline">\(110_{10} + 227_{10} = 337_{10}\)</span>.</p>
+<hr>
+<section id="solution-fig-example-14" class="level6">
+<h6 class="anchored" data-anchor-id="solution-fig-example-14">Solution (<a href="#fig-example-14" class="quarto-xref">Figure&nbsp;<span>2.8</span></a>)</h6>
+<div id="fig-example-14" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Example of binary subtraction with overflow: 110 + 227 = 337">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-example-14-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/addition3.png" class="img-fluid figure-img" alt="Example of binary subtraction with overflow: 110 + 227 = 337">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-example-14-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.8: Example of binary subtraction with overflow: <span class="math inline">\(110_{10} + 227_{10} = 337_{10}\)</span>
+</figcaption>
+</figure>
+</div>
+<div class="notes">
+<p>The overflow is acknowledged in the <strong>status register</strong> by the carry flag</p>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="sec-week2:sr" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="sec-week2:sr"><span class="header-section-number">2.4</span> Introduction to the Status Register</h2>
+<p>The microcontroller has an 8-bit register containing a number of flags which can be set based on the condition of the microcontroller.</p>
+<p>The status register for the Atmel ATMega328/P is illustrated in <a href="#fig-week2-sr" class="quarto-xref">Figure&nbsp;<span>2.9</span></a>.</p>
+<div id="fig-week2-sr" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The Status Register of the Atmel ATMega328/P">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week2-sr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/status_register.png" class="img-fluid figure-img" alt="The Status Register of the Atmel ATMega328/P">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week2-sr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.9: The Status Register of the Atmel ATMega328/P
+</figcaption>
+</figure>
+</div>
+<hr>
+<section id="status-register-flags-associated-with-binary-addition-and-subtraction" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="status-register-flags-associated-with-binary-addition-and-subtraction"><span class="header-section-number">2.4.1</span> Status register flags associated with binary addition and subtraction</h3>
+<div class="incremental">
+<ul class="incremental">
+<li>The Half Carry Flag <code>H</code> is set (to 1) if there was a carry from bit 3; it is cleared (set to 0) otherwise.</li>
+<li>The Zero Flag <code>Z</code> is set if the result is <code>0x00000000</code>; cleared otherwise.</li>
+<li>The Carry Flag <code>C</code> is set if there was a carry from the most significant bit (MSB)<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> of the result; cleared otherwise.</li>
+</ul>
+</div>
+<div class="fragment">
+<p>We will look at the status register in detail in <a href="../week02/">Architecture of the Atmel ATmega 328 Microcontroller</a>.</p>
+</div>
+<hr>
+</section>
+<section id="binary-arithmetic-example-14" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="binary-arithmetic-example-14"><span class="header-section-number">2.4.2</span> Binary Arithmetic Example 14</h3>
+<p><a href="#fig-week2-ex15" class="quarto-xref">Figure&nbsp;<span>2.10</span></a> shows the condition of the status register after completing the addition from <a href="#week2:example14">Example 14</a>.</p>
+<div id="fig-week2-ex15" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The condition of the status register after completing the sum 110 + 227 = 337.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-week2-ex15-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="pictures/sr_after_ex14.png" class="img-fluid figure-img" alt="The condition of the status register after completing the sum 110 + 227 = 337.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-week2-ex15-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.10: The condition of the status register after completing the sum <span class="math inline">\(110_{10} + 227_{10} = 337\)</span>.
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="other-data-representations" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="other-data-representations"><span class="header-section-number">2.5</span> Other Data Representations</h2>
+<p>We have provided notes and videos that introduce other commonly used data representations in <a href="../..\appendix/appendix_a.html">Appendix A: Other Data Representations</a>.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This chapter and <a href="../..\appendix/appendix_a.html">Appendix A</a> are examinable and you should study both as part of your preparation for the class test.</p>
+</div>
+</div>
+<section id="next" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="next">Next</h3>
+<p>In the next lecture we will look at the <a href="../..\lectures/week2/">Architecture of the Atmel ATmega 328 Microcontroller</a>.</p>
+<hr>
+
+
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Source of image used in <a href="#fig-week2:1_bit_of_memory" class="quarto-xref">Figure&nbsp;<span>2.2</span></a>: <a href="https://youtu.be/r787m_IaR1I">SRAM vs DRAM : How SRAM Works? How DRAM Works? Why SRAM is faster than RAM?</a>, All About Electronics - YouTube.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Note that octal and hexadecimal are related to binary as in each case the base is a power of 2. In the case of octal <span class="math inline">\(8 = 2^3\)</span> and hexadecimal <span class="math inline">\(16 = 2^4\)</span>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Note we have to introduce the letters A-F to represent the two-digit decinal numbers 10-15. Thus <span class="math inline">\(\textrm{A}_{16} = 10_{10}\)</span>, <span class="math inline">\(\textrm{B}_{16} = 11_{10}\)</span>, <span class="math inline">\(\textrm{C}_{16} = 12_{10}\)</span>, <span class="math inline">\(\textrm{D}_{16} = 13_{10}\)</span>, <span class="math inline">\(\textrm{E}_{16} = 14_{10}\)</span>, <span class="math inline">\(\textrm{F}_{16} = 15_{10}\)</span>,<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>The prefix <code>0b</code> is used in C code and many other languages as the prefix for the text representation of a binary value. <code>0</code> is used for octal values and <code>0x</code> for hexadecimal values. If there is no leading zero, the number is assumed to be decimal. However a number is defined in program code, the actual value stored in memory to represent that number will be a binary number.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>The calculator app on both Windows and MacOS have a programmer view that makes it easy to confirm these results.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>The most significant bit is the left most bit. It corresponds to the numerical value <span class="math inline">\(2^7 = 128\)</span>. For certain operations, it may also indicate a negative number.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+<p>Copyright © 2021-2025 Swansea University. All rights reserved.</p></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jahangerh\.github\.io\/eg-151-textbook");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../lectures/week01/index.html" class="pagination-link" aria-label="Introduction to Microcontrollers and Microcontroller Architecture">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Microcontrollers and Microcontroller Architecture</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../lectures/week03/index.html" class="pagination-link" aria-label="Architecture of the Atmel ATmega 328 Microcontroller">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Architecture of the Atmel ATmega 328 Microcontroller</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JahangerH/eg-151-textbook/edit/main/website/lectures/week02/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/JahangerH/eg-151-textbook/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
