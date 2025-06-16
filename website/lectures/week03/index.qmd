@@ -3,8 +3,8 @@ title: Architecture of the Atmel ATmega 328 Microcontroller
 author: 
   name: Ben Clifford
   affiliation: Welsh Centre for Printing and Coatings
-copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
-date: 10/08/2024
+copyright: Copyright &copy; 2021-2025 Swansea University. All rights reserved.
+date: 10/08/2025
 ---
 ::: {.notes}
 [Presentation version](/slides/lecture03.html) of these [notes](#sec-week02).
