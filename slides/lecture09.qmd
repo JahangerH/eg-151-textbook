@@ -5,8 +5,8 @@ title: Microcontroller Architecture – Program Operation
 author: 
   name: Ben Clifford
   affiliation: Welsh Centre for Printing and Coatings
-copyright: Copyright &copy; 2021-2024 Swansea University. All rights reserved.
-date: 11/19/2024
+copyright: Copyright &copy; 2021-2025 Swansea University. All rights reserved.
+date: 11/19/2025
 ---
 ::: {.notes}
 [Presentation version](/slides/lecture09.html) of these [notes](#sec-week08-intro).
