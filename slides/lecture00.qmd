@@ -24,11 +24,11 @@ date: 10/01/2025
 Dr Chris Jobling
 :::
 
-**Module Coordinator**
+**Module Former Coordinator**
 
 **Email**: [c.p.jobling@swansea.ac.uk](mailto:c.p.jobling@swansea.ac.uk)
 
-**Office Hour**: Tuesdays 13:00 on Zoom. (From Monday 8th October)
+**Office Hour**: Not application (Tuesdays 13:00 on Zoom. (From Monday 8th October))
 
 **Office Location**: Room B206, Engineering East
 
@@ -42,11 +42,11 @@ Dr Chris Jobling
 Dr Hayder Jahanger
 :::
 
-**Module Lecturer**
+**Module Coordinator and Lecturer**
 
 **Email**: [hayder.jahanger@swansea.ac.uk](mailto:hayder.jahanger@swansea.ac.uk)
 
-**Office Hour**: TBC
+**Office Hour**: Tuesday 13:00-13:50
 
 **Office Location**: Room 202, Engineering North
 
@@ -94,13 +94,13 @@ The course entry page on Canvas dashboard
 
 - Lecture Class
 
-  - Tuesday 11:00 &ndash; 11:50
+  - Monday 14:00 &ndash; 14:50
 
   - Great Hall, Room 029
 
 - Laboratory class
 
-  - 10:00 &ndash; 12:00 Thursday and Friday
+  - 14:00 &ndash; 16:00 Tuesdat and 09:00 &ndash; 11:00 Friday
 
   - Engineering East, Room B107 Electronics Lab
 
