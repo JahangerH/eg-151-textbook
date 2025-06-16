@@ -5,7 +5,7 @@ footer: Welcome to EG-151 Microcontrollers
 author:
   name: Dr Chris Jobling
   affiliation: Department of Electronic and Electrical Engineering
-date: 10/01/2024
+date: 10/01/2025
 ---
 
 ::: {.notes}
